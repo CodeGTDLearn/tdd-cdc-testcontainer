@@ -8,7 +8,9 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import static com.tdd.parallel.core.Routes.REQ_MAP;
+import java.util.List;
+
+import static com.tdd.parallel.core.Routes.*;
 import static org.springframework.http.HttpStatus.*;
 
 //@AllArgsConstructor
@@ -28,6 +30,13 @@ public class PersonController {
   }
 
 
+  @PostMapping(SAVE_ALL)
+  @ResponseStatus(CREATED)
+  public Flux<Person> saveAll(@RequestBody List<Person> personList) {
+    return service.saveAll(personList);
+  }
+
+
   @GetMapping
   @ResponseStatus(OK)
   public Flux<Person> findAll() {
@@ -35,7 +44,7 @@ public class PersonController {
   }
 
 
-  @GetMapping("/{id}")
+  @GetMapping(ID)
   @ResponseStatus(OK)
   public Mono<Person> findById(@PathVariable String id) {
     return service.findById(id);
@@ -49,11 +58,9 @@ public class PersonController {
   }
 
 
-  @DeleteMapping("/{id}")
+  @DeleteMapping(ID)
   @ResponseStatus(NO_CONTENT)
   public Mono<Void> deleteById(@PathVariable String id) {
     return service.deleteById(id);
   }
-
-
 }

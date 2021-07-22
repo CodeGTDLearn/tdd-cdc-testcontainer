@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 //TUTORIAL: https://rieckpil.de/mongodb-testcontainers-setup-for-datamongotest/
 @Slf4j
 @Service
@@ -19,8 +21,14 @@ public class PersonService implements IPersonService {
 
 
   @Override
-  public Mono<Person> save(Person customer) {
-    return crudRepo.save(customer);
+  public Mono<Person> save(Person person) {
+    return crudRepo.save(person);
+  }
+
+
+  @Override
+  public Flux<Person> saveAll(List<Person> personList) {
+    return crudRepo.saveAll(personList);
   }
 
 
@@ -45,6 +53,8 @@ public class PersonService implements IPersonService {
   public Mono<Void> deleteById(String id) {
     return crudRepo.deleteById(id);
   }
+
+
 }
 
 

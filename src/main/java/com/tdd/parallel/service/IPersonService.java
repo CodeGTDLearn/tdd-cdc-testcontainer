@@ -4,8 +4,10 @@ import com.tdd.parallel.entity.Person;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 public interface IPersonService {
-  Mono<Person> save(Person customer);
+  Mono<Person> save(Person person);
 
   Flux<Person> findAll();
 
@@ -14,4 +16,6 @@ public interface IPersonService {
   Mono<Void> deleteAll();
 
   Mono<Person> findById(String id);
+
+  Flux<Person> saveAll(List<Person> personList);
 }
