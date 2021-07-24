@@ -1,7 +1,7 @@
 package com.tdd.parallel.controller;
 
 import com.tdd.parallel.entity.Person;
-import com.tdd.parallel.service.IPersonService;
+import com.tdd.parallel.service.IService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +20,7 @@ import static org.springframework.http.HttpStatus.*;
 public class PersonController {
 
   @Autowired
-  private IPersonService service;
+  private IService service;
 
 
   @PostMapping

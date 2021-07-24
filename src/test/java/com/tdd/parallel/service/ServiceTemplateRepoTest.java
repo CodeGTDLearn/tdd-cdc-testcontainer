@@ -2,7 +2,7 @@ package com.tdd.parallel.service;
 
 import com.tdd.container.ConfigTests;
 import com.tdd.parallel.entity.Person;
-import com.tdd.parallel.repository.ICrudRepository;
+import com.tdd.parallel.repository.template.TemplateRepo;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,27 +24,26 @@ import static com.tdd.databuilder.PersonBuilder.personWithIdAndName;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-@DisplayName("Service")
-public class PersonServiceTest extends ConfigTests {
+@DisplayName("ServiceTemplateRepo")
+public class ServiceTemplateRepoTest extends ConfigTests {
 
   final private String enabledTest = "true";
   final private int repet = 1;
   private List<Person> personList;
-  Mono<Person> personMono;
+  private Mono<Person> personMono;
 
   @Lazy
   @Autowired
-  private ICrudRepository repo;
+  private TemplateRepo templateRepo;
 
-  private IPersonService service;
+  private IService serviceTemplateRepo;
 
 
   @BeforeAll
   public static void beforeAll() {
     ConfigTests.beforeAll();
-    ConfigTests.testHeader(
-         "STARTING TEST-CLASS...",
-         PersonServiceTest.class.getSimpleName()
+    ConfigTests.testHeader("STARTING TEST-CLASS","Name:",
+                           ServiceTemplateRepoTest.class.getSimpleName()
                           );
   }
 
@@ -52,26 +51,25 @@ public class PersonServiceTest extends ConfigTests {
   @AfterAll
   public static void afterAll() {
     ConfigTests.afterAll();
-    ConfigTests.testHeader(
-         "...ENDING TEST-CLASS",
-         PersonServiceTest.class.getSimpleName()
+    ConfigTests.testHeader("ENDING TEST-CLASS","Name:",
+                           ServiceTemplateRepoTest.class.getSimpleName()
                           );
   }
 
 
   @BeforeEach
   public void setUp(TestInfo testInfo) {
-    ConfigTests.testHeader(
-         "STARTING TEST...",
-         String.format("Test-Name: %s",testInfo.getDisplayName())
+    ConfigTests.testHeader("STARTING TEST","Method-Name:",
+                           testInfo.getTestMethod()
+                                   .toString()
                           );
-    service = new PersonService(repo);
+    serviceTemplateRepo = new ServiceTemplateRepo(templateRepo);
     Person person1 = personWithIdAndName().create();
     personList = Collections.singletonList(person1);
     personMono = Mono.just(person1);
     StepVerifier
-         .create(service.save(person1)
-                        .log())
+         .create(serviceTemplateRepo.save(person1)
+                                    .log())
          .expectNext(person1)
          .verifyComplete();
   }
@@ -80,18 +78,15 @@ public class PersonServiceTest extends ConfigTests {
   @AfterEach
   void tearDown(TestInfo testInfo) {
     StepVerifier
-         .create(service.deleteAll()
-                        .log())
+         .create(serviceTemplateRepo.deleteAll()
+                                    .log())
          .expectSubscription()
          .expectNextCount(0L)
          .verifyComplete();
-    ConfigTests.testHeader(
-         "ENDING TEST...",
-         String.format("Test-Name-Displayed: %s",testInfo.getDisplayName())
-                          );
-    ConfigTests.testHeader(
-         "ENDING TEST...",
-         String.format("Test-Name-Method: %s",testInfo.getTestMethod())
+
+    ConfigTests.testHeader("ENDING TEST","Method-Name:",
+                           testInfo.getTestMethod()
+                                   .toString()
                           );
   }
 
@@ -120,8 +115,8 @@ public class PersonServiceTest extends ConfigTests {
   }
 
 
-  //  @Test
-  @RepeatedTest(repet)
+  @Test
+  //  @RepeatedTest(repet)
   @DisplayName("FindAll")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void findAll() {
@@ -130,16 +125,16 @@ public class PersonServiceTest extends ConfigTests {
                 .verifyComplete();
 
     StepVerifier
-         .create(service.findAll()
-                        .log())
+         .create(serviceTemplateRepo.findAll()
+                                    .log())
          .expectSubscription()
          .expectNextCount(1L)
          .verifyComplete();
   }
 
 
-  //  @Test
-  @RepeatedTest(repet)
+  @Test
+  //  @RepeatedTest(repet)
   @DisplayName("FindById")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void findById() {
@@ -153,36 +148,36 @@ public class PersonServiceTest extends ConfigTests {
   }
 
 
-  //  @Test
-  @RepeatedTest(repet)
+  @Test
+  //  @RepeatedTest(repet)
   @DisplayName("DeleteAll")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void deleteAll() {
-    StepVerifier.create(service.deleteAll())
+    StepVerifier.create(serviceTemplateRepo.deleteAll())
                 .verifyComplete();
 
     StepVerifier
-         .create(service.findAll()
-                        .log())
+         .create(serviceTemplateRepo.findAll()
+                                    .log())
          .expectSubscription()
          .expectNextCount(0L)
          .verifyComplete();
   }
 
 
-  //  @Test
-  @RepeatedTest(repet)
+  @Test
+  //  @RepeatedTest(repet)
   @DisplayName("DeleteById")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void deleteById() {
     StepVerifier
-         .create(service.deleteById(personList.get(0)
-                                              .getId()))
+         .create(serviceTemplateRepo.deleteById(personList.get(0)
+                                                          .getId()))
          .expectSubscription()
          .verifyComplete();
 
-    Mono<Person> personMono = service.findById(personList.get(0)
-                                                         .getId());
+    Mono<Person> personMono = serviceTemplateRepo.findById(personList.get(0)
+                                                                     .getId());
 
     StepVerifier
          .create(personMono)

@@ -67,14 +67,22 @@ public class ConfigTests extends TestContainerConfig {
     containerHeader("AFTER-ALL");
   }
 
-  public static void testHeader(String title, String subTitle) {
+
+  public static void testHeader(String title,String label,String subTitle) {
+    if (subTitle.contains("repetition"))
+      subTitle = "Error: Provide TestInfo testInfo.getTestMethod().toString()";
+    if (subTitle.contains("()]") ) {
+      subTitle = subTitle.replace("()]","");
+      subTitle = subTitle.substring(subTitle.lastIndexOf(".") + 1);
+      subTitle = subTitle.substring(0,1)
+                         .toUpperCase() + subTitle.substring(1);
+    }
+
     System.out.printf(
          "\n\n>=====================< %s >=====================<\n" +
-              " --> %s\n" +
+              " -->  %s %s\n" +
               ">=====================< %s >=====================<\n\n%n",
-         title,
-         subTitle,
-         title
+         title,label,subTitle,title
                      );
   }
 }
