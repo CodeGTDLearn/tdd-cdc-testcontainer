@@ -2,6 +2,8 @@ package com.tdd.parallel.core.config;
 
 import com.mongodb.reactivestreams.client.MongoClient;
 import com.mongodb.reactivestreams.client.MongoClients;
+import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,36 +11,28 @@ import org.springframework.data.mongodb.config.AbstractReactiveMongoConfiguratio
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.repository.config.EnableReactiveMongoRepositories;
 
+//https://www.baeldung.com/spring-data-mongodb-reactive
 @Configuration
-@EnableReactiveMongoRepositories(basePackages = {
-     "com.tdd.parallel.repository.crud",
-     "com.tdd.parallel.repository.mongo",
-     "com.tdd.parallel.repository.template"})
-public class ReactiveDBConfig extends AbstractReactiveMongoConfiguration {
+@EnableReactiveMongoRepositories(basePackages = {"com.tdd.parallel.repository"})
+public class MongoConfig extends AbstractReactiveMongoConfiguration  {
 
-  @Value("${udemy.mongodb.database}")
-  private String database;
+  @Autowired
+  MongoClient mongoClient;
 
-  @Value("${udemy.mongodb.uri}")
-  private String uri;
-
-
-  @Override
-  public MongoClient reactiveMongoClient() {
-    return super.reactiveMongoClient();
-//        return MongoClients.create(uri)
+  @Bean
+  public MongoClient mongoClient() {
+    return MongoClients.create();
   }
-
 
   @Override
   protected String getDatabaseName() {
-    return database;
+    return "reactive";
   }
 
 
-  @Bean
+  @Bean("reactiveMongoTemplate")
   public ReactiveMongoTemplate reactiveMongoTemplate() {
-    return new ReactiveMongoTemplate(reactiveMongoClient(),getDatabaseName());
+    return new ReactiveMongoTemplate(mongoClient,"test");
   }
 
 }

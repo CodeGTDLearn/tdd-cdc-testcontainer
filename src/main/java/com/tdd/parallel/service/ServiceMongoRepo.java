@@ -1,7 +1,7 @@
 package com.tdd.parallel.service;
 
 import com.tdd.parallel.entity.Person;
-import com.tdd.parallel.repository.mongo.IMongoRepository;
+import com.tdd.parallel.repository.IMongoRepo;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,18 +16,18 @@ import java.util.List;
 public class ServiceMongoRepo implements IService {
 
 
-  private final IMongoRepository mongoRepo;
+  private final IMongoRepo repo;
 
 
   @Override
   public Mono<Person> save(Person person) {
-    return mongoRepo.save(person);
+    return repo.save(person);
   }
 
 
   @Override
   public Flux<Person> saveAll(List<Person> personList) {
-    return mongoRepo.saveAll(personList);
+    return repo.saveAll(personList);
   }
 
 
@@ -39,24 +39,24 @@ public class ServiceMongoRepo implements IService {
 
   @Override
   public Flux<Person> findAll() {
-    return mongoRepo.findAll();
+    return repo.findAll();
   }
 
 
   @Override
   public Mono<Person> findById(String id) {
-    return mongoRepo.findById(id);
+    return repo.findById(id);
   }
 
 
   public Mono<Void> deleteAll() {
-    return mongoRepo.deleteAll();
+    return repo.deleteAll();
   }
 
 
   @Override
   public Mono<Void> deleteById(String id) {
-    return mongoRepo.deleteById(id);
+    return repo.deleteById(id);
   }
 
 

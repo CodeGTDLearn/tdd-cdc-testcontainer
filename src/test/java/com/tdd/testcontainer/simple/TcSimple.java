@@ -1,4 +1,4 @@
-package com.tdd.container;
+package com.tdd.testcontainer.simple;
 
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -7,12 +7,12 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
-/*
-RESTARTED TESTCONTAINERS
-https://www.testcontainers.org/test_framework_integration/junit_5/#restarted-containers
- */
+///*
+//RESTARTED TESTCONTAINERS
+//https://www.testcontainers.org/test_framework_integration/junit_5/#restarted-containers
+// */
 @Testcontainers
-public class TestContainerConfig {
+public class TcSimple {
 
   final static String MONGO_VERSION = "mongo:4.4.2";
   final static String MONGO_URI_PROPERTY = "spring.data.mongodb.uri";

@@ -1,12 +1,15 @@
-package com.tdd.parallel.service;
+package com.tdd.parallel.service.annotation;
 
-import com.tdd.container.ConfigTests;
+import com.tdd.parallel.core.config.ServiceMongoTestConfig;
+import com.tdd.parallel.core.config.ServiceTemplTestConfig;
+import com.tdd.testcontainer.annotation.TestsConfigAnnot;
+import com.tdd.testcontainer.annotation.TcAnnotationClass;
 import com.tdd.parallel.entity.Person;
-import com.tdd.parallel.repository.mongo.IMongoRepository;
+import com.tdd.parallel.service.IService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit.jupiter.EnabledIf;
 import reactor.blockhound.BlockingOperationError;
 import reactor.core.publisher.Mono;
@@ -23,52 +26,50 @@ import java.util.concurrent.TimeoutException;
 import static com.tdd.databuilder.PersonBuilder.personWithIdAndName;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+//https://rieckpil.de/initialization-strategies-with-testcontainers-for-integration-tests/
 @Slf4j
-@DisplayName("ServiceMongoRepo")
-public class ServiceMongoRepoTest extends ConfigTests {
+@DisplayName("ServiceTemplRepo")
+@Import(ServiceTemplTestConfig.class)
+public class ServiceTemplateAnnot extends TestsConfigAnnot {
 
   final private String enabledTest = "true";
   final private int repet = 1;
   private List<Person> personList;
   private Mono<Person> personMono;
 
-  @Lazy
   @Autowired
-  private IMongoRepository mongoRepo;
-
-  private IService serviceMongoRepo;
+  private IService serviceTemplRepo;
 
 
   @BeforeAll
   public static void beforeAll() {
-    ConfigTests.beforeAll();
-    ConfigTests.testHeader("STARTING TEST-CLASS","Name:",
-                           ServiceMongoRepoTest.class.getSimpleName()
-                          );
+    TestsConfigAnnot.beforeAll();
+    TestsConfigAnnot.testHeader("STARTING TEST-CLASS","Name:",
+                                ServiceTemplateAnnot.class.getSimpleName()
+                               );
   }
 
 
   @AfterAll
   public static void afterAll() {
-    ConfigTests.afterAll();
-    ConfigTests.testHeader("ENDING TEST-CLASS","Name:",
-                           ServiceMongoRepoTest.class.getSimpleName()
-                          );
+    TestsConfigAnnot.afterAll();
+    TestsConfigAnnot.testHeader("ENDING TEST-CLASS","Name:",
+                                ServiceTemplateAnnot.class.getSimpleName()
+                               );
   }
 
 
   @BeforeEach
   public void setUp(TestInfo testInfo) {
-    ConfigTests.testHeader("STARTING TEST","Method-Name:",
-                           testInfo.getTestMethod()
+    TestsConfigAnnot.testHeader("STARTING TEST","Method-Name:",
+                                testInfo.getTestMethod()
                                    .toString()
-                          );
-    serviceMongoRepo = new ServiceMongoRepo(mongoRepo);
+                               );
     Person person1 = personWithIdAndName().create();
     personList = Collections.singletonList(person1);
     personMono = Mono.just(person1);
     StepVerifier
-         .create(serviceMongoRepo.save(person1)
+         .create(serviceTemplRepo.save(person1)
                                  .log())
          .expectNext(person1)
          .verifyComplete();
@@ -78,16 +79,16 @@ public class ServiceMongoRepoTest extends ConfigTests {
   @AfterEach
   void tearDown(TestInfo testInfo) {
     StepVerifier
-         .create(serviceMongoRepo.deleteAll()
+         .create(serviceTemplRepo.deleteAll()
                                  .log())
          .expectSubscription()
          .expectNextCount(0L)
          .verifyComplete();
 
-    ConfigTests.testHeader("ENDING TEST","Method-Name:",
-                           testInfo.getTestMethod()
+    TestsConfigAnnot.testHeader("ENDING TEST","Method-Name:",
+                                testInfo.getTestMethod()
                                    .toString()
-                          );
+                               );
   }
 
 
@@ -102,7 +103,7 @@ public class ServiceMongoRepoTest extends ConfigTests {
   }
 
 
-  //  @Test
+//  @Test
   @RepeatedTest(repet)
   @DisplayName("Save")
   @EnabledIf(expression = enabledTest, loadContext = true)
@@ -125,7 +126,7 @@ public class ServiceMongoRepoTest extends ConfigTests {
                 .verifyComplete();
 
     StepVerifier
-         .create(serviceMongoRepo.findAll()
+         .create(serviceTemplRepo.findAll()
                                  .log())
          .expectSubscription()
          .expectNextCount(1L)
@@ -153,11 +154,11 @@ public class ServiceMongoRepoTest extends ConfigTests {
   @DisplayName("DeleteAll")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void deleteAll() {
-    StepVerifier.create(serviceMongoRepo.deleteAll())
+    StepVerifier.create(serviceTemplRepo.deleteAll())
                 .verifyComplete();
 
     StepVerifier
-         .create(serviceMongoRepo.findAll()
+         .create(serviceTemplRepo.findAll()
                                  .log())
          .expectSubscription()
          .expectNextCount(0L)
@@ -171,12 +172,12 @@ public class ServiceMongoRepoTest extends ConfigTests {
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void deleteById() {
     StepVerifier
-         .create(serviceMongoRepo.deleteById(personList.get(0)
+         .create(serviceTemplRepo.deleteById(personList.get(0)
                                                        .getId()))
          .expectSubscription()
          .verifyComplete();
 
-    Mono<Person> personMono = serviceMongoRepo.findById(personList.get(0)
+    Mono<Person> personMono = serviceTemplRepo.findById(personList.get(0)
                                                                   .getId());
 
     StepVerifier
@@ -191,7 +192,7 @@ public class ServiceMongoRepoTest extends ConfigTests {
   @DisplayName("Container")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void checkContainer() {
-    assertTrue(container.isRunning());
+    assertTrue(TcAnnotationClass.getContainer().isRunning());
   }
 
 

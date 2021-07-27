@@ -1,10 +1,10 @@
-package com.tdd.parallel.repository.mongo;
+package com.tdd.parallel.repository;
 
 import com.tdd.parallel.entity.Person;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import org.springframework.stereotype.Repository;
 
-@Repository("mongoRepository")
-public interface IMongoRepository extends ReactiveMongoRepository<Person, String> {
+@Repository("mongoRepo")
+public interface IMongoRepo extends ReactiveMongoRepository<Person, String> {
 
 }

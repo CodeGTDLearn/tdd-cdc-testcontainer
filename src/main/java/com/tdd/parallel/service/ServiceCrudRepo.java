@@ -1,7 +1,7 @@
 package com.tdd.parallel.service;
 
 import com.tdd.parallel.entity.Person;
-import com.tdd.parallel.repository.crud.ICrudRepository;
+import com.tdd.parallel.repository.ICrudRepo;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,18 +17,18 @@ import java.util.List;
 public class ServiceCrudRepo implements IService {
 
 
-  private final ICrudRepository crudRepo;
+  private final ICrudRepo repo;
 
 
   @Override
   public Mono<Person> save(Person person) {
-    return crudRepo.save(person);
+    return repo.save(person);
   }
 
 
   @Override
   public Flux<Person> saveAll(List<Person> personList) {
-    return crudRepo.saveAll(personList);
+    return repo.saveAll(personList);
   }
 
 
@@ -40,24 +40,24 @@ public class ServiceCrudRepo implements IService {
 
   @Override
   public Flux<Person> findAll() {
-    return crudRepo.findAll();
+    return repo.findAll();
   }
 
 
   @Override
   public Mono<Person> findById(String id) {
-    return crudRepo.findById(id);
+    return repo.findById(id);
   }
 
 
   public Mono<Void> deleteAll() {
-    return crudRepo.deleteAll();
+    return repo.deleteAll();
   }
 
 
   @Override
   public Mono<Void> deleteById(String id) {
-    return crudRepo.deleteById(id);
+    return repo.deleteById(id);
   }
 
 

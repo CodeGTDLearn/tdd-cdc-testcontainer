@@ -1,12 +1,14 @@
-package com.tdd.parallel.service;
+package com.tdd.parallel.service.simple;
 
-import com.tdd.container.ConfigTests;
+import com.tdd.parallel.core.config.ServiceCrudTestConfig;
+import com.tdd.testcontainer.annotation.TcAnnotationClass;
+import com.tdd.testcontainer.simple.TestsConfigSimple;
 import com.tdd.parallel.entity.Person;
-import com.tdd.parallel.repository.crud.ICrudRepository;
+import com.tdd.parallel.service.IService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit.jupiter.EnabledIf;
 import reactor.blockhound.BlockingOperationError;
 import reactor.core.publisher.Mono;
@@ -25,45 +27,42 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 @DisplayName("ServiceCrudRepo")
-public class ServiceCrudRepoTest extends ConfigTests {
+@Import(ServiceCrudTestConfig.class)
+public class ServiceCrudSimple extends TestsConfigSimple {
 
   final private String enabledTest = "true";
   final private int repet = 1;
   private List<Person> personList;
   private Mono<Person> personMono;
 
-  @Lazy
   @Autowired
-  private ICrudRepository crudRepo;
-
   private IService serviceCrudRepo;
 
 
   @BeforeAll
   public static void beforeAll() {
-    ConfigTests.beforeAll();
-    ConfigTests.testHeader("STARTING TEST-CLASS","Name:",
-                           ServiceCrudRepoTest.class.getSimpleName()
-                          );
+    TestsConfigSimple.beforeAll();
+    TestsConfigSimple.testHeader("STARTING TEST-CLASS","Name:",
+                                 ServiceCrudSimple.class.getSimpleName()
+                                );
   }
 
 
   @AfterAll
   public static void afterAll() {
-    ConfigTests.afterAll();
-    ConfigTests.testHeader("ENDING TEST-CLASS","Name:",
-                           ServiceCrudRepoTest.class.getSimpleName()
-                          );
+    TestsConfigSimple.afterAll();
+    TestsConfigSimple.testHeader("ENDING TEST-CLASS","Name:",
+                                 ServiceCrudSimple.class.getSimpleName()
+                                );
   }
 
 
   @BeforeEach
   public void setUp(TestInfo testInfo) {
-    ConfigTests.testHeader("STARTING TEST","Method-Name:",
-                           testInfo.getTestMethod()
+    TestsConfigSimple.testHeader("STARTING TEST","Method-Name:",
+                                 testInfo.getTestMethod()
                                    .toString()
-                          );
-    serviceCrudRepo = new ServiceCrudRepo(crudRepo);
+                                );
     Person person1 = personWithIdAndName().create();
     personList = Collections.singletonList(person1);
     personMono = Mono.just(person1);
@@ -84,10 +83,10 @@ public class ServiceCrudRepoTest extends ConfigTests {
          .expectNextCount(0L)
          .verifyComplete();
 
-    ConfigTests.testHeader("ENDING TEST","Method-Name:",
-                           testInfo.getTestMethod()
+    TestsConfigSimple.testHeader("ENDING TEST","Method-Name:",
+                                 testInfo.getTestMethod()
                                    .toString()
-                          );
+                                );
   }
 
 
@@ -191,7 +190,7 @@ public class ServiceCrudRepoTest extends ConfigTests {
   @DisplayName("Container")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void checkContainer() {
-    assertTrue(container.isRunning());
+    assertTrue(TcAnnotationClass.getContainer().isRunning());
   }
 
 
