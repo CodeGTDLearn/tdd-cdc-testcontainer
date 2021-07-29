@@ -1,17 +1,14 @@
 package com.tdd.parallel.service.simple;
 
-import com.tdd.parallel.core.config.ServiceMongoTestConfig;
-import com.tdd.testcontainer.annotation.TcAnnotationClass;
-import com.tdd.testcontainer.simple.TestsConfigSimple;
+import com.tdd.parallel.core.config.ServiceCrudRepoCfg;
+import com.tdd.testconfig.annotation.CustomTestcontainerConfigClass;
+import com.tdd.testconfig.simple.TestsConfigSimple;
 import com.tdd.parallel.entity.Person;
-import com.tdd.parallel.repository.IMongoRepo;
 import com.tdd.parallel.service.IService;
-import com.tdd.parallel.service.ServiceMongoRepo;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.test.context.junit.jupiter.EnabledIf;
 import reactor.blockhound.BlockingOperationError;
 import reactor.core.publisher.Mono;
@@ -29,9 +26,9 @@ import static com.tdd.databuilder.PersonBuilder.personWithIdAndName;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-@DisplayName("ServiceMongoRepo")
-@Import(ServiceMongoTestConfig.class)
-public class ServiceMongoSimple extends TestsConfigSimple {
+@DisplayName("ServiceCrudRepoSimple")
+@Import(ServiceCrudRepoCfg.class)
+public class ServiceCrudRepoSimple extends TestsConfigSimple {
 
   final private String enabledTest = "true";
   final private int repet = 1;
@@ -39,14 +36,14 @@ public class ServiceMongoSimple extends TestsConfigSimple {
   private Mono<Person> personMono;
 
   @Autowired
-  private IService serviceMongoRepo;
+  private IService serviceCrudRepo;
 
 
   @BeforeAll
   public static void beforeAll() {
     TestsConfigSimple.beforeAll();
     TestsConfigSimple.testHeader("STARTING TEST-CLASS","Name:",
-                                 ServiceMongoSimple.class.getSimpleName()
+                                 ServiceCrudRepoSimple.class.getSimpleName()
                                 );
   }
 
@@ -55,7 +52,7 @@ public class ServiceMongoSimple extends TestsConfigSimple {
   public static void afterAll() {
     TestsConfigSimple.afterAll();
     TestsConfigSimple.testHeader("ENDING TEST-CLASS","Name:",
-                                 ServiceMongoSimple.class.getSimpleName()
+                                 ServiceCrudRepoSimple.class.getSimpleName()
                                 );
   }
 
@@ -66,13 +63,12 @@ public class ServiceMongoSimple extends TestsConfigSimple {
                                  testInfo.getTestMethod()
                                    .toString()
                                 );
-
     Person person1 = personWithIdAndName().create();
     personList = Collections.singletonList(person1);
     personMono = Mono.just(person1);
     StepVerifier
-         .create(serviceMongoRepo.save(person1)
-                                 .log())
+         .create(serviceCrudRepo.save(person1)
+                                .log())
          .expectNext(person1)
          .verifyComplete();
   }
@@ -81,8 +77,8 @@ public class ServiceMongoSimple extends TestsConfigSimple {
   @AfterEach
   void tearDown(TestInfo testInfo) {
     StepVerifier
-         .create(serviceMongoRepo.deleteAll()
-                                 .log())
+         .create(serviceCrudRepo.deleteAll()
+                                .log())
          .expectSubscription()
          .expectNextCount(0L)
          .verifyComplete();
@@ -128,8 +124,8 @@ public class ServiceMongoSimple extends TestsConfigSimple {
                 .verifyComplete();
 
     StepVerifier
-         .create(serviceMongoRepo.findAll()
-                                 .log())
+         .create(serviceCrudRepo.findAll()
+                                .log())
          .expectSubscription()
          .expectNextCount(1L)
          .verifyComplete();
@@ -156,12 +152,12 @@ public class ServiceMongoSimple extends TestsConfigSimple {
   @DisplayName("DeleteAll")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void deleteAll() {
-    StepVerifier.create(serviceMongoRepo.deleteAll())
+    StepVerifier.create(serviceCrudRepo.deleteAll())
                 .verifyComplete();
 
     StepVerifier
-         .create(serviceMongoRepo.findAll()
-                                 .log())
+         .create(serviceCrudRepo.findAll()
+                                .log())
          .expectSubscription()
          .expectNextCount(0L)
          .verifyComplete();
@@ -174,13 +170,13 @@ public class ServiceMongoSimple extends TestsConfigSimple {
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void deleteById() {
     StepVerifier
-         .create(serviceMongoRepo.deleteById(personList.get(0)
-                                                       .getId()))
+         .create(serviceCrudRepo.deleteById(personList.get(0)
+                                                      .getId()))
          .expectSubscription()
          .verifyComplete();
 
-    Mono<Person> personMono = serviceMongoRepo.findById(personList.get(0)
-                                                                  .getId());
+    Mono<Person> personMono = serviceCrudRepo.findById(personList.get(0)
+                                                                 .getId());
 
     StepVerifier
          .create(personMono)
@@ -194,7 +190,7 @@ public class ServiceMongoSimple extends TestsConfigSimple {
   @DisplayName("Container")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void checkContainer() {
-    assertTrue(TcAnnotationClass.getContainer().isRunning());
+    assertTrue(CustomTestcontainerConfigClass.getContainer().isRunning());
   }
 
 

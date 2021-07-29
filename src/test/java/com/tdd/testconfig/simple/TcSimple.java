@@ -1,27 +1,30 @@
-package com.tdd.testcontainer.annotation;
+package com.tdd.testconfig.simple;
 
-import org.junit.jupiter.api.extension.Extension;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.MongoDBContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
-public class TcAnnotationClass implements Extension {
+///*
+//RESTARTED TESTCONTAINERS
+//https://www.testcontainers.org/test_framework_integration/junit_5/#restarted-containers
+// */
+@Testcontainers
+public class TcSimple {
 
   final static String MONGO_VERSION = "mongo:4.4.2";
   final static String MONGO_URI_PROPERTY = "spring.data.mongodb.uri";
 
-  static MongoDBContainer container;
+  @Container
+  public static final MongoDBContainer container =
+       new MongoDBContainer(DockerImageName.parse(MONGO_VERSION));
 
-  static {
-    container = new MongoDBContainer(DockerImageName.parse(MONGO_VERSION));
 
-    container.start();
-
-    System.setProperty(MONGO_URI_PROPERTY,container.getReplicaSetUrl());
-
-  }
-
-  public static MongoDBContainer getContainer() {
-    return container;
+  @DynamicPropertySource
+  static void mongoProperties(DynamicPropertyRegistry registry) {
+    registry.add(MONGO_URI_PROPERTY,container::getReplicaSetUrl);
   }
 
 
@@ -39,5 +42,9 @@ public class TcAnnotationClass implements Extension {
          title
                      );
   }
-
 }
+
+
+
+
+

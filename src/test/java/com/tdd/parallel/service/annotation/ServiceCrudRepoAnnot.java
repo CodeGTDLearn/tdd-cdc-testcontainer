@@ -1,12 +1,12 @@
 package com.tdd.parallel.service.annotation;
 
-import com.tdd.parallel.core.config.ServiceCrudTestConfig;
+import com.tdd.parallel.core.config.ServiceCrudRepoCfg;
 import com.tdd.parallel.entity.Person;
 import com.tdd.parallel.service.IService;
-import com.tdd.testcontainer.annotation.TcAnnotationClass;
-
-import com.tdd.testcontainer.annotation.TestsConfigAnnot;
-import lombok.extern.slf4j.Slf4j;
+import com.tdd.testconfig.annotation.CustomTestcontainerConfig;
+import com.tdd.testconfig.annotation.CustomTestcontainerConfigClass;
+import com.tdd.testconfig.annotation.CustomTestsConfig;
+import com.tdd.testconfig.annotation.CustomTestsConfigClass;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
@@ -26,10 +26,12 @@ import java.util.concurrent.TimeoutException;
 import static com.tdd.databuilder.PersonBuilder.personWithIdAndName;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@Slf4j
-@DisplayName("ServiceCrudRepo")
-@Import(ServiceCrudTestConfig.class)
-public class ServiceCrudAnnot extends TestsConfigAnnot {
+
+@DisplayName("ServiceCrudRepoAnnot")
+@Import(ServiceCrudRepoCfg.class)
+@CustomTestsConfig
+//@CustomTestcontainerConfig
+public class ServiceCrudRepoAnnot {
 
   final private String enabledTest = "true";
   final private int repet = 1;
@@ -39,12 +41,13 @@ public class ServiceCrudAnnot extends TestsConfigAnnot {
   @Autowired
   private IService serviceCrudRepo;
 
+
   @BeforeEach
   public void setUp(TestInfo testInfo) {
-    TestsConfigAnnot.testHeader("STARTING TEST","Method-Name:",
-                                testInfo.getTestMethod()
-                                        .toString()
-                               );
+    CustomTestsConfigClass.testHeader("STARTING TEST","Method-Name:",
+                                      testInfo.getTestMethod()
+                                                     .toString()
+                                     );
     Person person1 = personWithIdAndName().create();
     personList = Collections.singletonList(person1);
     personMono = Mono.just(person1);
@@ -58,20 +61,21 @@ public class ServiceCrudAnnot extends TestsConfigAnnot {
 
   @BeforeAll
   public static void beforeAll() {
-    TestsConfigAnnot.beforeAll();
-    TestsConfigAnnot.testHeader("STARTING TEST-CLASS","Name:",
-                                ServiceCrudAnnot.class.getSimpleName()
-                               );
+    CustomTestsConfigClass.beforeAll();
+    CustomTestsConfigClass.testHeader("STARTING TEST-CLASS","Name:",
+                                      ServiceCrudRepoAnnot.class.getSimpleName()
+                                     );
   }
 
 
   @AfterAll
   public static void afterAll() {
-    TestsConfigAnnot.afterAll();
-    TestsConfigAnnot.testHeader("ENDING TEST-CLASS","Name:",
-                                ServiceCrudAnnot.class.getSimpleName()
-                               );
+    CustomTestsConfigClass.afterAll();
+    CustomTestsConfigClass.testHeader("ENDING TEST-CLASS","Name:",
+                                      ServiceCrudRepoAnnot.class.getSimpleName()
+                                     );
   }
+
 
   @AfterEach
   void tearDown(TestInfo testInfo) {
@@ -82,10 +86,10 @@ public class ServiceCrudAnnot extends TestsConfigAnnot {
          .expectNextCount(0L)
          .verifyComplete();
 
-    TestsConfigAnnot.testHeader("ENDING TEST","Method-Name:",
-               testInfo.getTestMethod()
-                       .toString()
-              );
+    CustomTestsConfigClass.testHeader("ENDING TEST","Method-Name:",
+                                      testInfo.getTestMethod()
+                                                     .toString()
+                                     );
   }
 
 
@@ -189,8 +193,8 @@ public class ServiceCrudAnnot extends TestsConfigAnnot {
   @DisplayName("Container")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void checkContainer() {
-    assertTrue(TcAnnotationClass.getContainer()
-                                .isRunning());
+    assertTrue(CustomTestcontainerConfigClass.getContainer()
+                                             .isRunning());
   }
 
 

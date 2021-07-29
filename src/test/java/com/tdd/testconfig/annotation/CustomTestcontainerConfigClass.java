@@ -1,30 +1,24 @@
-package com.tdd.testcontainer.simple;
+package com.tdd.testconfig.annotation;
 
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
+import org.junit.jupiter.api.extension.Extension;
 import org.testcontainers.containers.MongoDBContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
-///*
-//RESTARTED TESTCONTAINERS
-//https://www.testcontainers.org/test_framework_integration/junit_5/#restarted-containers
-// */
-@Testcontainers
-public class TcSimple {
+public class CustomTestcontainerConfigClass implements Extension {
 
   final static String MONGO_VERSION = "mongo:4.4.2";
   final static String MONGO_URI_PROPERTY = "spring.data.mongodb.uri";
 
-  @Container
-  public static final MongoDBContainer container =
-       new MongoDBContainer(DockerImageName.parse(MONGO_VERSION));
+  static MongoDBContainer container;
 
+  static {
+    container = new MongoDBContainer(DockerImageName.parse(MONGO_VERSION));
+    container.start();
+    System.setProperty(MONGO_URI_PROPERTY,container.getReplicaSetUrl());
+  }
 
-  @DynamicPropertySource
-  static void mongoProperties(DynamicPropertyRegistry registry) {
-    registry.add(MONGO_URI_PROPERTY,container::getReplicaSetUrl);
+  public static MongoDBContainer getContainer() {
+    return container;
   }
 
 
@@ -43,8 +37,3 @@ public class TcSimple {
                      );
   }
 }
-
-
-
-
-

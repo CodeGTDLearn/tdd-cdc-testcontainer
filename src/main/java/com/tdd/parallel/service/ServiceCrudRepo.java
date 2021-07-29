@@ -17,18 +17,18 @@ import java.util.List;
 public class ServiceCrudRepo implements IService {
 
 
-  private final ICrudRepo repo;
+  private final ICrudRepo iCrudRepo;
 
 
   @Override
   public Mono<Person> save(Person person) {
-    return repo.save(person);
+    return iCrudRepo.save(person);
   }
 
 
   @Override
   public Flux<Person> saveAll(List<Person> personList) {
-    return repo.saveAll(personList);
+    return iCrudRepo.saveAll(personList);
   }
 
 
@@ -40,24 +40,24 @@ public class ServiceCrudRepo implements IService {
 
   @Override
   public Flux<Person> findAll() {
-    return repo.findAll();
+    return iCrudRepo.findAll();
   }
 
 
   @Override
   public Mono<Person> findById(String id) {
-    return repo.findById(id);
+    return iCrudRepo.findById(id);
   }
 
 
   public Mono<Void> deleteAll() {
-    return repo.deleteAll();
+    return iCrudRepo.deleteAll();
   }
 
 
   @Override
   public Mono<Void> deleteById(String id) {
-    return repo.deleteById(id);
+    return iCrudRepo.deleteById(id);
   }
 
 

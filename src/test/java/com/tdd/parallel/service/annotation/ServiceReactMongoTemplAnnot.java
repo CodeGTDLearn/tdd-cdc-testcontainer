@@ -1,11 +1,11 @@
-package com.tdd.parallel.service.simple;
+package com.tdd.parallel.service.annotation;
 
-import com.tdd.parallel.core.config.ServiceTemplTestConfig;
+import com.tdd.parallel.core.config.ServiceReactMongoTemplCfg;
 import com.tdd.parallel.entity.Person;
 import com.tdd.parallel.service.IService;
-import com.tdd.testcontainer.annotation.TcAnnotationClass;
-import com.tdd.testcontainer.simple.TestsConfigSimple;
-import lombok.extern.slf4j.Slf4j;
+import com.tdd.testconfig.annotation.CustomTestcontainerConfigClass;
+import com.tdd.testconfig.annotation.CustomTestsConfig;
+import com.tdd.testconfig.annotation.CustomTestsConfigClass;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
@@ -25,10 +25,11 @@ import java.util.concurrent.TimeoutException;
 import static com.tdd.databuilder.PersonBuilder.personWithIdAndName;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@Slf4j
-@DisplayName("ServiceTemplateRepo")
-@Import(ServiceTemplTestConfig.class)
-public class ServiceTemplateSimple extends TestsConfigSimple {
+@DisplayName("ServiceReactiveTemplAnnot")
+@Import(ServiceReactMongoTemplCfg.class)
+@CustomTestsConfig
+//@CustomTestcontainerConfig
+public class ServiceReactMongoTemplAnnot {
 
   final private String enabledTest = "true";
   final private int repet = 1;
@@ -36,40 +37,39 @@ public class ServiceTemplateSimple extends TestsConfigSimple {
   private Mono<Person> personMono;
 
   @Autowired
-  private IService serviceTemplRepo;
+  private IService serviceReactMongoTempl;
 
 
   @BeforeAll
   public static void beforeAll() {
-    TestsConfigSimple.beforeAll();
-    TestsConfigSimple.testHeader("STARTING TEST-CLASS","Name:",
-                                 ServiceTemplateSimple.class.getSimpleName()
-                                );
+    CustomTestsConfigClass.beforeAll();
+    CustomTestsConfigClass.testHeader("STARTING TEST-CLASS","Name:",
+                                      ServiceReactMongoTemplAnnot.class.getSimpleName()
+                                     );
   }
 
 
   @AfterAll
   public static void afterAll() {
-    TestsConfigSimple.afterAll();
-    TestsConfigSimple.testHeader("ENDING TEST-CLASS","Name:",
-                                 ServiceTemplateSimple.class.getSimpleName()
-                                );
+    CustomTestsConfigClass.afterAll();
+    CustomTestsConfigClass.testHeader("ENDING TEST-CLASS","Name:",
+                                      ServiceReactMongoTemplAnnot.class.getSimpleName()
+                                     );
   }
 
 
   @BeforeEach
   public void setUp(TestInfo testInfo) {
-    TestsConfigSimple.testHeader("STARTING TEST","Method-Name:",
-                                 testInfo.getTestMethod()
-                                         .toString()
-                                );
-    //    serviceTemplateRepo = new ServiceTemplateRepo();
+    CustomTestsConfigClass.testHeader("STARTING TEST","Method-Name:",
+                                      testInfo.getTestMethod()
+                                                     .toString()
+                                     );
     Person person1 = personWithIdAndName().create();
     personList = Collections.singletonList(person1);
     personMono = Mono.just(person1);
     StepVerifier
-         .create(serviceTemplRepo.save(person1)
-                                 .log())
+         .create(serviceReactMongoTempl.save(person1)
+                                       .log())
          .expectNext(person1)
          .verifyComplete();
   }
@@ -78,16 +78,16 @@ public class ServiceTemplateSimple extends TestsConfigSimple {
   @AfterEach
   void tearDown(TestInfo testInfo) {
     StepVerifier
-         .create(serviceTemplRepo.deleteAll()
-                                 .log())
+         .create(serviceReactMongoTempl.deleteAll()
+                                       .log())
          .expectSubscription()
          .expectNextCount(0L)
          .verifyComplete();
 
-    TestsConfigSimple.testHeader("ENDING TEST","Method-Name:",
-                                 testInfo.getTestMethod()
-                                         .toString()
-                                );
+    CustomTestsConfigClass.testHeader("ENDING TEST","Method-Name:",
+                                      testInfo.getTestMethod()
+                                                     .toString()
+                                     );
   }
 
 
@@ -125,8 +125,8 @@ public class ServiceTemplateSimple extends TestsConfigSimple {
                 .verifyComplete();
 
     StepVerifier
-         .create(serviceTemplRepo.findAll()
-                                 .log())
+         .create(serviceReactMongoTempl.findAll()
+                                       .log())
          .expectSubscription()
          .expectNextCount(1L)
          .verifyComplete();
@@ -153,12 +153,12 @@ public class ServiceTemplateSimple extends TestsConfigSimple {
   @DisplayName("DeleteAll")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void deleteAll() {
-    StepVerifier.create(serviceTemplRepo.deleteAll())
+    StepVerifier.create(serviceReactMongoTempl.deleteAll())
                 .verifyComplete();
 
     StepVerifier
-         .create(serviceTemplRepo.findAll()
-                                 .log())
+         .create(serviceReactMongoTempl.findAll()
+                                       .log())
          .expectSubscription()
          .expectNextCount(0L)
          .verifyComplete();
@@ -171,13 +171,13 @@ public class ServiceTemplateSimple extends TestsConfigSimple {
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void deleteById() {
     StepVerifier
-         .create(serviceTemplRepo.deleteById(personList.get(0)
-                                                       .getId()))
+         .create(serviceReactMongoTempl.deleteById(personList.get(0)
+                                                             .getId()))
          .expectSubscription()
          .verifyComplete();
 
-    Mono<Person> personMono = serviceTemplRepo.findById(personList.get(0)
-                                                                  .getId());
+    Mono<Person> personMono = serviceReactMongoTempl.findById(personList.get(0)
+                                                                        .getId());
 
     StepVerifier
          .create(personMono)
@@ -191,8 +191,8 @@ public class ServiceTemplateSimple extends TestsConfigSimple {
   @DisplayName("Container")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void checkContainer() {
-    assertTrue(TcAnnotationClass.getContainer()
-                                .isRunning());
+    assertTrue(CustomTestcontainerConfigClass.getContainer()
+                                             .isRunning());
   }
 
 

@@ -1,20 +1,21 @@
-package com.tdd.parallel.repository;
+package com.tdd.parallel.service;
 
 import com.tdd.parallel.entity.Person;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
 
-
+@Slf4j
+@Service("serviceReactMongoTempl")
 @AllArgsConstructor
-@Repository("templateRepo")
-public class TemplateRepo implements ITemplateRepo {
+public class ServiceReactMongoTempl implements IService {
+
 
   private final ReactiveMongoTemplate reactiveMongoTemplate;
 
@@ -65,3 +66,5 @@ public class TemplateRepo implements ITemplateRepo {
     return reactiveMongoTemplate.insertAll(personList);
   }
 }
+
+

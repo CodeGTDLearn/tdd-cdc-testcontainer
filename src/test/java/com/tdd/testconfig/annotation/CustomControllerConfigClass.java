@@ -1,4 +1,4 @@
-package com.tdd.parallel.controller;
+package com.tdd.testconfig.annotation;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
@@ -9,12 +9,9 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD;
 
-@AutoConfigureWebTestClient
-@SpringBootTest(webEnvironment = RANDOM_PORT)
-@DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
-@Slf4j
+
 //@Testcontainers
-public class ConfigController {
+public class CustomControllerConfigClass {
 
 }
 

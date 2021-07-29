@@ -1,21 +1,21 @@
 package com.tdd.parallel.core.config;
 
-import com.tdd.parallel.repository.IMongoRepo;
-import com.tdd.parallel.service.ServiceMongoRepo;
+import com.tdd.parallel.repository.ICrudRepo;
+import com.tdd.parallel.service.ServiceCrudRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 
 @TestConfiguration
-public class ServiceMongoTestConfig {
+public class ServiceCrudRepoCfg {
 
   @Autowired
-  private IMongoRepo repo;
+  private ICrudRepo iCrudRepo;
 
 
   @Bean
-  public ServiceMongoRepo serviceMongoRepo() {
-    return new ServiceMongoRepo(repo);
+  public ServiceCrudRepo serviceCrudRepo() {
+    return new ServiceCrudRepo(iCrudRepo);
   }
 
 }
