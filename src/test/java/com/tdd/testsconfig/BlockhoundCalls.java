@@ -1,4 +1,4 @@
-package com.tdd.parallel.core;
+package com.tdd.testsconfig;
 
 import lombok.NoArgsConstructor;
 import org.junit.Ignore;

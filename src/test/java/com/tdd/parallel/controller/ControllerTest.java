@@ -2,9 +2,8 @@ package com.tdd.parallel.controller;
 
 import com.tdd.parallel.entity.Person;
 import com.tdd.parallel.service.IService;
-import com.tdd.testconfig.annotation.CustomControllerConfig;
-import com.tdd.testconfig.annotation.CustomTestcontainerConfigClass;
-import com.tdd.testconfig.simple.TestsConfigSimple;
+import com.tdd.testsconfig.annotation.ControllerConfig;
+import com.tdd.testsconfig.simple.TestsConfigSimple;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 //@Import(ServiceTemplateRepoCfg.class)
 @Slf4j
 @DisplayName("Controller")
-@CustomControllerConfig
+@ControllerConfig
 public class ControllerTest {
 
   final private String enabledTest = "true";
@@ -42,27 +41,27 @@ public class ControllerTest {
   @BeforeAll
   public static void beforeAll() {
     TestsConfigSimple.beforeAll();
-    TestsConfigSimple.testHeader("STARTING TEST-CLASS","Name:",
-                                 ControllerTest.class.getSimpleName()
-                                );
+    TestsConfigSimple.testSimpleHeader("STARTING TEST-CLASS","Name:",
+                                       ControllerTest.class.getSimpleName()
+                                      );
   }
 
 
   @AfterAll
   public static void afterAll() {
     TestsConfigSimple.afterAll();
-    TestsConfigSimple.testHeader("ENDING TEST-CLASS","Name:",
-                                 ControllerTest.class.getSimpleName()
-                                );
+    TestsConfigSimple.testSimpleHeader("ENDING TEST-CLASS","Name:",
+                                       ControllerTest.class.getSimpleName()
+                                      );
   }
 
 
   @BeforeEach
   public void setUp(TestInfo testInfo) {
-    TestsConfigSimple.testHeader("STARTING TEST","Method-Name:",
-                                 testInfo.getTestMethod()
+    TestsConfigSimple.testSimpleHeader("STARTING TEST","Method-Name:",
+                                       testInfo.getTestMethod()
                                          .toString()
-                                );
+                                      );
 
     Person person1 = personWithIdAndName().create();
     personList = Collections.singletonList(person1);
@@ -84,10 +83,10 @@ public class ControllerTest {
          .expectNextCount(0L)
          .verifyComplete();
 
-    TestsConfigSimple.testHeader("ENDING TEST","Method-Name:",
-                                 testInfo.getTestMethod()
+    TestsConfigSimple.testSimpleHeader("ENDING TEST","Method-Name:",
+                                       testInfo.getTestMethod()
                                          .toString()
-                                );
+                                      );
   }
 
 
@@ -139,13 +138,13 @@ public class ControllerTest {
   }
 
 
-  @Test
-  @DisplayName("Container")
-  @EnabledIf(expression = enabledTest, loadContext = true)
-  public void checkContainer() {
-    assertTrue(CustomTestcontainerConfigClass.getContainer()
-                                             .isRunning());
-  }
+//  @Test
+//  @DisplayName("Container")
+//  @EnabledIf(expression = enabledTest, loadContext = true)
+//  public void checkContainer() {
+//    assertTrue(TestcontainerConfigClass.getContainerAnn()
+//                                       .isRunning());
+//  }
 
 
   @Test

@@ -3,9 +3,9 @@ package com.tdd.parallel.service.annotation;
 import com.tdd.parallel.core.config.ServiceTemplateRepoCfg;
 import com.tdd.parallel.entity.Person;
 import com.tdd.parallel.service.IService;
-import com.tdd.testconfig.annotation.CustomTestcontainerConfigClass;
-import com.tdd.testconfig.annotation.CustomTestsConfig;
-import com.tdd.testconfig.annotation.CustomTestsConfigClass;
+import com.tdd.testsconfig.annotation.TestcontainerConfig;
+import com.tdd.testsconfig.annotation.TestsGlobalAnnotations;
+import com.tdd.testsconfig.annotation.TestsMongoConfig;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
@@ -23,12 +23,17 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import static com.tdd.databuilder.PersonBuilder.personWithIdAndName;
+import static com.tdd.testsconfig.annotation.TestcontainerConfigClass.getTestcontainer;
+import static com.tdd.testsconfig.annotation.TestcontainerConfigClass.testcontainerHeader;
+import static com.tdd.testsconfig.annotation.TestsGlobalMethods.generalTestMessage;
+import static com.tdd.testsconfig.annotation.TestsGlobalMethods.globalBeforeAll;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@CustomTestsConfig
 @DisplayName("ServiceTemplateRepoAnnot")
 @Import(ServiceTemplateRepoCfg.class)
-//@CustomTestcontainerConfig
+@TestcontainerConfig
+@TestsMongoConfig
+@TestsGlobalAnnotations
 public class ServiceTemplateRepoAnnot {
 
   final private String enabledTest = "true";
@@ -42,28 +47,31 @@ public class ServiceTemplateRepoAnnot {
 
   @BeforeAll
   public static void beforeAll() {
-    CustomTestsConfigClass.beforeAll();
-    CustomTestsConfigClass.testHeader("STARTING TEST-CLASS","Name:",
-                                      ServiceTemplateRepoAnnot.class.getSimpleName()
-                                     );
+    globalBeforeAll();
+    generalTestMessage("STARTING TEST-CLASS","Name:",
+                      ServiceTemplateRepoAnnot.class.getSimpleName()
+                     );
   }
 
 
   @AfterAll
   public static void afterAll() {
-    CustomTestsConfigClass.afterAll();
-    CustomTestsConfigClass.testHeader("ENDING TEST-CLASS","Name:",
-                                      ServiceTemplateRepoAnnot.class.getSimpleName()
-                                     );
+    globalBeforeAll();
+    generalTestMessage("ENDING TEST-CLASS","Name:",
+                      ServiceTemplateRepoAnnot.class.getSimpleName()
+                     );
   }
 
 
   @BeforeEach
   public void setUp(TestInfo testInfo) {
-    CustomTestsConfigClass.testHeader("STARTING TEST","Method-Name:",
-                                      testInfo.getTestMethod()
-                                                     .toString()
-                                     );
+    generalTestMessage("STARTING TEST","Method-Name:",
+                      testInfo.getTestMethod()
+                              .toString()
+                     );
+
+    testcontainerHeader("STARTING TEST-CONTAINER...",getTestcontainer());
+
     Person person1 = personWithIdAndName().create();
     personList = Collections.singletonList(person1);
     personMono = Mono.just(person1);
@@ -84,14 +92,13 @@ public class ServiceTemplateRepoAnnot {
          .expectNextCount(0L)
          .verifyComplete();
 
-    CustomTestsConfigClass.testHeader("ENDING TEST","Method-Name:",
-                                      testInfo.getTestMethod()
-                                                     .toString()
-                                     );
+    generalTestMessage("ENDING TEST","Method-Name:",
+                       testInfo.getTestMethod()
+                               .toString()
+                      );
   }
 
 
-  //  @Test
   @RepeatedTest(value = repet)
   @DisplayName("SaveAll")
   @EnabledIf(expression = enabledTest, loadContext = true)
@@ -102,7 +109,6 @@ public class ServiceTemplateRepoAnnot {
   }
 
 
-  //  @Test
   @RepeatedTest(repet)
   @DisplayName("Save")
   @EnabledIf(expression = enabledTest, loadContext = true)
@@ -116,7 +122,6 @@ public class ServiceTemplateRepoAnnot {
 
 
   @Test
-  //  @RepeatedTest(repet)
   @DisplayName("FindAll")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void findAll() {
@@ -134,7 +139,6 @@ public class ServiceTemplateRepoAnnot {
 
 
   @Test
-  //  @RepeatedTest(repet)
   @DisplayName("FindById")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void findById() {
@@ -149,7 +153,6 @@ public class ServiceTemplateRepoAnnot {
 
 
   @Test
-  //  @RepeatedTest(repet)
   @DisplayName("DeleteAll")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void deleteAll() {
@@ -166,7 +169,6 @@ public class ServiceTemplateRepoAnnot {
 
 
   @Test
-  //  @RepeatedTest(repet)
   @DisplayName("DeleteById")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void deleteById() {
@@ -191,8 +193,8 @@ public class ServiceTemplateRepoAnnot {
   @DisplayName("Container")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void checkContainer() {
-    assertTrue(CustomTestcontainerConfigClass.getContainer()
-                                             .isRunning());
+    assertTrue(getTestcontainer()
+                    .isRunning());
   }
 
 

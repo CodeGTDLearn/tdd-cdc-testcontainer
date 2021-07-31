@@ -1,8 +1,7 @@
-package com.tdd.testconfig.annotation;
+package com.tdd.testsconfig.annotation;
 
-import com.tdd.parallel.core.MongoTest;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -16,10 +15,7 @@ import java.lang.annotation.Target;
 //@WebFluxTest
 //----------------------------------------------
 //@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-//@TestPropertySource("classpath:application-test.properties")
-//@CustomTestcontainerConfig
-@MongoTest
+@TestPropertySource("classpath:application-test.properties")
 @ActiveProfiles("test")
-@ExtendWith(CustomTestsConfigClass.class)
-public @interface CustomTestsConfig {
+public @interface TestsGlobalAnnotations {
 }

@@ -1,4 +1,4 @@
-package com.tdd.parallel.core;
+package com.tdd.testsconfig.annotation;
 
 import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
@@ -24,5 +24,5 @@ b) USO ALTERNATIVO (DataMongoTest/SpringBootTest) - CONFLITAM ENTRE-SI:
 @Target(ElementType.TYPE)
 @DataMongoTest(excludeAutoConfiguration = EmbeddedMongoAutoConfiguration.class)
 @DirtiesContext(classMode = BEFORE_EACH_TEST_METHOD)
-public @interface MongoTest {
+public @interface TestsMongoConfig {
 }

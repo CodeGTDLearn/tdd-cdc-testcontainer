@@ -1,4 +1,4 @@
-package com.tdd.testconfig.simple;
+package com.tdd.testsconfig.simple;
 
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -18,17 +18,17 @@ public class TcSimple {
   final static String MONGO_URI_PROPERTY = "spring.data.mongodb.uri";
 
   @Container
-  public static final MongoDBContainer container =
+  public static final MongoDBContainer containerTcSimple =
        new MongoDBContainer(DockerImageName.parse(MONGO_VERSION));
 
 
   @DynamicPropertySource
   static void mongoProperties(DynamicPropertyRegistry registry) {
-    registry.add(MONGO_URI_PROPERTY,container::getReplicaSetUrl);
+    registry.add(MONGO_URI_PROPERTY,containerTcSimple::getReplicaSetUrl);
   }
 
 
-  public static void containerHeader(String title) {
+  public static void containerHeaderTcSimple(String title) {
     System.out.printf(
          "\n\n>=====================< %s >=====================<\n" +
               " --> Container-Name: %s\n" +
@@ -36,9 +36,9 @@ public class TcSimple {
               " --> Container-Running: %s\n" +
               ">=====================< %s >=====================<\n\n%n",
          title,
-         container.getContainerName(),
-         container.getReplicaSetUrl(),
-         container.isRunning(),
+         containerTcSimple.getContainerName(),
+         containerTcSimple.getReplicaSetUrl(),
+         containerTcSimple.isRunning(),
          title
                      );
   }

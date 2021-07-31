@@ -1,27 +1,25 @@
-package com.tdd.testconfig.annotation;
+package com.tdd.testsconfig.annotation;
 
 import io.restassured.builder.ResponseSpecBuilder;
 import io.restassured.http.ContentType;
 import io.restassured.module.webtestclient.RestAssuredWebTestClient;
 import io.restassured.module.webtestclient.specification.WebTestClientRequestSpecBuilder;
 import lombok.extern.slf4j.Slf4j;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.extension.Extension;
 import reactor.blockhound.BlockHound;
 
-import static com.tdd.testconfig.annotation.CustomTestcontainerConfigClass.containerHeader;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
 
 @Slf4j
-public class CustomTestsConfigClass implements Extension {
+public class TestsGlobalMethods {
 
   final static Long MAX_TIMEOUT = 15000L;
   final static ContentType JSON_CONTENT_TYPE = ContentType.JSON;
 
 
   @BeforeAll
-  public static void beforeAll() {
+  public static void globalBeforeAll() {
     BlockHound.install(
          builder -> builder
               .allowBlockingCallsInside("java.io.PrintStream",
@@ -38,22 +36,20 @@ public class CustomTestsConfigClass implements Extension {
     //DEFINE CONFIG-GLOBAL PARA OS RESPONSE DOS TESTES
     RestAssuredWebTestClient.responseSpecification =
          new ResponseSpecBuilder()
-              .expectResponseTime(
-                   Matchers.lessThanOrEqualTo(MAX_TIMEOUT))
+              .expectResponseTime(lessThanOrEqualTo(MAX_TIMEOUT))
               .build();
 
-    containerHeader("BEFORE-ALL");
+
   }
 
 
   @AfterAll
-  public static void afterAll() {
+  public static void globalAfterAll() {
     RestAssuredWebTestClient.reset();
-    containerHeader("AFTER-ALL");
   }
 
 
-  public static void testHeader(String title,String label,String subTitle) {
+  public static void generalTestMessage(String title,String label,String subTitle) {
     if (subTitle.contains("repetition"))
       subTitle = "Error: Provide TestInfo testInfo.getTestMethod().toString()";
     if (subTitle.contains("()]")) {
@@ -64,10 +60,12 @@ public class CustomTestsConfigClass implements Extension {
     }
 
     System.out.printf(
-         "\n\n>=====================< %s >=====================<\n" +
-              " -->  %s %s\n" +
-              ">=====================< %s >=====================<\n\n%n",
-         title,label,subTitle,title
+         "\n\n╔══════════════════════════════════════════════════ %s==>\n" +
+              "║ --> %s %s\n" +
+              "╚══════════════════════════════════════════════════ %s==>\n\n%n",
+         title,
+         label,subTitle,
+         title
                      );
   }
 }

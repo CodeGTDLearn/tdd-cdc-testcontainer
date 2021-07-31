@@ -3,9 +3,9 @@ package com.tdd.parallel.service.annotation;
 import com.tdd.parallel.core.config.ServiceReactMongoTemplCfg;
 import com.tdd.parallel.entity.Person;
 import com.tdd.parallel.service.IService;
-import com.tdd.testconfig.annotation.CustomTestcontainerConfigClass;
-import com.tdd.testconfig.annotation.CustomTestsConfig;
-import com.tdd.testconfig.annotation.CustomTestsConfigClass;
+import com.tdd.testsconfig.annotation.TestcontainerConfig;
+import com.tdd.testsconfig.annotation.TestsGlobalAnnotations;
+import com.tdd.testsconfig.annotation.TestsMongoConfig;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
@@ -23,12 +23,17 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import static com.tdd.databuilder.PersonBuilder.personWithIdAndName;
+import static com.tdd.testsconfig.annotation.TestcontainerConfigClass.getTestcontainer;
+import static com.tdd.testsconfig.annotation.TestcontainerConfigClass.testcontainerHeader;
+import static com.tdd.testsconfig.annotation.TestsGlobalMethods.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
 
 @DisplayName("ServiceReactiveTemplAnnot")
 @Import(ServiceReactMongoTemplCfg.class)
-@CustomTestsConfig
-//@CustomTestcontainerConfig
+@TestcontainerConfig
+@TestsMongoConfig
+@TestsGlobalAnnotations
 public class ServiceReactMongoTemplAnnot {
 
   final private String enabledTest = "true";
@@ -42,28 +47,31 @@ public class ServiceReactMongoTemplAnnot {
 
   @BeforeAll
   public static void beforeAll() {
-    CustomTestsConfigClass.beforeAll();
-    CustomTestsConfigClass.testHeader("STARTING TEST-CLASS","Name:",
-                                      ServiceReactMongoTemplAnnot.class.getSimpleName()
-                                     );
+    globalBeforeAll();
+    generalTestMessage("STARTING TEST-CLASS","Name:",
+                       ServiceReactMongoTemplAnnot.class.getSimpleName()
+                      );
   }
 
 
   @AfterAll
   public static void afterAll() {
-    CustomTestsConfigClass.afterAll();
-    CustomTestsConfigClass.testHeader("ENDING TEST-CLASS","Name:",
-                                      ServiceReactMongoTemplAnnot.class.getSimpleName()
-                                     );
+    globalAfterAll();
+    generalTestMessage("ENDING TEST-CLASS","Name:",
+                       ServiceReactMongoTemplAnnot.class.getSimpleName()
+                      );
   }
 
 
   @BeforeEach
   public void setUp(TestInfo testInfo) {
-    CustomTestsConfigClass.testHeader("STARTING TEST","Method-Name:",
-                                      testInfo.getTestMethod()
-                                                     .toString()
-                                     );
+    generalTestMessage("STARTING TEST","Method-Name:",
+                       testInfo.getTestMethod()
+                               .toString()
+                      );
+
+    testcontainerHeader("STARTING TEST-CONTAINER...",getTestcontainer());
+
     Person person1 = personWithIdAndName().create();
     personList = Collections.singletonList(person1);
     personMono = Mono.just(person1);
@@ -84,10 +92,10 @@ public class ServiceReactMongoTemplAnnot {
          .expectNextCount(0L)
          .verifyComplete();
 
-    CustomTestsConfigClass.testHeader("ENDING TEST","Method-Name:",
-                                      testInfo.getTestMethod()
-                                                     .toString()
-                                     );
+    generalTestMessage("ENDING TEST","Method-Name:",
+                       testInfo.getTestMethod()
+                               .toString()
+                      );
   }
 
 
@@ -191,8 +199,8 @@ public class ServiceReactMongoTemplAnnot {
   @DisplayName("Container")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void checkContainer() {
-    assertTrue(CustomTestcontainerConfigClass.getContainer()
-                                             .isRunning());
+    assertTrue(getTestcontainer()
+                    .isRunning());
   }
 
 

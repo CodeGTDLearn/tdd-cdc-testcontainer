@@ -1,4 +1,4 @@
-package com.tdd.testconfig.simple;
+package com.tdd.testsconfig.simple;
 
 import io.restassured.builder.ResponseSpecBuilder;
 import io.restassured.http.ContentType;
@@ -54,18 +54,18 @@ public class TestsConfigSimple extends TcSimple {
                    Matchers.lessThanOrEqualTo(MAX_TIMEOUT))
               .build();
 
-    containerHeader("BEFORE-ALL");
+    containerHeaderTcSimple("BEFORE-ALL");
   }
 
 
   @AfterAll
   public static void afterAll() {
     RestAssuredWebTestClient.reset();
-    containerHeader("AFTER-ALL");
+    containerHeaderTcSimple("AFTER-ALL");
   }
 
 
-  public static void testHeader(String title,String label,String subTitle) {
+  public static void testSimpleHeader(String title,String label,String subTitle) {
     if (subTitle.contains("repetition"))
       subTitle = "Error: Provide TestInfo testInfo.getTestMethod().toString()";
     if (subTitle.contains("()]")) {

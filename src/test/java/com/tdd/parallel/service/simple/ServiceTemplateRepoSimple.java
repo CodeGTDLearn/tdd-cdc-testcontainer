@@ -3,8 +3,7 @@ package com.tdd.parallel.service.simple;
 import com.tdd.parallel.core.config.ServiceTemplateRepoCfg;
 import com.tdd.parallel.entity.Person;
 import com.tdd.parallel.service.IService;
-import com.tdd.testconfig.annotation.CustomTestcontainerConfigClass;
-import com.tdd.testconfig.simple.TestsConfigSimple;
+import com.tdd.testsconfig.simple.TestsConfigSimple;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,27 +41,27 @@ public class ServiceTemplateRepoSimple extends TestsConfigSimple {
   @BeforeAll
   public static void beforeAll() {
     TestsConfigSimple.beforeAll();
-    TestsConfigSimple.testHeader("STARTING TEST-CLASS","Name:",
-                                 ServiceTemplateRepoSimple.class.getSimpleName()
-                                );
+    TestsConfigSimple.testSimpleHeader("STARTING TEST-CLASS","Name:",
+                                       ServiceTemplateRepoSimple.class.getSimpleName()
+                                      );
   }
 
 
   @AfterAll
   public static void afterAll() {
     TestsConfigSimple.afterAll();
-    TestsConfigSimple.testHeader("ENDING TEST-CLASS","Name:",
-                                 ServiceTemplateRepoSimple.class.getSimpleName()
-                                );
+    TestsConfigSimple.testSimpleHeader("ENDING TEST-CLASS","Name:",
+                                       ServiceTemplateRepoSimple.class.getSimpleName()
+                                      );
   }
 
 
   @BeforeEach
   public void setUp(TestInfo testInfo) {
-    TestsConfigSimple.testHeader("STARTING TEST","Method-Name:",
-                                 testInfo.getTestMethod()
+    TestsConfigSimple.testSimpleHeader("STARTING TEST","Method-Name:",
+                                       testInfo.getTestMethod()
                                          .toString()
-                                );
+                                      );
     Person person1 = personWithIdAndName().create();
     personList = Collections.singletonList(person1);
     personMono = Mono.just(person1);
@@ -83,10 +82,10 @@ public class ServiceTemplateRepoSimple extends TestsConfigSimple {
          .expectNextCount(0L)
          .verifyComplete();
 
-    TestsConfigSimple.testHeader("ENDING TEST","Method-Name:",
-                                 testInfo.getTestMethod()
+    TestsConfigSimple.testSimpleHeader("ENDING TEST","Method-Name:",
+                                       testInfo.getTestMethod()
                                          .toString()
-                                );
+                                      );
   }
 
 
@@ -186,13 +185,13 @@ public class ServiceTemplateRepoSimple extends TestsConfigSimple {
   }
 
 
-  @Test
-  @DisplayName("Container")
-  @EnabledIf(expression = enabledTest, loadContext = true)
-  public void checkContainer() {
-    assertTrue(CustomTestcontainerConfigClass.getContainer()
-                                             .isRunning());
-  }
+//  @Test
+//  @DisplayName("Container")
+//  @EnabledIf(expression = enabledTest, loadContext = true)
+//  public void checkContainer() {
+//    assertTrue(TestcontainerConfigClass.getContainerAnn()
+//                                       .isRunning());
+//  }
 
 
   @Test

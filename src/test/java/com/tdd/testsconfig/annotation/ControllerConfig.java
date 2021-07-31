@@ -1,6 +1,5 @@
-package com.tdd.testconfig.annotation;
+package com.tdd.testsconfig.annotation;
 
-import com.tdd.testconfig.annotation.CustomTestcontainerConfigClass;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,9 +24,9 @@ b) USO ALTERNATIVO (DataMongoTest/SpringBootTest) - CONFLITAM ENTRE-SI:
   ------------------------------------------------------------*/
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
-@ExtendWith(CustomTestcontainerConfigClass.class)
+@ExtendWith(TestcontainerConfigClass.class)
 @AutoConfigureWebTestClient
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
-public @interface CustomControllerConfig {
+public @interface ControllerConfig {
 }
