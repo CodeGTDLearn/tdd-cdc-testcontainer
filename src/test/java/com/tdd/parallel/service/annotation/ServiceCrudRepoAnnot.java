@@ -7,6 +7,7 @@ import com.tdd.testsconfig.annotation.TestcontainerConfig;
 import com.tdd.testsconfig.annotation.TestsGlobalAnnotations;
 import com.tdd.testsconfig.annotation.TestsMongoConfig;
 import org.junit.jupiter.api.*;
+import org.springframework.beans.factory.BeanCreationNotAllowedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit.jupiter.EnabledIf;
@@ -83,6 +84,11 @@ public class ServiceCrudRepoAnnot {
 
   @AfterEach
   void tearDown(TestInfo testInfo) {
+//    if (singletonObject == null) {
+//      if (this.singletonsCurrentlyInDestruction) {
+//        throw new BeanCreationNotAllowedException(beanName,
+//                                                  "Singleton bean creation not allowed while the singletons of this factory are in destruction " +
+//                                                       "(Do not request a bean from a BeanFactory in a destroy method implementation!)");
     StepVerifier
          .create(serviceCrudRepo.deleteAll()
                                 .log())
