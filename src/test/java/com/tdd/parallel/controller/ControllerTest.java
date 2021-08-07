@@ -2,8 +2,7 @@ package com.tdd.parallel.controller;
 
 import com.tdd.parallel.entity.Person;
 import com.tdd.parallel.service.IService;
-import com.tdd.testsconfig.annotation.ControllerConfig;
-import com.tdd.testsconfig.simple.TestsConfigSimple;
+import com.tdd.testsconfig.annotation.ControllerConfigAnn;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,12 +20,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import static com.tdd.databuilder.PersonBuilder.personWithIdAndName;
+import static com.tdd.testsconfig.TestsGlobalMethods.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 //@Import(ServiceTemplateRepoCfg.class)
 @Slf4j
 @DisplayName("Controller")
-@ControllerConfig
+@ControllerConfigAnn
 public class ControllerTest {
 
   final private String enabledTest = "true";
@@ -40,28 +40,28 @@ public class ControllerTest {
 
   @BeforeAll
   public static void beforeAll() {
-    TestsConfigSimple.beforeAll();
-    TestsConfigSimple.testSimpleHeader("STARTING TEST-CLASS","Name:",
-                                       ControllerTest.class.getSimpleName()
-                                      );
+    globalBeforeAll();
+    globalTestMessage("STARTING TEST-CLASS","Name:",
+                     ControllerTest.class.getSimpleName()
+                    );
   }
 
 
   @AfterAll
   public static void afterAll() {
-    TestsConfigSimple.afterAll();
-    TestsConfigSimple.testSimpleHeader("ENDING TEST-CLASS","Name:",
-                                       ControllerTest.class.getSimpleName()
-                                      );
+    globalAfterAll();
+    globalTestMessage("ENDING TEST-CLASS","Name:",
+                     ControllerTest.class.getSimpleName()
+                    );
   }
 
 
   @BeforeEach
   public void setUp(TestInfo testInfo) {
-    TestsConfigSimple.testSimpleHeader("STARTING TEST","Method-Name:",
-                                       testInfo.getTestMethod()
-                                         .toString()
-                                      );
+    globalTestMessage("STARTING TEST","Method-Name:",
+                     testInfo.getTestMethod()
+                             .toString()
+                    );
 
     Person person1 = personWithIdAndName().create();
     personList = Collections.singletonList(person1);
@@ -83,10 +83,10 @@ public class ControllerTest {
          .expectNextCount(0L)
          .verifyComplete();
 
-    TestsConfigSimple.testSimpleHeader("ENDING TEST","Method-Name:",
-                                       testInfo.getTestMethod()
-                                         .toString()
-                                      );
+    globalTestMessage("ENDING TEST","Method-Name:",
+                     testInfo.getTestMethod()
+                             .toString()
+                    );
   }
 
 
@@ -138,13 +138,13 @@ public class ControllerTest {
   }
 
 
-//  @Test
-//  @DisplayName("Container")
-//  @EnabledIf(expression = enabledTest, loadContext = true)
-//  public void checkContainer() {
-//    assertTrue(TestcontainerConfigClass.getContainerAnn()
-//                                       .isRunning());
-//  }
+  //  @Test
+  //  @DisplayName("Container")
+  //  @EnabledIf(expression = enabledTest, loadContext = true)
+  //  public void checkContainer() {
+  //    assertTrue(TestcontainerConfigClass.getContainerAnn()
+  //                                       .isRunning());
+  //  }
 
 
   @Test

@@ -16,8 +16,4 @@ public interface IService {
   Mono<Void> deleteAll();
 
   Mono<Person> findById(String id);
-
-  Flux<Person> saveAll(List<Person> personList);
-
-  public Mono<Boolean> collectionExists(String collection);
 }

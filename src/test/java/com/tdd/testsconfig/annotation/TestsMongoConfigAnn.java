@@ -24,5 +24,5 @@ b) USO ALTERNATIVO (DataMongoTest/SpringBootTest) - CONFLITAM ENTRE-SI:
 @Target(ElementType.TYPE)
 @DataMongoTest(excludeAutoConfiguration = EmbeddedMongoAutoConfiguration.class)
 @DirtiesContext(classMode = BEFORE_EACH_TEST_METHOD)
-public @interface TestsMongoConfig {
+public @interface TestsMongoConfigAnn {
 }

@@ -58,10 +58,4 @@ public class TemplateRepo implements ITemplateRepo {
   public Mono<Person> findById(String id) {
     return reactiveMongoTemplate.findById(id,Person.class);
   }
-
-
-  @Override
-  public Flux<Person> saveAll(List<Person> personList) {
-    return reactiveMongoTemplate.insertAll(personList);
-  }
 }

@@ -27,18 +27,6 @@ public class ServiceCrudRepo implements IService {
 
 
   @Override
-  public Flux<Person> saveAll(List<Person> personList) {
-    return iCrudRepo.saveAll(personList);
-  }
-
-
-  @Override
-  public Mono<Boolean> collectionExists(String collection) {
-    return null;
-  }
-
-
-  @Override
   public Flux<Person> findAll() {
     return iCrudRepo.findAll();
   }

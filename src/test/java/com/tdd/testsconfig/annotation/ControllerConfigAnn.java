@@ -24,9 +24,9 @@ b) USO ALTERNATIVO (DataMongoTest/SpringBootTest) - CONFLITAM ENTRE-SI:
   ------------------------------------------------------------*/
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
-@ExtendWith(TestcontainerConfigClass.class)
+@ExtendWith(TestcontainerConfigAnn.class)
 @AutoConfigureWebTestClient
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
-public @interface ControllerConfig {
+public @interface ControllerConfigAnn {
 }

@@ -12,7 +12,7 @@ import org.testcontainers.utility.DockerImageName;
 //https://www.testcontainers.org/test_framework_integration/junit_5/#restarted-containers
 // */
 @Testcontainers
-public class TcSimple {
+public class TestcontainerSimple {
 
   final static String MONGO_VERSION = "mongo:4.4.2";
   final static String MONGO_URI_PROPERTY = "spring.data.mongodb.uri";
@@ -25,22 +25,6 @@ public class TcSimple {
   @DynamicPropertySource
   static void mongoProperties(DynamicPropertyRegistry registry) {
     registry.add(MONGO_URI_PROPERTY,containerTcSimple::getReplicaSetUrl);
-  }
-
-
-  public static void containerHeaderTcSimple(String title) {
-    System.out.printf(
-         "\n\n>=====================< %s >=====================<\n" +
-              " --> Container-Name: %s\n" +
-              " --> Container-Url: %s\n" +
-              " --> Container-Running: %s\n" +
-              ">=====================< %s >=====================<\n\n%n",
-         title,
-         containerTcSimple.getContainerName(),
-         containerTcSimple.getReplicaSetUrl(),
-         containerTcSimple.isRunning(),
-         title
-                     );
   }
 }
 

@@ -17,5 +17,5 @@ import java.lang.annotation.Target;
 //@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestPropertySource("classpath:application-test.properties")
 @ActiveProfiles("test")
-public @interface TestsGlobalAnnotations {
+public @interface TestsGlobalAnn {
 }

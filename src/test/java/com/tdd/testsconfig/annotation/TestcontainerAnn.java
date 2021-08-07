@@ -9,6 +9,6 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
-@ExtendWith(TestcontainerConfigClass.class)
-public @interface TestcontainerConfig {
+@ExtendWith(TestcontainerConfigAnn.class)
+public @interface TestcontainerAnn {
 }

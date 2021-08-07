@@ -3,43 +3,36 @@ package com.tdd.parallel.service.annotation;
 import com.tdd.parallel.core.config.ServiceReactMongoTemplCfg;
 import com.tdd.parallel.entity.Person;
 import com.tdd.parallel.service.IService;
-import com.tdd.testsconfig.annotation.TestcontainerConfig;
-import com.tdd.testsconfig.annotation.TestsGlobalAnnotations;
-import com.tdd.testsconfig.annotation.TestsMongoConfig;
+import com.tdd.testsconfig.annotation.TestcontainerAnn;
+import com.tdd.testsconfig.annotation.TestsGlobalAnn;
+import com.tdd.testsconfig.annotation.TestsMongoConfigAnn;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit.jupiter.EnabledIf;
 import reactor.blockhound.BlockingOperationError;
-import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import static com.tdd.databuilder.PersonBuilder.personWithIdAndName;
-import static com.tdd.testsconfig.annotation.TestcontainerConfigClass.getTestcontainer;
-import static com.tdd.testsconfig.annotation.TestcontainerConfigClass.testcontainerHeader;
-import static com.tdd.testsconfig.annotation.TestsGlobalMethods.*;
+import static com.tdd.testsconfig.TestsGlobalMethods.*;
+import static com.tdd.testsconfig.annotation.TestcontainerConfigAnn.getTestcontainer;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
 
 @DisplayName("ServiceReactiveTemplAnnot")
 @Import(ServiceReactMongoTemplCfg.class)
-@TestcontainerConfig
-@TestsMongoConfig
-@TestsGlobalAnnotations
+@TestcontainerAnn
+@TestsMongoConfigAnn
+@TestsGlobalAnn
 public class ServiceReactMongoTemplAnnot {
 
   final private String enabledTest = "true";
   final private int repet = 1;
-  private List<Person> personList;
-  private Mono<Person> personMono;
 
   @Autowired
   private IService serviceReactMongoTempl;
@@ -48,38 +41,29 @@ public class ServiceReactMongoTemplAnnot {
   @BeforeAll
   public static void beforeAll() {
     globalBeforeAll();
-    generalTestMessage("STARTING TEST-CLASS","Name:",
-                       ServiceReactMongoTemplAnnot.class.getSimpleName()
-                      );
+    globalTestMessage("STARTING TEST-CLASS","Name:",
+                      ServiceReactMongoTemplAnnot.class.getSimpleName()
+                     );
   }
 
 
   @AfterAll
   public static void afterAll() {
     globalAfterAll();
-    generalTestMessage("ENDING TEST-CLASS","Name:",
-                       ServiceReactMongoTemplAnnot.class.getSimpleName()
-                      );
+    globalTestMessage("...ENDING TEST-CLASS","Name:",
+                      ServiceCrudRepoAnnot.class.getSimpleName()
+                     );
   }
 
 
   @BeforeEach
   public void setUp(TestInfo testInfo) {
-    generalTestMessage("STARTING TEST","Method-Name:",
-                       testInfo.getTestMethod()
-                               .toString()
-                      );
+    globalTestMessage("STARTING TEST","Method-Name:",
+                      testInfo.getTestMethod()
+                              .toString()
+                     );
 
-    testcontainerHeader("STARTING TEST-CONTAINER...",getTestcontainer());
-
-    Person person1 = personWithIdAndName().create();
-    personList = Collections.singletonList(person1);
-    personMono = Mono.just(person1);
-    StepVerifier
-         .create(serviceReactMongoTempl.save(person1)
-                                       .log())
-         .expectNext(person1)
-         .verifyComplete();
+    globalContainerMessage("STARTING TEST-CONTAINER...",getTestcontainer());
   }
 
 
@@ -92,45 +76,59 @@ public class ServiceReactMongoTemplAnnot {
          .expectNextCount(0L)
          .verifyComplete();
 
-    generalTestMessage("ENDING TEST","Method-Name:",
-                       testInfo.getTestMethod()
-                               .toString()
-                      );
+    globalTestMessage("ENDING TEST","Method-Name:",
+                      testInfo.getTestMethod()
+                              .toString()
+                     );
+
+    globalContainerMessage("...ENDING TEST-CONTAINER...",getTestcontainer());
   }
 
 
-  //  @Test
-  @RepeatedTest(value = repet)
-  @DisplayName("SaveAll")
-  @EnabledIf(expression = enabledTest, loadContext = true)
-  public void saveAll() {
-    StepVerifier.create(personMono.log())
-                .expectNextSequence(personList)
-                .verifyComplete();
-  }
-
-
-  //  @Test
   @RepeatedTest(repet)
   @DisplayName("Save")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void save() {
+    generateAndSavePerson();
+  }
+
+
+  @Test
+  @DisplayName("FindAll")
+  @EnabledIf(expression = enabledTest, loadContext = true)
+  public void findAll() {
+    generateAndSavePerson();
+
+    StepVerifier.create(
+         serviceReactMongoTempl.findAll()
+                               .log())
+                .expectSubscription()
+                .expectNextCount(1L)
+                .verifyComplete();
+  }
+
+
+  @Test
+  @DisplayName("FindById")
+  @EnabledIf(expression = enabledTest, loadContext = true)
+  public void findById() {
+    Person localPerson = generateAndSavePerson();
+
     StepVerifier
-         .create(personMono)
+         .create(serviceReactMongoTempl.findById(localPerson.getId())
+                                       .log())
          .expectSubscription()
-         .expectNextCount(1L)
+         .expectNextMatches(item -> localPerson.getId()
+                                               .equals(item.getId()))
          .verifyComplete();
   }
 
 
   @Test
-  //  @RepeatedTest(repet)
-  @DisplayName("FindAll")
+  @DisplayName("DeleteAll")
   @EnabledIf(expression = enabledTest, loadContext = true)
-  public void findAll() {
-    StepVerifier.create(personMono)
-                .expectNextSequence(personList)
-                .verifyComplete();
+  public void deleteAll() {
+    generateAndSavePerson();
 
     StepVerifier
          .create(serviceReactMongoTempl.findAll()
@@ -138,29 +136,7 @@ public class ServiceReactMongoTemplAnnot {
          .expectSubscription()
          .expectNextCount(1L)
          .verifyComplete();
-  }
 
-
-  @Test
-  //  @RepeatedTest(repet)
-  @DisplayName("FindById")
-  @EnabledIf(expression = enabledTest, loadContext = true)
-  public void findById() {
-    StepVerifier
-         .create(personMono.log())
-         .expectSubscription()
-         .expectNextMatches(person -> personList.get(0)
-                                                .getName()
-                                                .equals(person.getName()))
-         .verifyComplete();
-  }
-
-
-  @Test
-  //  @RepeatedTest(repet)
-  @DisplayName("DeleteAll")
-  @EnabledIf(expression = enabledTest, loadContext = true)
-  public void deleteAll() {
     StepVerifier.create(serviceReactMongoTempl.deleteAll())
                 .verifyComplete();
 
@@ -174,21 +150,18 @@ public class ServiceReactMongoTemplAnnot {
 
 
   @Test
-  //  @RepeatedTest(repet)
   @DisplayName("DeleteById")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void deleteById() {
+    Person localPerson = generateAndSavePerson();
+
     StepVerifier
-         .create(serviceReactMongoTempl.deleteById(personList.get(0)
-                                                             .getId()))
+         .create(serviceReactMongoTempl.deleteById(localPerson.getId()))
          .expectSubscription()
          .verifyComplete();
 
-    Mono<Person> personMono = serviceReactMongoTempl.findById(personList.get(0)
-                                                                        .getId());
-
     StepVerifier
-         .create(personMono)
+         .create(serviceReactMongoTempl.findById(localPerson.getId()))
          .expectSubscription()
          .expectNextCount(0L)
          .verifyComplete();
@@ -222,6 +195,24 @@ public class ServiceReactMongoTemplAnnot {
     } catch (ExecutionException | InterruptedException | TimeoutException e) {
       assertTrue(e.getCause() instanceof BlockingOperationError,"detected");
     }
+  }
+
+
+  private Person getPerson() {
+    return personWithIdAndName().create();
+  }
+
+
+  private Person generateAndSavePerson() {
+    Person localPerson = getPerson();
+
+    StepVerifier
+         .create(serviceReactMongoTempl.save(localPerson))
+         .expectSubscription()
+         .expectNext(localPerson)
+         .verifyComplete();
+
+    return localPerson;
   }
 }
 

@@ -30,7 +30,9 @@
 
     <dependencies>
 
-        <!-- GENERAL DEPENDENCIES-->
+        <!--╔══════════════════════════════╗
+            ║     GENERAL DEPENDENCIES     ║
+            ╚══════════════════════════════╝-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webflux</artifactId>
@@ -49,21 +51,17 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- ===================================
-                    DB DEPENDENCIES
-        ===================================-->
+        <!--╔══════════════════════════════╗
+            ║       DB DEPENDENCIES        ║
+            ╚══════════════════════════════╝-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-mongodb-reactive</artifactId>
         </dependency>
 
-
-        <!-- ===================================
-            TESTS-DEPENDENCIES USING TESTS-CONTAINERS
-                see more:
-                    https://www.codeflow.site/pt/article/docker-test-containers
-                    https://www.youtube.com/watch?v=7ExYGJxGC8Q&list=WL&index=62&t=477s
-        ===================================-->
+        <!--╔══════════════════════════════╗
+            ║      TESTS DEPENDENCIES      ║
+            ╚══════════════════════════════╝-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -76,6 +74,26 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>com.github.javafaker</groupId>
+            <artifactId>javafaker</artifactId>
+            <version>1.0.2</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.projectreactor.tools</groupId>
+            <artifactId>blockhound</artifactId>
+            <version>1.0.3.RELEASE</version>
+        </dependency>
+
+        <!--╔═══════════════════════════════╗
+            ║ TESTS-CONTAINERS DEPENDENCIES ║
+            ╠═══════════════════════════════╩════════════════════════════════════════╗
+            ║ see more:                                                              ║
+            ║    https://www.codeflow.site/pt/article/docker-test-containers         ║
+            ║    https://www.youtube.com/watch?v=7ExYGJxGC8Q&list=WL&index=62&t=477s ║
+            ╚════════════════════════════════════════════════════════════════════════╝-->
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>mongodb</artifactId>
@@ -97,20 +115,9 @@
             <scope>test</scope>
         </dependency>
 
-        <dependency>
-            <groupId>com.github.javafaker</groupId>
-            <artifactId>javafaker</artifactId>
-            <version>1.0.2</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>io.projectreactor.tools</groupId>
-            <artifactId>blockhound</artifactId>
-            <version>1.0.3.RELEASE</version>
-        </dependency>
-
-        <!-- REST_ASSURE -> MODULO REATIVO-->
+        <!--╔═══════════════════════════════╗
+            ║ REST_ASSURE -> MODULO REATIVO ║
+            ╚═══════════════════════════════╝-->
         <dependency>
             <groupId>io.rest-assured</groupId>
             <artifactId>spring-web-test-client</artifactId>
@@ -118,16 +125,19 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- REST_ASSURE -> MODULOS GERAIS-->
+        <!--╔═══════════════════════════════╗
+            ║ REST_ASSURE -> MODULOS GERAIS ║
+            ╚═══════════════════════════════╝-->
         <dependency>
             <groupId>io.rest-assured</groupId>
             <artifactId>rest-assured-common</artifactId>
             <version>4.3.1</version>
         </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
-        </dependency>
+
+<!--        <dependency>-->
+<!--            <groupId>org.springframework</groupId>-->
+<!--            <artifactId>spring-test</artifactId>-->
+<!--        </dependency>-->
     </dependencies>
 
     <dependencyManagement>

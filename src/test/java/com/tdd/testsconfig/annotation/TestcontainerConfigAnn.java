@@ -4,7 +4,7 @@ import org.junit.jupiter.api.extension.Extension;
 import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.utility.DockerImageName;
 
-public class TestcontainerConfigClass implements Extension {
+public class TestcontainerConfigAnn implements Extension {
 
   private final static String MONGO_VERSION = "mongo:4.4.2";
   private final static String MONGO_URI_PROPERTY = "spring.data.mongodb.uri";
@@ -29,22 +29,5 @@ public class TestcontainerConfigClass implements Extension {
 
   public static MongoDBContainer getTestcontainer() {
     return testContainer;
-  }
-
-
-  public static void testcontainerHeader(String title,MongoDBContainer container) {
-
-    System.out.printf(
-         "\n\n╔══════════════════════════════════════════════════ %s==>\n" +
-              "║ --> Name: %s\n" +
-              "║ --> Url: %s\n" +
-              "║ --> Created: %s\n" +
-              "╚══════════════════════════════════════════════════ %s==>\n\n%n",
-         title,
-         container.getContainerName(),
-         container.getReplicaSetUrl(),
-         container.isCreated(),
-         title
-                     );
   }
 }

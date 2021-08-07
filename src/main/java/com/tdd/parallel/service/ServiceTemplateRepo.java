@@ -42,23 +42,9 @@ public class ServiceTemplateRepo implements IService {
     return templateRepo.deleteAll();
   }
 
-
-  @Override
-  public Mono<Boolean> collectionExists(String collection) {
-    return templateRepo.collectionExists(collection);
-
-  }
-
-
   @Override
   public Mono<Person> findById(String id) {
     return templateRepo.findById(id);
-  }
-
-
-  @Override
-  public Flux<Person> saveAll(List<Person> personList) {
-    return templateRepo.saveAll(personList);
   }
 }
 

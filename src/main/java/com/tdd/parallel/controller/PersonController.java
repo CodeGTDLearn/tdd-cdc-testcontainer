@@ -8,9 +8,8 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
-
-import static com.tdd.parallel.core.Routes.*;
+import static com.tdd.parallel.core.Routes.ID;
+import static com.tdd.parallel.core.Routes.REQ_MAP;
 import static org.springframework.http.HttpStatus.*;
 
 //@AllArgsConstructor
@@ -27,13 +26,6 @@ public class PersonController {
   @ResponseStatus(CREATED)
   public Mono<Person> save(@RequestBody Person customer) {
     return service.save(customer);
-  }
-
-
-  @PostMapping(SAVE_ALL)
-  @ResponseStatus(CREATED)
-  public Flux<Person> saveAll(@RequestBody List<Person> personList) {
-    return service.saveAll(personList);
   }
 
 

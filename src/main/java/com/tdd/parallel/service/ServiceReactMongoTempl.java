@@ -49,21 +49,8 @@ public class ServiceReactMongoTempl implements IService {
 
 
   @Override
-  public Mono<Boolean> collectionExists(String collection) {
-    return reactiveMongoTemplate.collectionExists(collection);
-
-  }
-
-
-  @Override
   public Mono<Person> findById(String id) {
     return reactiveMongoTemplate.findById(id,Person.class);
-  }
-
-
-  @Override
-  public Flux<Person> saveAll(List<Person> personList) {
-    return reactiveMongoTemplate.insertAll(personList);
   }
 }
 

@@ -18,6 +18,4 @@ public interface ITemplateRepo {
   Mono<Boolean> collectionExists(String collection);
 
   Mono<Person> findById(String id);
-
-  Flux<Person> saveAll(List<Person> personList);
 }

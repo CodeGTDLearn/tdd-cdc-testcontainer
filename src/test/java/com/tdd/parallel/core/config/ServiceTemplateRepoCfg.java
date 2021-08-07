@@ -13,9 +13,6 @@ public class ServiceTemplateRepoCfg {
   @Autowired
   private ReactiveMongoTemplate reactiveMongoTemplate;
 
-//  @Autowired
-//  private ITemplateRepo templateRepo;
-
 
   @Bean
   public ServiceTemplateRepo serviceTemplateRepo() {

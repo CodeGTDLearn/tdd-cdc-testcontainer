@@ -1,7 +1,7 @@
 package com.tdd.parallel.service.simple;
 
 import com.tdd.parallel.core.config.ServiceMongoRepoCfg;
-import com.tdd.testsconfig.simple.TestsConfigSimple;
+import com.tdd.testsconfig.simple.TestscontainerConfigSimple;
 import com.tdd.parallel.entity.Person;
 import com.tdd.parallel.service.IService;
 import lombok.extern.slf4j.Slf4j;
@@ -22,12 +22,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import static com.tdd.databuilder.PersonBuilder.personWithIdAndName;
+import static com.tdd.testsconfig.TestsGlobalMethods.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 @DisplayName("ServiceMongoRepoSimple")
 @Import(ServiceMongoRepoCfg.class)
-public class ServiceMongoRepoSimple extends TestsConfigSimple {
+public class ServiceMongoRepoSimple extends TestscontainerConfigSimple {
 
   final private String enabledTest = "true";
   final private int repet = 1;
@@ -40,28 +41,28 @@ public class ServiceMongoRepoSimple extends TestsConfigSimple {
 
   @BeforeAll
   public static void beforeAll() {
-    TestsConfigSimple.beforeAll();
-    TestsConfigSimple.testSimpleHeader("STARTING TEST-CLASS","Name:",
-                                       ServiceMongoRepoSimple.class.getSimpleName()
-                                      );
+    globalBeforeAll();
+    globalTestMessage("STARTING TEST-CLASS","Name:",
+                     ServiceMongoRepoSimple.class.getSimpleName()
+                    );
   }
 
 
   @AfterAll
   public static void afterAll() {
-    TestsConfigSimple.afterAll();
-    TestsConfigSimple.testSimpleHeader("ENDING TEST-CLASS","Name:",
-                                       ServiceMongoRepoSimple.class.getSimpleName()
-                                      );
+    globalAfterAll();
+    globalTestMessage("ENDING TEST-CLASS","Name:",
+                     ServiceMongoRepoSimple.class.getSimpleName()
+                    );
   }
 
 
   @BeforeEach
   public void setUp(TestInfo testInfo) {
-    TestsConfigSimple.testSimpleHeader("STARTING TEST","Method-Name:",
-                                       testInfo.getTestMethod()
-                                   .toString()
-                                      );
+    globalTestMessage("STARTING TEST","Method-Name:",
+                     testInfo.getTestMethod()
+                             .toString()
+                    );
 
     Person person1 = personWithIdAndName().create();
     personList = Collections.singletonList(person1);
@@ -83,14 +84,13 @@ public class ServiceMongoRepoSimple extends TestsConfigSimple {
          .expectNextCount(0L)
          .verifyComplete();
 
-    TestsConfigSimple.testSimpleHeader("ENDING TEST","Method-Name:",
-                                       testInfo.getTestMethod()
-                                   .toString()
-                                      );
+    globalTestMessage("ENDING TEST","Method-Name:",
+                     testInfo.getTestMethod()
+                             .toString()
+                    );
   }
 
 
-  //  @Test
   @RepeatedTest(value = repet)
   @DisplayName("SaveAll")
   @EnabledIf(expression = enabledTest, loadContext = true)
@@ -101,7 +101,6 @@ public class ServiceMongoRepoSimple extends TestsConfigSimple {
   }
 
 
-  //  @Test
   @RepeatedTest(repet)
   @DisplayName("Save")
   @EnabledIf(expression = enabledTest, loadContext = true)
@@ -115,7 +114,6 @@ public class ServiceMongoRepoSimple extends TestsConfigSimple {
 
 
   @Test
-  //  @RepeatedTest(repet)
   @DisplayName("FindAll")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void findAll() {
@@ -133,7 +131,6 @@ public class ServiceMongoRepoSimple extends TestsConfigSimple {
 
 
   @Test
-  //  @RepeatedTest(repet)
   @DisplayName("FindById")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void findById() {
@@ -148,7 +145,6 @@ public class ServiceMongoRepoSimple extends TestsConfigSimple {
 
 
   @Test
-  //  @RepeatedTest(repet)
   @DisplayName("DeleteAll")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void deleteAll() {
@@ -165,7 +161,6 @@ public class ServiceMongoRepoSimple extends TestsConfigSimple {
 
 
   @Test
-  //  @RepeatedTest(repet)
   @DisplayName("DeleteById")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void deleteById() {
@@ -186,12 +181,12 @@ public class ServiceMongoRepoSimple extends TestsConfigSimple {
   }
 
 
-//  @Test
-//  @DisplayName("Container")
-//  @EnabledIf(expression = enabledTest, loadContext = true)
-//  public void checkContainer() {
-//    assertTrue(TestcontainerConfigClass.getContainerAnn().isRunning());
-//  }
+  //  @Test
+  //  @DisplayName("Container")
+  //  @EnabledIf(expression = enabledTest, loadContext = true)
+  //  public void checkContainer() {
+  //    assertTrue(TestcontainerConfigClass.getContainerAnn().isRunning());
+  //  }
 
 
   @Test

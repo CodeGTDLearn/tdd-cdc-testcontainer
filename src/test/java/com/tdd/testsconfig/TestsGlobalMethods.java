@@ -1,4 +1,4 @@
-package com.tdd.testsconfig.annotation;
+package com.tdd.testsconfig;
 
 import io.restassured.builder.ResponseSpecBuilder;
 import io.restassured.http.ContentType;
@@ -7,7 +7,7 @@ import io.restassured.module.webtestclient.specification.WebTestClientRequestSpe
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import reactor.blockhound.BlockHound;
+import org.testcontainers.containers.MongoDBContainer;
 
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 
@@ -20,11 +20,7 @@ public class TestsGlobalMethods {
 
   @BeforeAll
   public static void globalBeforeAll() {
-    BlockHound.install(
-         builder -> builder
-              .allowBlockingCallsInside("java.io.PrintStream",
-                                        "write"
-                                       ));
+    BlockhoundManage.blockhoundInstallSimple();
 
     //DEFINE CONFIG-GLOBAL PARA OS REQUESTS DOS TESTES
     RestAssuredWebTestClient.requestSpecification =
@@ -49,7 +45,7 @@ public class TestsGlobalMethods {
   }
 
 
-  public static void generalTestMessage(String title,String label,String subTitle) {
+  public static void globalTestMessage(String title,String label,String subTitle) {
     if (subTitle.contains("repetition"))
       subTitle = "Error: Provide TestInfo testInfo.getTestMethod().toString()";
     if (subTitle.contains("()]")) {
@@ -60,11 +56,27 @@ public class TestsGlobalMethods {
     }
 
     System.out.printf(
-         "\n\n╔══════════════════════════════════════════════════ %s==>\n" +
+         "\n\n╔════════════════════════╣ %s ╠════════════════════════╣\n" +
               "║ --> %s %s\n" +
-              "╚══════════════════════════════════════════════════ %s==>\n\n%n",
+              "╚════════════════════════╣ %s ╠════════════════════════╣\n\n%n",
          title,
          label,subTitle,
+         title
+                     );
+  }
+
+
+  public static void globalContainerMessage(String title,MongoDBContainer container) {
+    System.out.printf(
+         "\n\n╔═════════════════════════════╣ %s ╠═════════════════════════════╣\n" +
+              "║ --> Name: %s\n" +
+              "║ --> Url: %s\n" +
+              "║ --> Running: %s\n" +
+              "╚═════════════════════════════╣ %s ╠═════════════════════════════╣\n\n",
+         title,
+         container.getContainerName(),
+         container.getReplicaSetUrl(),
+         container.isRunning(),
          title
                      );
   }

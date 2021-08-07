@@ -26,18 +26,6 @@ public class ServiceMongoRepo implements IService {
 
 
   @Override
-  public Flux<Person> saveAll(List<Person> personList) {
-    return iMongoRepo.saveAll(personList);
-  }
-
-
-  @Override
-  public Mono<Boolean> collectionExists(String collection) {
-    return null;
-  }
-
-
-  @Override
   public Flux<Person> findAll() {
     return iMongoRepo.findAll();
   }
