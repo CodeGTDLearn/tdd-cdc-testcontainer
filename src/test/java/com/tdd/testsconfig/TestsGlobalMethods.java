@@ -45,9 +45,10 @@ public class TestsGlobalMethods {
   }
 
 
-  public static void globalTestMessage(String title,String label,String subTitle) {
+  public static void globalTestMessage(String subTitle,String typeTestMessage) {
     if (subTitle.contains("repetition"))
       subTitle = "Error: Provide TestInfo testInfo.getTestMethod().toString()";
+
     if (subTitle.contains("()]")) {
       subTitle = subTitle.replace("()]","");
       subTitle = subTitle.substring(subTitle.lastIndexOf(".") + 1);
@@ -55,30 +56,68 @@ public class TestsGlobalMethods {
                          .toUpperCase() + subTitle.substring(1);
     }
 
+    String title = "";
+    switch (typeTestMessage.toLowerCase()) {
+      case "class-start":
+        title = "STARTING TEST-CLASS....";
+        break;
+
+      case "class-end":
+        title = "...END TEST-CLASS";
+        break;
+
+      case "method-start":
+        title = "STARTING TEST-METHOD...";
+        break;
+
+      case "method-end":
+        title = "...END TEST-METHOD";
+        break;
+    }
+
     System.out.printf(
-         "\n\n╔════════════════════════╣ %s ╠════════════════════════╣\n" +
-              "║ --> %s %s\n" +
-              "╚════════════════════════╣ %s ╠════════════════════════╣\n\n%n",
-         title,
-         label,subTitle,
-         title
+         "%n%n" +
+              "╔════════════════════════════════════════════════════════════════════╗%n" +
+              "║                         %s                                         ║%n" +
+              "║ --> Name: %s %38s%n" +
+              "╚════════════════════════════════════════════════════════════════════╝%n%n%n",
+         title,subTitle,"║"
                      );
   }
 
 
-  public static void globalContainerMessage(String title,MongoDBContainer container) {
-    System.out.printf(
-         "\n\n╔═════════════════════════════╣ %s ╠═════════════════════════════╣\n" +
-              "║ --> Name: %s\n" +
-              "║ --> Url: %s\n" +
-              "║ --> Running: %s\n" +
-              "╚═════════════════════════════╣ %s ╠═════════════════════════════╣\n\n",
-         title,
-         container.getContainerName(),
-         container.getReplicaSetUrl(),
-         container.isRunning(),
-         title
-                     );
+  public static void globalContainerMessage(MongoDBContainer container,String typeTestMessage) {
+    switch (typeTestMessage.toLowerCase()) {
+      case "container-start":
+        System.out.printf(
+             "%n%n" +
+                  "╔═══════════════════════════════════════════════════════════════════════╗%n" +
+                  "║                           STARTING TEST-CONTAINER...                  ║%n" +
+                  "║ --> Name: %s\n" +
+                  "║ --> Url: %s\n" +
+                  "║ --> Running: %s\n" +
+                  "╚═══════════════════════════════════════════════════════════════════════╝%n%n",
+             container.getContainerName(),
+             container.getReplicaSetUrl(),
+             container.isRunning()
+                         );
+        break;
+
+      case "container-end":
+        System.out.printf(
+             "%n%n" +
+                  "╔═══════════════════════════════════════════════════════════════════════╗%n" +
+                  "║                          ...END TEST-CONTAINER                        ║%n" +
+                  "║ --> Name: %s\n" +
+                  "║ --> Url: %s\n" +
+                  "║ --> Running: %s\n" +
+                  "╚═══════════════════════════════════════════════════════════════════════╝%n%n",
+             container.getContainerName(),
+             container.getReplicaSetUrl(),
+             container.isRunning()
+                         );
+        break;
+    }
   }
 }
 

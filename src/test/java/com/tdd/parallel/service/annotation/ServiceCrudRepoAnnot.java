@@ -7,8 +7,6 @@ import com.tdd.testsconfig.annotation.TestcontainerAnn;
 import com.tdd.testsconfig.annotation.TestsGlobalAnn;
 import com.tdd.testsconfig.annotation.TestsMongoConfigAnn;
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.parallel.Execution;
-import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit.jupiter.EnabledIf;
@@ -24,11 +22,10 @@ import java.util.concurrent.TimeoutException;
 import static com.tdd.databuilder.PersonBuilder.personWithIdAndName;
 import static com.tdd.testsconfig.TestsGlobalMethods.*;
 import static com.tdd.testsconfig.annotation.TestcontainerConfigAnn.getTestcontainer;
+import static com.tdd.testsconfig.annotation.TestcontainerConfigAnn.restartTestcontainer;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-
-@DisplayName("ServiceCrudRepoAnnot")
 @Import(ServiceCrudRepoCfg.class)
 @TestcontainerAnn
 @TestsMongoConfigAnn
@@ -45,84 +42,47 @@ public class ServiceCrudRepoAnnot {
   @BeforeAll
   public static void beforeAll() {
     globalBeforeAll();
-    globalTestMessage("STARTING TEST-CLASS...","Name:",
-                      ServiceCrudRepoAnnot.class.getSimpleName()
-                     );
+    globalTestMessage(ServiceCrudRepoAnnot.class.getSimpleName(),"class-start");
+    globalContainerMessage(getTestcontainer(),"container-start");
   }
 
 
   @AfterAll
   public static void afterAll() {
     globalAfterAll();
-    globalTestMessage("...ENDING TEST-CLASS","Name:",
-                      ServiceCrudRepoAnnot.class.getSimpleName()
-                     );
+    globalTestMessage(ServiceCrudRepoAnnot.class.getSimpleName(),"class-end");
+    globalContainerMessage(getTestcontainer(),"container-end");
+    restartTestcontainer();
   }
 
 
   @BeforeEach
   public void setUp(TestInfo testInfo) {
-    globalTestMessage("STARTING TEST","Method-Name:",
-                      testInfo.getTestMethod()
-                              .toString()
-                     );
-
-    globalContainerMessage("STARTING TEST-CONTAINER...",getTestcontainer());
+    globalTestMessage(testInfo.getTestMethod()
+                              .toString(),"method-start");
   }
 
 
   @AfterEach
   void tearDown(TestInfo testInfo) {
-    //    if (singletonObject == null) {
-    //      if (this.singletonsCurrentlyInDestruction) {
-    //        throw new BeanCreationNotAllowedException(beanName,
-    //"Singleton bean creation not allowed while the singletons of this factory are in
-    // destruction " +"(Do not request a bean from a BeanFactory in a destroy method
-    // implementation!)");
-
-    StepVerifier
-         .create(serviceCrudRepo.deleteAll()
-                                .log())
-         .expectSubscription()
-         .expectNextCount(0L)
-         .verifyComplete();
-
-    globalTestMessage("ENDING TEST","Method-Name:",
-                      testInfo.getTestMethod()
-                              .toString()
-                     );
-
-    globalContainerMessage("...ENDING TEST-CONTAINER...",getTestcontainer());
-
+    globalTestMessage(testInfo.getTestMethod()
+                              .toString(),"method-end");
   }
+
 
   @RepeatedTest(repet)
   @DisplayName("Save")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void save() {
-    generateAndSavePerson();
+    generatePerson_savePerson_testThisSaving();
   }
 
-
-  @Test
-  @DisplayName("FindAll")
-  @EnabledIf(expression = enabledTest, loadContext = true)
-  public void findAll() {
-    generateAndSavePerson();
-
-    StepVerifier.create(
-         serviceCrudRepo.findAll()
-                        .log())
-                .expectSubscription()
-                .expectNextCount(1L)
-                .verifyComplete();
-  }
 
   @Test
   @DisplayName("FindById")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void findById() {
-    Person localPerson = generateAndSavePerson();
+    Person localPerson = generatePerson_savePerson_testThisSaving();
 
     StepVerifier
          .create(serviceCrudRepo.findById(localPerson.getId())
@@ -138,14 +98,7 @@ public class ServiceCrudRepoAnnot {
   @DisplayName("DeleteAll")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void deleteAll() {
-    generateAndSavePerson();
-
-    StepVerifier
-         .create(serviceCrudRepo.findAll()
-                                .log())
-         .expectSubscription()
-         .expectNextCount(1L)
-         .verifyComplete();
+    generatePerson_savePerson_testThisSaving();
 
     StepVerifier.create(serviceCrudRepo.deleteAll())
                 .verifyComplete();
@@ -158,11 +111,12 @@ public class ServiceCrudRepoAnnot {
          .verifyComplete();
   }
 
+
   @Test
   @DisplayName("DeleteById")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void deleteById() {
-    Person localPerson = generateAndSavePerson();
+    Person localPerson = generatePerson_savePerson_testThisSaving();
 
     StepVerifier
          .create(serviceCrudRepo.deleteById(localPerson.getId()))
@@ -176,6 +130,7 @@ public class ServiceCrudRepoAnnot {
          .verifyComplete();
   }
 
+
   @Test
   @DisplayName("Container")
   @EnabledIf(expression = enabledTest, loadContext = true)
@@ -183,6 +138,7 @@ public class ServiceCrudRepoAnnot {
     assertTrue(getTestcontainer()
                     .isRunning());
   }
+
 
   @Test
   @DisplayName("BHWorks")
@@ -205,13 +161,37 @@ public class ServiceCrudRepoAnnot {
   }
 
 
+  @Test
+  @DisplayName("findAll")
+  @EnabledIf(expression = enabledTest, loadContext = true)
+  public void findAll() {
+    Person localPerson = generatePerson_savePerson_testThisSaving();
+
+    StepVerifier.create(serviceCrudRepo.findAll()
+                                       .log())
+                .thenConsumeWhile(person -> {
+                  System.out.println(person.getName());
+                  Assertions.assertEquals((person.getId()),localPerson.getId());
+                  return true;
+                })
+                .verifyComplete();
+  }
+
+
   private Person getPerson() {
     return personWithIdAndName().create();
   }
 
 
-  private Person generateAndSavePerson() {
+  private Person generatePerson_savePerson_testThisSaving() {
     Person localPerson = getPerson();
+
+    StepVerifier
+         .create(serviceCrudRepo.deleteAll()
+                                .log())
+         .expectSubscription()
+         .expectNextCount(0L)
+         .verifyComplete();
 
     StepVerifier
          .create(serviceCrudRepo.save(localPerson))

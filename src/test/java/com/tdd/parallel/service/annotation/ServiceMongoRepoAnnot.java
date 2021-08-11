@@ -22,7 +22,10 @@ import java.util.concurrent.TimeoutException;
 import static com.tdd.databuilder.PersonBuilder.personWithIdAndName;
 import static com.tdd.testsconfig.TestsGlobalMethods.*;
 import static com.tdd.testsconfig.annotation.TestcontainerConfigAnn.getTestcontainer;
+import static com.tdd.testsconfig.annotation.TestcontainerConfigAnn.restartTestcontainer;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 
 @DisplayName("ServiceMongoRepoAnnot")
 @Import(ServiceMongoRepoCfg.class)
@@ -41,63 +44,49 @@ public class ServiceMongoRepoAnnot {
   @BeforeAll
   public static void beforeAll() {
     globalBeforeAll();
-    globalTestMessage("STARTING TEST-CLASS","Name:",
-                      ServiceMongoRepoAnnot.class.getSimpleName()
-                     );
+    globalTestMessage(ServiceMongoRepoAnnot.class.getSimpleName(),"class-start");
+    globalContainerMessage(getTestcontainer(),"container-start");
   }
 
 
   @AfterAll
   public static void afterAll() {
     globalAfterAll();
-    globalTestMessage("...ENDING TEST-CLASS","Name:",
-                      ServiceCrudRepoAnnot.class.getSimpleName()
-                     );
+    globalTestMessage(ServiceMongoRepoAnnot.class.getSimpleName(),"class-end");
+    globalContainerMessage(getTestcontainer(),"container-end");
+    restartTestcontainer();
   }
 
 
   @BeforeEach
   public void setUp(TestInfo testInfo) {
-    globalTestMessage("STARTING TEST","Method-Name:",
-                      testInfo.getTestMethod()
-                              .toString()
-                     );
-
-    globalContainerMessage("STARTING TEST-CONTAINER...",getTestcontainer());
+    globalTestMessage(testInfo.getTestMethod()
+                              .toString(),"method-start");
   }
 
 
   @AfterEach
   void tearDown(TestInfo testInfo) {
-    StepVerifier
-         .create(serviceMongoRepo.deleteAll()
-                                 .log())
-         .expectSubscription()
-         .expectNextCount(0L)
-         .verifyComplete();
-
-    globalTestMessage("ENDING TEST","Method-Name:",
-                      testInfo.getTestMethod()
-                              .toString()
-                     );
-
-    globalContainerMessage("...ENDING TEST-CONTAINER...",getTestcontainer());
+    globalTestMessage(testInfo.getTestMethod()
+                              .toString(),"method-end");
   }
 
 
   @RepeatedTest(repet)
   @DisplayName("Save")
+  //  @Execution(ExecutionMode.CONCURRENT)
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void save() {
-    generateAndSavePerson();
+    generatePerson_savePerson_testThisSaving();
   }
 
 
   @Test
   @DisplayName("FindAll")
+  //  @Execution(ExecutionMode.SAME_THREAD)
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void findAll() {
-    generateAndSavePerson();
+    generatePerson_savePerson_testThisSaving();
 
     StepVerifier.create(
          serviceMongoRepo.findAll()
@@ -110,9 +99,10 @@ public class ServiceMongoRepoAnnot {
 
   @Test
   @DisplayName("FindById")
+  //  @Execution(ExecutionMode.SAME_THREAD)
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void findById() {
-    Person localPerson = generateAndSavePerson();
+    Person localPerson = generatePerson_savePerson_testThisSaving();
 
     StepVerifier
          .create(serviceMongoRepo.findById(localPerson.getId())
@@ -126,16 +116,10 @@ public class ServiceMongoRepoAnnot {
 
   @Test
   @DisplayName("DeleteAll")
+  //  @Execution(ExecutionMode.SAME_THREAD)
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void deleteAll() {
-    generateAndSavePerson();
-
-    StepVerifier
-         .create(serviceMongoRepo.findAll()
-                                 .log())
-         .expectSubscription()
-         .expectNextCount(1L)
-         .verifyComplete();
+    generatePerson_savePerson_testThisSaving();
 
     StepVerifier.create(serviceMongoRepo.deleteAll())
                 .verifyComplete();
@@ -151,9 +135,10 @@ public class ServiceMongoRepoAnnot {
 
   @Test
   @DisplayName("DeleteById")
+  //  @Execution(ExecutionMode.CONCURRENT)
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void deleteById() {
-    Person localPerson = generateAndSavePerson();
+    Person localPerson = generatePerson_savePerson_testThisSaving();
 
     StepVerifier
          .create(serviceMongoRepo.deleteById(localPerson.getId()))
@@ -170,6 +155,7 @@ public class ServiceMongoRepoAnnot {
 
   @Test
   @DisplayName("Container")
+  //  @Execution(ExecutionMode.CONCURRENT)
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void checkContainer() {
     assertTrue(getTestcontainer()
@@ -179,6 +165,7 @@ public class ServiceMongoRepoAnnot {
 
   @Test
   @DisplayName("BHWorks")
+  //  @Execution(ExecutionMode.CONCURRENT)
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void bHWorks() {
     try {
@@ -191,7 +178,7 @@ public class ServiceMongoRepoAnnot {
                 .schedule(task);
 
       task.get(10,TimeUnit.SECONDS);
-      Assertions.fail("should fail");
+      fail("should fail");
     } catch (ExecutionException | InterruptedException | TimeoutException e) {
       assertTrue(e.getCause() instanceof BlockingOperationError,"detected");
     }
@@ -203,7 +190,7 @@ public class ServiceMongoRepoAnnot {
   }
 
 
-  private Person generateAndSavePerson() {
+  private Person generatePerson_savePerson_testThisSaving() {
     Person localPerson = getPerson();
 
     StepVerifier

@@ -42,27 +42,20 @@ public class ServiceReactMongoTemplSimple extends TestscontainerConfigSimple {
   @BeforeAll
   public static void beforeAll() {
     globalBeforeAll();
-    globalTestMessage("STARTING TEST-CLASS","Name:",
-                     ServiceReactMongoTemplSimple.class.getSimpleName()
-                    );
+    globalTestMessage(ServiceCrudRepoSimple.class.getSimpleName(),"class-start");
   }
 
 
   @AfterAll
   public static void afterAll() {
     globalAfterAll();
-    globalTestMessage("ENDING TEST-CLASS","Name:",
-                     ServiceReactMongoTemplSimple.class.getSimpleName()
-                    );
+    globalTestMessage(ServiceCrudRepoSimple.class.getSimpleName(),"class-end");
   }
 
 
   @BeforeEach
   public void setUp(TestInfo testInfo) {
-    globalTestMessage("STARTING TEST","Method-Name:",
-                     testInfo.getTestMethod()
-                             .toString()
-                    );
+    globalTestMessage(testInfo.getTestMethod().toString(),"method-start");
     Person person1 = personWithIdAndName().create();
     personList = Collections.singletonList(person1);
     personMono = Mono.just(person1);
@@ -83,10 +76,7 @@ public class ServiceReactMongoTemplSimple extends TestscontainerConfigSimple {
          .expectNextCount(0L)
          .verifyComplete();
 
-    globalTestMessage("ENDING TEST","Method-Name:",
-                     testInfo.getTestMethod()
-                             .toString()
-                    );
+    globalTestMessage(testInfo.getTestMethod().toString(),"method-end");
   }
 
 

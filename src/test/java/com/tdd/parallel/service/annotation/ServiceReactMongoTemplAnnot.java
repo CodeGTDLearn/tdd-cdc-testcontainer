@@ -22,6 +22,7 @@ import java.util.concurrent.TimeoutException;
 import static com.tdd.databuilder.PersonBuilder.personWithIdAndName;
 import static com.tdd.testsconfig.TestsGlobalMethods.*;
 import static com.tdd.testsconfig.annotation.TestcontainerConfigAnn.getTestcontainer;
+import static com.tdd.testsconfig.annotation.TestcontainerConfigAnn.restartTestcontainer;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DisplayName("ServiceReactiveTemplAnnot")
@@ -41,47 +42,31 @@ public class ServiceReactMongoTemplAnnot {
   @BeforeAll
   public static void beforeAll() {
     globalBeforeAll();
-    globalTestMessage("STARTING TEST-CLASS","Name:",
-                      ServiceReactMongoTemplAnnot.class.getSimpleName()
-                     );
+    globalTestMessage(ServiceReactMongoTemplAnnot.class.getSimpleName(),"class-start");
+    globalContainerMessage(getTestcontainer(),"container-start");
   }
 
 
   @AfterAll
   public static void afterAll() {
     globalAfterAll();
-    globalTestMessage("...ENDING TEST-CLASS","Name:",
-                      ServiceCrudRepoAnnot.class.getSimpleName()
-                     );
+    globalTestMessage(ServiceReactMongoTemplAnnot.class.getSimpleName(),"class-end");
+    globalContainerMessage(getTestcontainer(),"container-end");
+    restartTestcontainer();
   }
 
 
   @BeforeEach
   public void setUp(TestInfo testInfo) {
-    globalTestMessage("STARTING TEST","Method-Name:",
-                      testInfo.getTestMethod()
-                              .toString()
-                     );
-
-    globalContainerMessage("STARTING TEST-CONTAINER...",getTestcontainer());
+    globalTestMessage(testInfo.getTestMethod()
+                              .toString(),"method-start");
   }
 
 
   @AfterEach
   void tearDown(TestInfo testInfo) {
-    StepVerifier
-         .create(serviceReactMongoTempl.deleteAll()
-                                       .log())
-         .expectSubscription()
-         .expectNextCount(0L)
-         .verifyComplete();
-
-    globalTestMessage("ENDING TEST","Method-Name:",
-                      testInfo.getTestMethod()
-                              .toString()
-                     );
-
-    globalContainerMessage("...ENDING TEST-CONTAINER...",getTestcontainer());
+    globalTestMessage(testInfo.getTestMethod()
+                              .toString(),"method-end");
   }
 
 
@@ -89,7 +74,7 @@ public class ServiceReactMongoTemplAnnot {
   @DisplayName("Save")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void save() {
-    generateAndSavePerson();
+    generatePerson_savePerson_testThisSaving();
   }
 
 
@@ -97,7 +82,7 @@ public class ServiceReactMongoTemplAnnot {
   @DisplayName("FindAll")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void findAll() {
-    generateAndSavePerson();
+    generatePerson_savePerson_testThisSaving();
 
     StepVerifier.create(
          serviceReactMongoTempl.findAll()
@@ -112,7 +97,7 @@ public class ServiceReactMongoTemplAnnot {
   @DisplayName("FindById")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void findById() {
-    Person localPerson = generateAndSavePerson();
+    Person localPerson = generatePerson_savePerson_testThisSaving();
 
     StepVerifier
          .create(serviceReactMongoTempl.findById(localPerson.getId())
@@ -128,14 +113,7 @@ public class ServiceReactMongoTemplAnnot {
   @DisplayName("DeleteAll")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void deleteAll() {
-    generateAndSavePerson();
-
-    StepVerifier
-         .create(serviceReactMongoTempl.findAll()
-                                       .log())
-         .expectSubscription()
-         .expectNextCount(1L)
-         .verifyComplete();
+    generatePerson_savePerson_testThisSaving();
 
     StepVerifier.create(serviceReactMongoTempl.deleteAll())
                 .verifyComplete();
@@ -153,7 +131,7 @@ public class ServiceReactMongoTemplAnnot {
   @DisplayName("DeleteById")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void deleteById() {
-    Person localPerson = generateAndSavePerson();
+    Person localPerson = generatePerson_savePerson_testThisSaving();
 
     StepVerifier
          .create(serviceReactMongoTempl.deleteById(localPerson.getId()))
@@ -203,7 +181,7 @@ public class ServiceReactMongoTemplAnnot {
   }
 
 
-  private Person generateAndSavePerson() {
+  private Person generatePerson_savePerson_testThisSaving() {
     Person localPerson = getPerson();
 
     StepVerifier
