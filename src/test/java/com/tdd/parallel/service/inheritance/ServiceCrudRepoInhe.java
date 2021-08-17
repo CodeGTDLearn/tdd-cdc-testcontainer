@@ -1,9 +1,9 @@
-package com.tdd.parallel.service.simple;
+package com.tdd.parallel.service.inheritance;
 
-import com.tdd.parallel.core.config.ServiceTemplateRepoCfg;
 import com.tdd.parallel.entity.Person;
 import com.tdd.parallel.service.IService;
-import com.tdd.testsconfig.simple.TestscontainerConfigSimple;
+import com.tdd.parallel.service.ServiceCrudRepo;
+import com.tdd.testsconfig.inheritance.TestscontainerConfigInhe;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,9 +26,9 @@ import static com.tdd.testsconfig.TestsGlobalMethods.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-@DisplayName("ServiceTemplateRepoSimple")
-@Import(ServiceTemplateRepoCfg.class)
-public class ServiceTemplateRepoSimple extends TestscontainerConfigSimple {
+@DisplayName("ServiceCrudRepoInhe")
+@Import({ServiceCrudRepo.class})
+public class ServiceCrudRepoInhe extends TestscontainerConfigInhe {
 
   final private String enabledTest = "true";
   final private int repet = 1;
@@ -36,20 +36,20 @@ public class ServiceTemplateRepoSimple extends TestscontainerConfigSimple {
   private Mono<Person> personMono;
 
   @Autowired
-  private IService serviceTemplateRepo;
+  private IService serviceCrudRepo;
 
 
   @BeforeAll
   public static void beforeAll() {
     globalBeforeAll();
-    globalTestMessage(ServiceCrudRepoSimple.class.getSimpleName(),"class-start");
+    globalTestMessage(ServiceCrudRepoInhe.class.getSimpleName(),"class-start");
   }
 
 
   @AfterAll
   public static void afterAll() {
     globalAfterAll();
-    globalTestMessage(ServiceCrudRepoSimple.class.getSimpleName(),"class-end");
+    globalTestMessage(ServiceCrudRepoInhe.class.getSimpleName(),"class-end");
   }
 
 
@@ -61,8 +61,8 @@ public class ServiceTemplateRepoSimple extends TestscontainerConfigSimple {
     personList = Collections.singletonList(person1);
     personMono = Mono.just(person1);
     StepVerifier
-         .create(serviceTemplateRepo.save(person1)
-                                    .log())
+         .create(serviceCrudRepo.save(person1)
+                                .log())
          .expectNext(person1)
          .verifyComplete();
   }
@@ -71,24 +71,14 @@ public class ServiceTemplateRepoSimple extends TestscontainerConfigSimple {
   @AfterEach
   void tearDown(TestInfo testInfo) {
     StepVerifier
-         .create(serviceTemplateRepo.deleteAll()
-                                    .log())
+         .create(serviceCrudRepo.deleteAll()
+                                .log())
          .expectSubscription()
          .expectNextCount(0L)
          .verifyComplete();
 
     globalTestMessage(testInfo.getTestMethod()
                               .toString(),"method-end");
-  }
-
-
-  @RepeatedTest(value = repet)
-  @DisplayName("SaveAll")
-  @EnabledIf(expression = enabledTest, loadContext = true)
-  public void saveAll() {
-    StepVerifier.create(personMono.log())
-                .expectNextSequence(personList)
-                .verifyComplete();
   }
 
 
@@ -113,8 +103,8 @@ public class ServiceTemplateRepoSimple extends TestscontainerConfigSimple {
                 .verifyComplete();
 
     StepVerifier
-         .create(serviceTemplateRepo.findAll()
-                                    .log())
+         .create(serviceCrudRepo.findAll()
+                                .log())
          .expectSubscription()
          .expectNextCount(1L)
          .verifyComplete();
@@ -139,12 +129,12 @@ public class ServiceTemplateRepoSimple extends TestscontainerConfigSimple {
   @DisplayName("DeleteAll")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void deleteAll() {
-    StepVerifier.create(serviceTemplateRepo.deleteAll())
+    StepVerifier.create(serviceCrudRepo.deleteAll())
                 .verifyComplete();
 
     StepVerifier
-         .create(serviceTemplateRepo.findAll()
-                                    .log())
+         .create(serviceCrudRepo.findAll()
+                                .log())
          .expectSubscription()
          .expectNextCount(0L)
          .verifyComplete();
@@ -156,13 +146,13 @@ public class ServiceTemplateRepoSimple extends TestscontainerConfigSimple {
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void deleteById() {
     StepVerifier
-         .create(serviceTemplateRepo.deleteById(personList.get(0)
-                                                          .getId()))
+         .create(serviceCrudRepo.deleteById(personList.get(0)
+                                                      .getId()))
          .expectSubscription()
          .verifyComplete();
 
-    Mono<Person> personMono = serviceTemplateRepo.findById(personList.get(0)
-                                                                     .getId());
+    Mono<Person> personMono = serviceCrudRepo.findById(personList.get(0)
+                                                                 .getId());
 
     StepVerifier
          .create(personMono)
@@ -176,8 +166,7 @@ public class ServiceTemplateRepoSimple extends TestscontainerConfigSimple {
   //  @DisplayName("Container")
   //  @EnabledIf(expression = enabledTest, loadContext = true)
   //  public void checkContainer() {
-  //    assertTrue(TestcontainerConfigClass.getContainerAnn()
-  //                                       .isRunning());
+  //    assertTrue(TestcontainerConfigClass.getContainerAnn().isRunning());
   //  }
 
 

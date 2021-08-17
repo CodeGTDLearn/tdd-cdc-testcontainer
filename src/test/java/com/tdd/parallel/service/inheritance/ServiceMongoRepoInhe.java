@@ -1,9 +1,9 @@
-package com.tdd.parallel.service.simple;
+package com.tdd.parallel.service.inheritance;
 
-import com.tdd.parallel.core.config.ServiceReactMongoTemplCfg;
+import com.tdd.parallel.service.ServiceMongoRepo;
+import com.tdd.testsconfig.inheritance.TestscontainerConfigInhe;
 import com.tdd.parallel.entity.Person;
 import com.tdd.parallel.service.IService;
-import com.tdd.testsconfig.simple.TestscontainerConfigSimple;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,9 +26,9 @@ import static com.tdd.testsconfig.TestsGlobalMethods.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-@DisplayName("ServiceReactiveTemplSimple")
-@Import(ServiceReactMongoTemplCfg.class)
-public class ServiceReactMongoTemplSimple extends TestscontainerConfigSimple {
+@DisplayName("ServiceMongoRepoInhe")
+@Import({ServiceMongoRepo.class})
+public class ServiceMongoRepoInhe extends TestscontainerConfigInhe {
 
   final private String enabledTest = "true";
   final private int repet = 1;
@@ -36,32 +36,34 @@ public class ServiceReactMongoTemplSimple extends TestscontainerConfigSimple {
   private Mono<Person> personMono;
 
   @Autowired
-  private IService serviceReactMongoTempl;
+  private IService serviceMongoRepo;
 
 
   @BeforeAll
   public static void beforeAll() {
     globalBeforeAll();
-    globalTestMessage(ServiceCrudRepoSimple.class.getSimpleName(),"class-start");
+    globalTestMessage(ServiceCrudRepoInhe.class.getSimpleName(),"class-start");
   }
 
 
   @AfterAll
   public static void afterAll() {
     globalAfterAll();
-    globalTestMessage(ServiceCrudRepoSimple.class.getSimpleName(),"class-end");
+    globalTestMessage(ServiceCrudRepoInhe.class.getSimpleName(),"class-end");
   }
 
 
   @BeforeEach
   public void setUp(TestInfo testInfo) {
-    globalTestMessage(testInfo.getTestMethod().toString(),"method-start");
+    globalTestMessage(testInfo.getTestMethod()
+                              .toString(),"method-start");
+
     Person person1 = personWithIdAndName().create();
     personList = Collections.singletonList(person1);
     personMono = Mono.just(person1);
     StepVerifier
-         .create(serviceReactMongoTempl.save(person1)
-                                       .log())
+         .create(serviceMongoRepo.save(person1)
+                                 .log())
          .expectNext(person1)
          .verifyComplete();
   }
@@ -70,23 +72,14 @@ public class ServiceReactMongoTemplSimple extends TestscontainerConfigSimple {
   @AfterEach
   void tearDown(TestInfo testInfo) {
     StepVerifier
-         .create(serviceReactMongoTempl.deleteAll()
-                                       .log())
+         .create(serviceMongoRepo.deleteAll()
+                                 .log())
          .expectSubscription()
          .expectNextCount(0L)
          .verifyComplete();
 
-    globalTestMessage(testInfo.getTestMethod().toString(),"method-end");
-  }
-
-
-  @RepeatedTest(value = repet)
-  @DisplayName("SaveAll")
-  @EnabledIf(expression = enabledTest, loadContext = true)
-  public void saveAll() {
-    StepVerifier.create(personMono.log())
-                .expectNextSequence(personList)
-                .verifyComplete();
+    globalTestMessage(testInfo.getTestMethod()
+                              .toString(),"method-end");
   }
 
 
@@ -111,8 +104,8 @@ public class ServiceReactMongoTemplSimple extends TestscontainerConfigSimple {
                 .verifyComplete();
 
     StepVerifier
-         .create(serviceReactMongoTempl.findAll()
-                                       .log())
+         .create(serviceMongoRepo.findAll()
+                                 .log())
          .expectSubscription()
          .expectNextCount(1L)
          .verifyComplete();
@@ -137,12 +130,12 @@ public class ServiceReactMongoTemplSimple extends TestscontainerConfigSimple {
   @DisplayName("DeleteAll")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void deleteAll() {
-    StepVerifier.create(serviceReactMongoTempl.deleteAll())
+    StepVerifier.create(serviceMongoRepo.deleteAll())
                 .verifyComplete();
 
     StepVerifier
-         .create(serviceReactMongoTempl.findAll()
-                                       .log())
+         .create(serviceMongoRepo.findAll()
+                                 .log())
          .expectSubscription()
          .expectNextCount(0L)
          .verifyComplete();
@@ -154,13 +147,13 @@ public class ServiceReactMongoTemplSimple extends TestscontainerConfigSimple {
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void deleteById() {
     StepVerifier
-         .create(serviceReactMongoTempl.deleteById(personList.get(0)
-                                                             .getId()))
+         .create(serviceMongoRepo.deleteById(personList.get(0)
+                                                       .getId()))
          .expectSubscription()
          .verifyComplete();
 
-    Mono<Person> personMono = serviceReactMongoTempl.findById(personList.get(0)
-                                                                        .getId());
+    Mono<Person> personMono = serviceMongoRepo.findById(personList.get(0)
+                                                                  .getId());
 
     StepVerifier
          .create(personMono)
@@ -174,8 +167,7 @@ public class ServiceReactMongoTemplSimple extends TestscontainerConfigSimple {
   //  @DisplayName("Container")
   //  @EnabledIf(expression = enabledTest, loadContext = true)
   //  public void checkContainer() {
-  //    assertTrue(TestcontainerConfigClass.getContainerAnn()
-  //                                       .isRunning());
+  //    assertTrue(TestcontainerConfigClass.getContainerAnn().isRunning());
   //  }
 
 

@@ -8,8 +8,6 @@ public class TestcontainerConfigAnn implements Extension {
 
   private final static String MONGO_VERSION = "mongo:4.4.2";
   private final static String APP_PROPERTIES_MONGO_URI = "spring.data.mongodb.uri";
-  private final static String APP_PROPERTIES_MONGO_tmp = "spring.data.mongodb.socketTimeout";
-
 
   private static MongoDBContainer testContainer;
 
@@ -22,7 +20,6 @@ public class TestcontainerConfigAnn implements Extension {
     testContainer = new MongoDBContainer(DockerImageName.parse(MONGO_VERSION));
     testContainer.start();
     System.setProperty(APP_PROPERTIES_MONGO_URI,testContainer.getReplicaSetUrl());
-    System.setProperty(APP_PROPERTIES_MONGO_tmp,"2000");
   }
 
 
@@ -30,6 +27,8 @@ public class TestcontainerConfigAnn implements Extension {
     testContainer.close();
     startTestcontainer();
   }
+
+
   public static void closeTestcontainer() {
     testContainer.close();
   }

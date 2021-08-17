@@ -1,12 +1,15 @@
-package com.tdd.parallel.service.annotation;
+package com.tdd.parallel.service.nestedTestClasses;
 
-import com.tdd.parallel.core.config.ServiceCrudRepoCfg;
 import com.tdd.parallel.entity.Person;
 import com.tdd.parallel.service.IService;
+import com.tdd.parallel.service.ServiceCrudRepo;
 import com.tdd.testsconfig.annotation.TestcontainerAnn;
-import com.tdd.testsconfig.annotation.TestsGlobalAnn;
+import com.tdd.testsconfig.annotation.TestsGlobalConfigAnn;
 import com.tdd.testsconfig.annotation.TestsMongoConfigAnn;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
@@ -19,12 +22,12 @@ import static com.tdd.databuilder.PersonBuilder.personWithIdAndName;
 import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
 
-@TestMethodOrder(MethodOrderer.DisplayName.class)
-@Import(ServiceCrudRepoCfg.class)
+@DisplayName("NestedTestClassLab")
+@Import({ServiceCrudRepo.class})
 @TestcontainerAnn
 @TestsMongoConfigAnn
-@TestsGlobalAnn
-public class Lab {
+@TestsGlobalConfigAnn
+public class NestedTestClassLab {
 
   final private String enabledTest = "true";
 
@@ -41,11 +44,9 @@ public class Lab {
 
   @TestsMongoConfigAnn
   @Nested
-  @DisplayName("NestedClass1")
+  @DisplayName("SameThread")
   @Execution(SAME_THREAD)
-  class NestedClass1 {
-
-
+  class SameThread {
     @Test
     @DisplayName("findAll1")
     @EnabledIf(expression = enabledTest, loadContext = true)
@@ -84,32 +85,15 @@ public class Lab {
 
   @TestsMongoConfigAnn
   @Nested
-  @DisplayName("NestedClass2")
+  @DisplayName("Concurrent")
   @Execution(CONCURRENT)
-  class NestedClass2 {
+  class Concurrent {
+
 
     @Test
     @DisplayName("findAll3")
     @EnabledIf(expression = enabledTest, loadContext = true)
     public void findAll3() {
-
-      Person localPerson = generatePerson_savePerson_testThisSaving();
-
-      StepVerifier.create(serviceCrudRepo.findAll()
-                                         .log())
-                  .thenConsumeWhile(person -> {
-                    System.out.println(person.getName());
-                    Assertions.assertEquals((person.getId()),localPerson.getId());
-                    return true;
-                  })
-                  .verifyComplete();
-    }
-
-
-    @Test
-    @DisplayName("findAll4")
-    @EnabledIf(expression = enabledTest, loadContext = true)
-    public void findAll4() {
 
       Person localPerson = generatePerson_savePerson_testThisSaving();
 

@@ -1,4 +1,4 @@
-package com.tdd.testsconfig.simple;
+package com.tdd.testsconfig.inheritance;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
@@ -18,7 +18,7 @@ import static org.springframework.test.annotation.DirtiesContext.ClassMode.BEFOR
 @Slf4j
 @ActiveProfiles("test")
 //@TestPropertySource("classpath:application-test.properties")
-public class TestscontainerConfigSimple extends TestcontainerSimple {
+public class TestscontainerConfigInhe extends TestcontainerInhe {
 }
 
 

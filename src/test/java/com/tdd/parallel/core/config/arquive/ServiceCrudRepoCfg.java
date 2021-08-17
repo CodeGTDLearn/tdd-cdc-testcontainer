@@ -1,4 +1,4 @@
-package com.tdd.parallel.core.config;
+package com.tdd.parallel.core.config.arquive;
 
 import com.tdd.parallel.repository.ICrudRepo;
 import com.tdd.parallel.service.ServiceCrudRepo;

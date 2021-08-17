@@ -1,9 +1,11 @@
-package com.tdd.parallel.controller;
+package com.tdd.parallel.resource;
 
 import com.tdd.parallel.entity.Person;
 import com.tdd.parallel.service.IService;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -12,47 +14,46 @@ import static com.tdd.parallel.core.Routes.ID;
 import static com.tdd.parallel.core.Routes.REQ_MAP;
 import static org.springframework.http.HttpStatus.*;
 
-//@AllArgsConstructor
+@AllArgsConstructor
 @Slf4j
 @RestController
 @RequestMapping(REQ_MAP)
-public class PersonController {
+public class ResourceCrudRepo {
 
-  @Autowired
-  private IService service;
+  private final IService serviceCrudRepo;
 
 
   @PostMapping
   @ResponseStatus(CREATED)
   public Mono<Person> save(@RequestBody Person customer) {
-    return service.save(customer);
+    return serviceCrudRepo.save(customer);
   }
 
 
   @GetMapping
   @ResponseStatus(OK)
   public Flux<Person> findAll() {
-    return service.findAll();
+    return serviceCrudRepo.findAll();
   }
 
 
   @GetMapping(ID)
   @ResponseStatus(OK)
   public Mono<Person> findById(@PathVariable String id) {
-    return service.findById(id);
+    return serviceCrudRepo.findById(id);
   }
 
 
   @DeleteMapping
   @ResponseStatus(NO_CONTENT)
   public Mono<Void> deleteAll() {
-    return service.deleteAll();
+    return serviceCrudRepo.deleteAll();
   }
 
 
   @DeleteMapping(ID)
   @ResponseStatus(NO_CONTENT)
   public Mono<Void> deleteById(@PathVariable String id) {
-    return service.deleteById(id);
+    return serviceCrudRepo.deleteById(id);
   }
 }

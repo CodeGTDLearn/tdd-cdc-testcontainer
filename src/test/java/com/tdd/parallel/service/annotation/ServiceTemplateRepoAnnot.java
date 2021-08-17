@@ -1,10 +1,10 @@
 package com.tdd.parallel.service.annotation;
 
-import com.tdd.parallel.core.config.ServiceTemplateRepoCfg;
+import com.tdd.parallel.core.config.arquive.ServiceTemplateRepoCfg;
 import com.tdd.parallel.entity.Person;
 import com.tdd.parallel.service.IService;
 import com.tdd.testsconfig.annotation.TestcontainerAnn;
-import com.tdd.testsconfig.annotation.TestsGlobalAnn;
+import com.tdd.testsconfig.annotation.TestsGlobalConfigAnn;
 import com.tdd.testsconfig.annotation.TestsMongoConfigAnn;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,10 +28,10 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 
 @DisplayName("ServiceTemplateRepoAnnot")
-@Import(ServiceTemplateRepoCfg.class)
+@Import({ServiceTemplateRepoCfg.class})
 @TestcontainerAnn
 @TestsMongoConfigAnn
-@TestsGlobalAnn
+@TestsGlobalConfigAnn
 public class ServiceTemplateRepoAnnot {
 
   final private String enabledTest = "true";
@@ -42,17 +42,17 @@ public class ServiceTemplateRepoAnnot {
 
 
   @BeforeAll
-  public static void beforeAll() {
+  public static void beforeAll(TestInfo testInfo) {
     globalBeforeAll();
-    globalTestMessage(ServiceTemplateRepoAnnot.class.getSimpleName(),"class-start");
+    globalTestMessage(testInfo.getDisplayName(),"class-start");
     globalContainerMessage(getTestcontainer(),"container-start");
   }
 
 
   @AfterAll
-  public static void afterAll() {
+  public static void afterAll(TestInfo testInfo) {
     globalAfterAll();
-    globalTestMessage(ServiceTemplateRepoAnnot.class.getSimpleName(),"class-end");
+    globalTestMessage(testInfo.getDisplayName(),"class-end");
     globalContainerMessage(getTestcontainer(),"container-end");
     restartTestcontainer();
   }
@@ -178,13 +178,8 @@ public class ServiceTemplateRepoAnnot {
   }
 
 
-  private Person getPerson() {
-    return personWithIdAndName().create();
-  }
-
-
   private Person generatePerson_savePerson_testThisSaving() {
-    Person localPerson = getPerson();
+    Person localPerson = personWithIdAndName().create();
 
     StepVerifier
          .create(serviceTemplateRepo.save(localPerson))

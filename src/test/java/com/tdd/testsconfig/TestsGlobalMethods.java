@@ -45,7 +45,9 @@ public class TestsGlobalMethods {
   }
 
 
-  public static void globalTestMessage(String subTitle,String typeTestMessage) {
+  public static void globalTestMessage(String subTitle,String testType) {
+
+
     if (subTitle.contains("repetition"))
       subTitle = "Error: Provide TestInfo testInfo.getTestMethod().toString()";
 
@@ -57,7 +59,8 @@ public class TestsGlobalMethods {
     }
 
     String title = "";
-    switch (typeTestMessage.toLowerCase()) {
+
+    switch (testType.toLowerCase()) {
       case "class-start":
         title = "STARTING TEST-CLASS....";
         break;

@@ -1,10 +1,10 @@
 package com.tdd.parallel.service.annotation;
 
-import com.tdd.parallel.core.config.ServiceReactMongoTemplCfg;
 import com.tdd.parallel.entity.Person;
 import com.tdd.parallel.service.IService;
+import com.tdd.parallel.service.ServiceReactMongoTempl;
 import com.tdd.testsconfig.annotation.TestcontainerAnn;
-import com.tdd.testsconfig.annotation.TestsGlobalAnn;
+import com.tdd.testsconfig.annotation.TestsGlobalConfigAnn;
 import com.tdd.testsconfig.annotation.TestsMongoConfigAnn;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,10 +26,10 @@ import static com.tdd.testsconfig.annotation.TestcontainerConfigAnn.restartTestc
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DisplayName("ServiceReactiveTemplAnnot")
-@Import(ServiceReactMongoTemplCfg.class)
+@Import({ServiceReactMongoTempl.class})
 @TestcontainerAnn
 @TestsMongoConfigAnn
-@TestsGlobalAnn
+@TestsGlobalConfigAnn
 public class ServiceReactMongoTemplAnnot {
 
   final private String enabledTest = "true";
@@ -40,17 +40,17 @@ public class ServiceReactMongoTemplAnnot {
 
 
   @BeforeAll
-  public static void beforeAll() {
+  public static void beforeAll(TestInfo testInfo) {
     globalBeforeAll();
-    globalTestMessage(ServiceReactMongoTemplAnnot.class.getSimpleName(),"class-start");
+    globalTestMessage(testInfo.getDisplayName(),"class-start");
     globalContainerMessage(getTestcontainer(),"container-start");
   }
 
 
   @AfterAll
-  public static void afterAll() {
+  public static void afterAll(TestInfo testInfo) {
     globalAfterAll();
-    globalTestMessage(ServiceReactMongoTemplAnnot.class.getSimpleName(),"class-end");
+    globalTestMessage(testInfo.getDisplayName(),"class-end");
     globalContainerMessage(getTestcontainer(),"container-end");
     restartTestcontainer();
   }
@@ -176,13 +176,8 @@ public class ServiceReactMongoTemplAnnot {
   }
 
 
-  private Person getPerson() {
-    return personWithIdAndName().create();
-  }
-
-
   private Person generatePerson_savePerson_testThisSaving() {
-    Person localPerson = getPerson();
+    Person localPerson = personWithIdAndName().create();
 
     StepVerifier
          .create(serviceReactMongoTempl.save(localPerson))

@@ -1,10 +1,10 @@
 package com.tdd.parallel.service.annotation;
 
-import com.tdd.parallel.core.config.ServiceCrudRepoCfg;
 import com.tdd.parallel.entity.Person;
 import com.tdd.parallel.service.IService;
+import com.tdd.parallel.service.ServiceCrudRepo;
 import com.tdd.testsconfig.annotation.TestcontainerAnn;
-import com.tdd.testsconfig.annotation.TestsGlobalAnn;
+import com.tdd.testsconfig.annotation.TestsGlobalConfigAnn;
 import com.tdd.testsconfig.annotation.TestsMongoConfigAnn;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,10 +26,11 @@ import static com.tdd.testsconfig.annotation.TestcontainerConfigAnn.restartTestc
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-@Import(ServiceCrudRepoCfg.class)
+@DisplayName("ServiceCrudRepoAnnot")
+@Import({ServiceCrudRepo.class})
 @TestcontainerAnn
 @TestsMongoConfigAnn
-@TestsGlobalAnn
+@TestsGlobalConfigAnn
 public class ServiceCrudRepoAnnot {
 
   final private String enabledTest = "true";
@@ -40,17 +41,17 @@ public class ServiceCrudRepoAnnot {
 
 
   @BeforeAll
-  public static void beforeAll() {
+  public static void beforeAll(TestInfo testInfo) {
     globalBeforeAll();
-    globalTestMessage(ServiceCrudRepoAnnot.class.getSimpleName(),"class-start");
+    globalTestMessage(testInfo.getDisplayName(),"class-start");
     globalContainerMessage(getTestcontainer(),"container-start");
   }
 
 
   @AfterAll
-  public static void afterAll() {
+  public static void afterAll(TestInfo testInfo) {
     globalAfterAll();
-    globalTestMessage(ServiceCrudRepoAnnot.class.getSimpleName(),"class-end");
+    globalTestMessage(testInfo.getDisplayName(),"class-end");
     globalContainerMessage(getTestcontainer(),"container-end");
     restartTestcontainer();
   }
@@ -90,24 +91,6 @@ public class ServiceCrudRepoAnnot {
          .expectSubscription()
          .expectNextMatches(item -> localPerson.getId()
                                                .equals(item.getId()))
-         .verifyComplete();
-  }
-
-
-  @Test
-  @DisplayName("DeleteAll")
-  @EnabledIf(expression = enabledTest, loadContext = true)
-  public void deleteAll() {
-    generatePerson_savePerson_testThisSaving();
-
-    StepVerifier.create(serviceCrudRepo.deleteAll())
-                .verifyComplete();
-
-    StepVerifier
-         .create(serviceCrudRepo.findAll()
-                                .log())
-         .expectSubscription()
-         .expectNextCount(0L)
          .verifyComplete();
   }
 
@@ -162,6 +145,24 @@ public class ServiceCrudRepoAnnot {
 
 
   @Test
+  @DisplayName("DeleteAll")
+  @EnabledIf(expression = enabledTest, loadContext = true)
+  public void deleteAll() {
+    generatePerson_savePerson_testThisSaving();
+
+    StepVerifier.create(serviceCrudRepo.deleteAll())
+                .verifyComplete();
+
+    StepVerifier
+         .create(serviceCrudRepo.findAll()
+                                .log())
+         .expectSubscription()
+         .expectNextCount(0L)
+         .verifyComplete();
+  }
+
+
+  @Test
   @DisplayName("findAll")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void findAll() {
@@ -178,13 +179,8 @@ public class ServiceCrudRepoAnnot {
   }
 
 
-  private Person getPerson() {
-    return personWithIdAndName().create();
-  }
-
-
   private Person generatePerson_savePerson_testThisSaving() {
-    Person localPerson = getPerson();
+    Person localPerson = personWithIdAndName().create();
 
     StepVerifier
          .create(serviceCrudRepo.deleteAll()

@@ -1,4 +1,4 @@
-package com.tdd.testsconfig.simple;
+package com.tdd.testsconfig.inheritance;
 
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -12,7 +12,7 @@ import org.testcontainers.utility.DockerImageName;
 //https://www.testcontainers.org/test_framework_integration/junit_5/#restarted-containers
 // */
 @Testcontainers
-public class TestcontainerSimple {
+public class TestcontainerInhe {
 
   final static String MONGO_VERSION = "mongo:4.4.2";
   final static String MONGO_URI_PROPERTY = "spring.data.mongodb.uri";

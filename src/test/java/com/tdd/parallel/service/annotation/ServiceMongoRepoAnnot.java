@@ -1,10 +1,10 @@
 package com.tdd.parallel.service.annotation;
 
-import com.tdd.parallel.core.config.ServiceMongoRepoCfg;
 import com.tdd.parallel.entity.Person;
 import com.tdd.parallel.service.IService;
+import com.tdd.parallel.service.ServiceMongoRepo;
 import com.tdd.testsconfig.annotation.TestcontainerAnn;
-import com.tdd.testsconfig.annotation.TestsGlobalAnn;
+import com.tdd.testsconfig.annotation.TestsGlobalConfigAnn;
 import com.tdd.testsconfig.annotation.TestsMongoConfigAnn;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,10 +28,10 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 
 @DisplayName("ServiceMongoRepoAnnot")
-@Import(ServiceMongoRepoCfg.class)
+@Import({ServiceMongoRepo.class})
 @TestcontainerAnn
 @TestsMongoConfigAnn
-@TestsGlobalAnn
+@TestsGlobalConfigAnn
 public class ServiceMongoRepoAnnot {
 
   final private String enabledTest = "true";
@@ -42,17 +42,17 @@ public class ServiceMongoRepoAnnot {
 
 
   @BeforeAll
-  public static void beforeAll() {
+  public static void beforeAll(TestInfo testInfo) {
     globalBeforeAll();
-    globalTestMessage(ServiceMongoRepoAnnot.class.getSimpleName(),"class-start");
+    globalTestMessage(testInfo.getDisplayName(),"class-start");
     globalContainerMessage(getTestcontainer(),"container-start");
   }
 
 
   @AfterAll
-  public static void afterAll() {
+  public static void afterAll(TestInfo testInfo) {
     globalAfterAll();
-    globalTestMessage(ServiceMongoRepoAnnot.class.getSimpleName(),"class-end");
+    globalTestMessage(testInfo.getDisplayName(),"class-end");
     globalContainerMessage(getTestcontainer(),"container-end");
     restartTestcontainer();
   }
@@ -74,7 +74,6 @@ public class ServiceMongoRepoAnnot {
 
   @RepeatedTest(repet)
   @DisplayName("Save")
-  //  @Execution(ExecutionMode.CONCURRENT)
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void save() {
     generatePerson_savePerson_testThisSaving();
@@ -83,23 +82,23 @@ public class ServiceMongoRepoAnnot {
 
   @Test
   @DisplayName("FindAll")
-  //  @Execution(ExecutionMode.SAME_THREAD)
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void findAll() {
-    generatePerson_savePerson_testThisSaving();
+    Person localPerson = generatePerson_savePerson_testThisSaving();
 
-    StepVerifier.create(
-         serviceMongoRepo.findAll()
-                         .log())
-                .expectSubscription()
-                .expectNextCount(1L)
+    StepVerifier.create(serviceMongoRepo.findAll()
+                                        .log())
+                .thenConsumeWhile(person -> {
+                  System.out.println(person.getName());
+                  Assertions.assertEquals((person.getId()),localPerson.getId());
+                  return true;
+                })
                 .verifyComplete();
   }
 
 
   @Test
   @DisplayName("FindById")
-  //  @Execution(ExecutionMode.SAME_THREAD)
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void findById() {
     Person localPerson = generatePerson_savePerson_testThisSaving();
@@ -116,7 +115,6 @@ public class ServiceMongoRepoAnnot {
 
   @Test
   @DisplayName("DeleteAll")
-  //  @Execution(ExecutionMode.SAME_THREAD)
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void deleteAll() {
     generatePerson_savePerson_testThisSaving();
@@ -135,7 +133,6 @@ public class ServiceMongoRepoAnnot {
 
   @Test
   @DisplayName("DeleteById")
-  //  @Execution(ExecutionMode.CONCURRENT)
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void deleteById() {
     Person localPerson = generatePerson_savePerson_testThisSaving();
@@ -155,7 +152,6 @@ public class ServiceMongoRepoAnnot {
 
   @Test
   @DisplayName("Container")
-  //  @Execution(ExecutionMode.CONCURRENT)
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void checkContainer() {
     assertTrue(getTestcontainer()
@@ -165,7 +161,6 @@ public class ServiceMongoRepoAnnot {
 
   @Test
   @DisplayName("BHWorks")
-  //  @Execution(ExecutionMode.CONCURRENT)
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void bHWorks() {
     try {
@@ -185,13 +180,8 @@ public class ServiceMongoRepoAnnot {
   }
 
 
-  private Person getPerson() {
-    return personWithIdAndName().create();
-  }
-
-
   private Person generatePerson_savePerson_testThisSaving() {
-    Person localPerson = getPerson();
+    Person localPerson = personWithIdAndName().create();
 
     StepVerifier
          .create(serviceMongoRepo.save(localPerson))

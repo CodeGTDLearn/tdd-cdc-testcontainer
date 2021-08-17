@@ -87,6 +87,12 @@
             <version>1.0.3.RELEASE</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.modelmapper</groupId>
+            <artifactId>modelmapper</artifactId>
+            <version>2.4.3</version>
+        </dependency>
+
         <!--╔═══════════════════════════════╗
             ║ TESTS-CONTAINERS DEPENDENCIES ║
             ╠═══════════════════════════════╩════════════════════════════════════════╗
