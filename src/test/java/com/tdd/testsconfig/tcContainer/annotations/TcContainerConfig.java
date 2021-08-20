@@ -1,12 +1,12 @@
-package com.tdd.testsconfig.annotation;
+package com.tdd.testsconfig.tcContainer.annotations;
 
 import org.junit.jupiter.api.extension.Extension;
 import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.utility.DockerImageName;
 
-public class TestcontainerConfigAnn implements Extension {
+public class TcContainerConfig implements Extension {
 
-  private final static String MONGO_VERSION = "mongo:4.4.2";
+  private final static String MONGO_IMAGE = "mongo:4.4.2";
   private final static String APP_PROPERTIES_MONGO_URI = "spring.data.mongodb.uri";
 
   private static MongoDBContainer testContainer;
@@ -17,7 +17,7 @@ public class TestcontainerConfigAnn implements Extension {
   }
 
   public static void startTestcontainer() {
-    testContainer = new MongoDBContainer(DockerImageName.parse(MONGO_VERSION));
+    testContainer = new MongoDBContainer(DockerImageName.parse(MONGO_IMAGE));
     testContainer.start();
     System.setProperty(APP_PROPERTIES_MONGO_URI,testContainer.getReplicaSetUrl());
   }
@@ -34,7 +34,7 @@ public class TestcontainerConfigAnn implements Extension {
   }
 
 
-  public static MongoDBContainer getTestcontainer() {
+  public static MongoDBContainer getTcContainerCustom() {
     return testContainer;
   }
 }

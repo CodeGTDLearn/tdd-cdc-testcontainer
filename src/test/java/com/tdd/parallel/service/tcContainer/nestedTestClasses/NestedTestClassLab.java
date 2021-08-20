@@ -1,11 +1,11 @@
-package com.tdd.parallel.service.nestedTestClasses;
+package com.tdd.parallel.service.tcContainer.nestedTestClasses;
 
 import com.tdd.parallel.entity.Person;
 import com.tdd.parallel.service.IService;
 import com.tdd.parallel.service.ServiceCrudRepo;
-import com.tdd.testsconfig.annotation.TestcontainerAnn;
-import com.tdd.testsconfig.annotation.TestsGlobalConfigAnn;
-import com.tdd.testsconfig.annotation.TestsMongoConfigAnn;
+import com.tdd.testsconfig.tcContainer.annotations.TcContainer;
+import com.tdd.testsconfig.globalAnnotations.GlobalConfig;
+import com.tdd.testsconfig.globalAnnotations.MongoDbConfig;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -24,9 +24,9 @@ import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
 
 @DisplayName("NestedTestClassLab")
 @Import({ServiceCrudRepo.class})
-@TestcontainerAnn
-@TestsMongoConfigAnn
-@TestsGlobalConfigAnn
+@TcContainer
+@MongoDbConfig
+@GlobalConfig
 public class NestedTestClassLab {
 
   final private String enabledTest = "true";
@@ -42,7 +42,7 @@ public class NestedTestClassLab {
   }
 
 
-  @TestsMongoConfigAnn
+  @MongoDbConfig
   @Nested
   @DisplayName("SameThread")
   @Execution(SAME_THREAD)
@@ -57,7 +57,7 @@ public class NestedTestClassLab {
       StepVerifier.create(serviceCrudRepo.findAll()
                                          .log())
                   .thenConsumeWhile(person -> {
-                    System.out.println(person.getName());
+//                    System.out.println(person.getName());
                     Assertions.assertEquals((person.getId()),localPerson.getId());
                     return true;
                   })
@@ -75,7 +75,7 @@ public class NestedTestClassLab {
       StepVerifier.create(serviceCrudRepo.findAll()
                                          .log())
                   .thenConsumeWhile(person -> {
-                    System.out.println(person.getName());
+//                    System.out.println(person.getName());
                     Assertions.assertEquals((person.getId()),localPerson.getId());
                     return true;
                   })
@@ -83,7 +83,7 @@ public class NestedTestClassLab {
     }
   }
 
-  @TestsMongoConfigAnn
+  @MongoDbConfig
   @Nested
   @DisplayName("Concurrent")
   @Execution(CONCURRENT)
@@ -100,7 +100,7 @@ public class NestedTestClassLab {
       StepVerifier.create(serviceCrudRepo.findAll()
                                          .log())
                   .thenConsumeWhile(person -> {
-                    System.out.println(person.getName());
+//                    System.out.println(person.getName());
                     Assertions.assertEquals((person.getId()),localPerson.getId());
                     return true;
                   })

@@ -1,6 +1,7 @@
-package com.tdd.testsconfig.annotation;
+package com.tdd.testsconfig.tcCompose;
 
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -9,6 +10,7 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
-@ExtendWith(TestcontainerConfigAnn.class)
-public @interface TestcontainerAnn {
+@Testcontainers
+@ExtendWith(TcComposeConfig.class)
+public @interface TcCompose {
 }

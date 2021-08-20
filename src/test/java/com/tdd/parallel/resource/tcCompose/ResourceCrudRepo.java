@@ -1,22 +1,21 @@
-package com.tdd.parallel.resource;
+package com.tdd.parallel.resource.tcCompose;
 
 import com.tdd.parallel.entity.Person;
 import com.tdd.parallel.service.IService;
 import com.tdd.parallel.service.ServiceCrudRepo;
-import com.tdd.testsconfig.annotation.TestcontainerAnn;
-import com.tdd.testsconfig.annotation.TestsGlobalConfigAnn;
-import com.tdd.testsconfig.annotation.TestsResourceConfigAnn;
+import com.tdd.testsconfig.globalAnnotations.GlobalConfig;
+import com.tdd.testsconfig.globalAnnotations.ResourceConfig;
+import com.tdd.testsconfig.tcCompose.TcCompose;
+import com.tdd.testsconfig.tcCompose.TcComposeConfig;
 import io.restassured.http.ContentType;
 import io.restassured.module.webtestclient.RestAssuredWebTestClient;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
-import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.EnabledIf;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.testcontainers.containers.DockerComposeContainer;
+import org.testcontainers.junit.jupiter.Container;
 import reactor.blockhound.BlockingOperationError;
 import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
@@ -28,26 +27,32 @@ import java.util.concurrent.TimeoutException;
 
 import static com.tdd.databuilder.PersonBuilder.personWithIdAndName;
 import static com.tdd.parallel.core.Routes.REQ_MAP;
-import static com.tdd.testsconfig.TestsGlobalMethods.*;
-import static com.tdd.testsconfig.annotation.TestcontainerConfigAnn.getTestcontainer;
-import static com.tdd.testsconfig.annotation.TestcontainerConfigAnn.restartTestcontainer;
+import static com.tdd.testsconfig.tcCompose.TcComposeConfig.checkTestcontainerComposeService;
+import static com.tdd.testsconfig.tcContainer.annotations.TcContainerConfig.getTcContainerCustom;
+import static com.tdd.testsconfig.utils.TestsGlobalMethods.*;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.HttpStatus.OK;
-import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD;
 
-@DisplayName("ResourceCrudRepoAnnot")
+@DisplayName("ResourceCrudRepo")
 @Import({ServiceCrudRepo.class})
-@TestsResourceConfigAnn
-@TestcontainerAnn
-public class ResourceCrudRepoAnnot {
+@ResourceConfig
+@GlobalConfig
+@TcCompose
+public class ResourceCrudRepo {
 
-  final private String enabledTest = "false";
+  final private String enabledTest = "true";
   final private int repet = 1;
   final ContentType CONT_ANY = ContentType.ANY;
   final ContentType CONT_JSON = ContentType.JSON;
+
+  @Container
+  private static final DockerComposeContainer<?> compose = new TcComposeConfig().tcCompose;
+
+  //  @Lazy
+  @Autowired
+  private IService serviceCrudRepo;
 
   // WEB-TEST-CLIENT(non-blocking client)'
   // SHOULD BE USED WITH 'TEST-CONTAINERS'
@@ -55,16 +60,13 @@ public class ResourceCrudRepoAnnot {
   @Autowired
   WebTestClient mockedWebClient;
 
-  @Autowired
-  private IService serviceCrudRepo;
-
 
   @BeforeAll
   public static void beforeAll(TestInfo testInfo) {
     globalBeforeAll();
     globalTestMessage(testInfo.getTestClass()
                               .toString(),"class-start");
-    globalContainerMessage(getTestcontainer(),"container-start");
+    globalContainerMessage(getTcContainerCustom(),"container-start");
   }
 
 
@@ -73,8 +75,8 @@ public class ResourceCrudRepoAnnot {
     globalAfterAll();
     globalTestMessage(testInfo.getTestClass()
                               .toString(),"class-end");
-    globalContainerMessage(getTestcontainer(),"container-end");
-    restartTestcontainer();
+    globalContainerMessage(getTcContainerCustom(),"container-end");
+    compose.close();
   }
 
 
@@ -101,17 +103,8 @@ public class ResourceCrudRepoAnnot {
 
 
   @Test
-  @DisplayName("Container")
-  @EnabledIf(expression = "true", loadContext = true)
-  public void checkContainer() {
-    assertTrue(getTestcontainer()
-                    .isRunning());
-  }
-
-
-  @Test
   @DisplayName("FindAll")
-  @EnabledIf(expression = "true", loadContext = true)
+  @EnabledIf(expression = enabledTest, loadContext = true)
   void findAll() {
     Person localPerson = generatePerson_savePerson_testThisSaving();
 
@@ -138,37 +131,49 @@ public class ResourceCrudRepoAnnot {
   }
 
 
-  //  @Test
-  //  @DisplayName("Save")
-  //  @EnabledIf(expression = enabledTest, loadContext = true)
-  //  public void save() {
-  //  }
-  //
-  //
-  //  @Test
-  //  @DisplayName("FindById")
-  //  @EnabledIf(expression = enabledTest, loadContext = true)
-  //  public void findById() {
-  //  }
-  //
-  //
-  //  @Test
-  //  @DisplayName("DeleteAll")
-  //  @EnabledIf(expression = enabledTest, loadContext = true)
-  //  public void deleteAll() {
-  //  }
-  //
-  //
-  //  @Test
-  //  @DisplayName("DeleteById")
-  //  @EnabledIf(expression = enabledTest, loadContext = true)
-  //  public void deleteById() {
-  //  }
+  @Test
+  @DisplayName("Check Service")
+  @EnabledIf(expression = enabledTest, loadContext = true)
+  void checkServices() {
+    checkTestcontainerComposeService(
+         compose,
+         TcComposeConfig.SERVICE,
+         TcComposeConfig.SERVICE_PORT);
+  }
+
+
+
+  @Test
+  @DisplayName("Save")
+  @EnabledIf(expression = enabledTest, loadContext = true)
+  public void save() {
+  }
+
+
+  @Test
+  @DisplayName("FindById")
+  @EnabledIf(expression = enabledTest, loadContext = true)
+  public void findById() {
+  }
+
+
+  @Test
+  @DisplayName("DeleteAll")
+  @EnabledIf(expression = enabledTest, loadContext = true)
+  public void deleteAll() {
+  }
+
+
+  @Test
+  @DisplayName("DeleteById")
+  @EnabledIf(expression = enabledTest, loadContext = true)
+  public void deleteById() {
+  }
 
 
   @Test
   @DisplayName("BHWorks")
-  @EnabledIf(expression = "true", loadContext = true)
+  @EnabledIf(expression = enabledTest, loadContext = true)
   public void bHWorks() {
     try {
       FutureTask<?> task = new FutureTask<>(() -> {

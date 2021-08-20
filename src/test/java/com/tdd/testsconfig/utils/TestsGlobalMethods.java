@@ -1,5 +1,6 @@
-package com.tdd.testsconfig;
+package com.tdd.testsconfig.utils;
 
+import com.tdd.testsconfig.utils.BlockhoundManage;
 import io.restassured.builder.ResponseSpecBuilder;
 import io.restassured.http.ContentType;
 import io.restassured.module.webtestclient.RestAssuredWebTestClient;
@@ -62,11 +63,11 @@ public class TestsGlobalMethods {
 
     switch (testType.toLowerCase()) {
       case "class-start":
-        title = "STARTING TEST-CLASS....";
+        title = " STARTING TEST-CLASS...";
         break;
 
       case "class-end":
-        title = "...END TEST-CLASS";
+        title = "...FINISHED TEST-CLASS ";
         break;
 
       case "method-start":
@@ -74,14 +75,14 @@ public class TestsGlobalMethods {
         break;
 
       case "method-end":
-        title = "...END TEST-METHOD";
+        title = "...FINISHED TEST-METHOD";
         break;
     }
 
     System.out.printf(
          "%n%n" +
               "╔════════════════════════════════════════════════════════════════════╗%n" +
-              "║                         %s                                         ║%n" +
+              "║                       %s                      ║%n" +
               "║ --> Name: %s %38s%n" +
               "╚════════════════════════════════════════════════════════════════════╝%n%n%n",
          title,subTitle,"║"
@@ -90,37 +91,36 @@ public class TestsGlobalMethods {
 
 
   public static void globalContainerMessage(MongoDBContainer container,String typeTestMessage) {
+    String title = "";
+
     switch (typeTestMessage.toLowerCase()) {
       case "container-start":
-        System.out.printf(
-             "%n%n" +
-                  "╔═══════════════════════════════════════════════════════════════════════╗%n" +
-                  "║                           STARTING TEST-CONTAINER...                  ║%n" +
-                  "║ --> Name: %s\n" +
-                  "║ --> Url: %s\n" +
-                  "║ --> Running: %s\n" +
-                  "╚═══════════════════════════════════════════════════════════════════════╝%n%n",
-             container.getContainerName(),
-             container.getReplicaSetUrl(),
-             container.isRunning()
-                         );
+        title = "STARTING TEST-CONTAINER...";
         break;
 
       case "container-end":
-        System.out.printf(
-             "%n%n" +
-                  "╔═══════════════════════════════════════════════════════════════════════╗%n" +
-                  "║                          ...END TEST-CONTAINER                        ║%n" +
-                  "║ --> Name: %s\n" +
-                  "║ --> Url: %s\n" +
-                  "║ --> Running: %s\n" +
-                  "╚═══════════════════════════════════════════════════════════════════════╝%n%n",
-             container.getContainerName(),
-             container.getReplicaSetUrl(),
-             container.isRunning()
-                         );
+        title = "...FINISHED TEST-CONTAINER";
+        break;
+
+
+      case "container-state":
+        title = "  ...TEST'S TC-CONTAINER  ";
         break;
     }
+
+    System.out.printf(
+         "%n%n" +
+              "╔═══════════════════════════════════════════════════════════════════════╗%n" +
+              "║                        %s                     ║%n" +
+              "║ --> Name: %s\n" +
+              "║ --> Url: %s\n" +
+              "║ --> Running: %s\n" +
+              "╚═══════════════════════════════════════════════════════════════════════╝%n%n",
+         title,
+         container.getContainerName(),
+         container.getReplicaSetUrl(),
+         container.isRunning()
+                     );
   }
 }
 

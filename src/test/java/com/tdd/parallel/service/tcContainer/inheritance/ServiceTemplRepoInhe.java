@@ -1,9 +1,9 @@
-package com.tdd.parallel.service.inheritance;
+package com.tdd.parallel.service.tcContainer.inheritance;
 
+import com.tdd.parallel.core.config.arquive.ServiceTemplateRepoCfg;
 import com.tdd.parallel.entity.Person;
 import com.tdd.parallel.service.IService;
-import com.tdd.parallel.service.ServiceReactMongoTempl;
-import com.tdd.testsconfig.inheritance.TestscontainerConfigInhe;
+import com.tdd.testsconfig.tcContainer.inheritance.TestscontainerConfigInhe;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,13 +22,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import static com.tdd.databuilder.PersonBuilder.personWithIdAndName;
-import static com.tdd.testsconfig.TestsGlobalMethods.*;
+import static com.tdd.testsconfig.utils.TestsGlobalMethods.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-@DisplayName("ServiceReactMongoTemplInhe")
-@Import({ServiceReactMongoTempl.class})
-public class ServiceReactMongoTemplInhe extends TestscontainerConfigInhe {
+@DisplayName("ServiceTemplateRepoInhe")
+@Import({ServiceTemplateRepoCfg.class})
+public class ServiceTemplRepoInhe extends TestscontainerConfigInhe {
 
   final private String enabledTest = "true";
   final private int repet = 1;
@@ -36,7 +36,7 @@ public class ServiceReactMongoTemplInhe extends TestscontainerConfigInhe {
   private Mono<Person> personMono;
 
   @Autowired
-  private IService serviceReactMongoTempl;
+  private IService serviceTemplateRepo;
 
 
   @BeforeAll
@@ -61,8 +61,8 @@ public class ServiceReactMongoTemplInhe extends TestscontainerConfigInhe {
     personList = Collections.singletonList(person1);
     personMono = Mono.just(person1);
     StepVerifier
-         .create(serviceReactMongoTempl.save(person1)
-                                       .log())
+         .create(serviceTemplateRepo.save(person1)
+                                    .log())
          .expectNext(person1)
          .verifyComplete();
   }
@@ -71,8 +71,8 @@ public class ServiceReactMongoTemplInhe extends TestscontainerConfigInhe {
   @AfterEach
   void tearDown(TestInfo testInfo) {
     StepVerifier
-         .create(serviceReactMongoTempl.deleteAll()
-                                       .log())
+         .create(serviceTemplateRepo.deleteAll()
+                                    .log())
          .expectSubscription()
          .expectNextCount(0L)
          .verifyComplete();
@@ -103,8 +103,8 @@ public class ServiceReactMongoTemplInhe extends TestscontainerConfigInhe {
                 .verifyComplete();
 
     StepVerifier
-         .create(serviceReactMongoTempl.findAll()
-                                       .log())
+         .create(serviceTemplateRepo.findAll()
+                                    .log())
          .expectSubscription()
          .expectNextCount(1L)
          .verifyComplete();
@@ -129,12 +129,12 @@ public class ServiceReactMongoTemplInhe extends TestscontainerConfigInhe {
   @DisplayName("DeleteAll")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void deleteAll() {
-    StepVerifier.create(serviceReactMongoTempl.deleteAll())
+    StepVerifier.create(serviceTemplateRepo.deleteAll())
                 .verifyComplete();
 
     StepVerifier
-         .create(serviceReactMongoTempl.findAll()
-                                       .log())
+         .create(serviceTemplateRepo.findAll()
+                                    .log())
          .expectSubscription()
          .expectNextCount(0L)
          .verifyComplete();
@@ -146,13 +146,13 @@ public class ServiceReactMongoTemplInhe extends TestscontainerConfigInhe {
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void deleteById() {
     StepVerifier
-         .create(serviceReactMongoTempl.deleteById(personList.get(0)
-                                                             .getId()))
+         .create(serviceTemplateRepo.deleteById(personList.get(0)
+                                                          .getId()))
          .expectSubscription()
          .verifyComplete();
 
-    Mono<Person> personMono = serviceReactMongoTempl.findById(personList.get(0)
-                                                                        .getId());
+    Mono<Person> personMono = serviceTemplateRepo.findById(personList.get(0)
+                                                                     .getId());
 
     StepVerifier
          .create(personMono)

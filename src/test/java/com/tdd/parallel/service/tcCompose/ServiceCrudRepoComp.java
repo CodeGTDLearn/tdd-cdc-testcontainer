@@ -1,11 +1,11 @@
-package com.tdd.parallel.service.annotation;
+package com.tdd.parallel.service.tcCompose;
 
-import com.tdd.parallel.core.config.arquive.ServiceTemplateRepoCfg;
 import com.tdd.parallel.entity.Person;
 import com.tdd.parallel.service.IService;
-import com.tdd.testsconfig.annotation.TestcontainerAnn;
-import com.tdd.testsconfig.annotation.TestsGlobalConfigAnn;
-import com.tdd.testsconfig.annotation.TestsMongoConfigAnn;
+import com.tdd.parallel.service.ServiceCrudRepo;
+import com.tdd.testsconfig.globalAnnotations.GlobalConfig;
+import com.tdd.testsconfig.globalAnnotations.MongoDbConfig;
+import com.tdd.testsconfig.tcContainer.annotations.TcContainer;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
@@ -20,32 +20,30 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import static com.tdd.databuilder.PersonBuilder.personWithIdAndName;
-import static com.tdd.testsconfig.TestsGlobalMethods.*;
-import static com.tdd.testsconfig.annotation.TestcontainerConfigAnn.getTestcontainer;
-import static com.tdd.testsconfig.annotation.TestcontainerConfigAnn.restartTestcontainer;
+import static com.tdd.testsconfig.tcContainer.annotations.TcContainerConfig.getTcContainerCustom;
+import static com.tdd.testsconfig.utils.TestsGlobalMethods.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-
-@DisplayName("ServiceTemplateRepoAnnot")
-@Import({ServiceTemplateRepoCfg.class})
-@TestcontainerAnn
-@TestsMongoConfigAnn
-@TestsGlobalConfigAnn
-public class ServiceTemplateRepoAnnot {
+@DisplayName("ServiceCrudRepoAnnot")
+@Import({ServiceCrudRepo.class})
+@TcContainer
+@MongoDbConfig
+@GlobalConfig
+public class ServiceCrudRepoComp {
 
   final private String enabledTest = "true";
   final private int repet = 1;
 
   @Autowired
-  private IService serviceTemplateRepo;
+  private IService serviceCrudRepo;
 
 
   @BeforeAll
   public static void beforeAll(TestInfo testInfo) {
     globalBeforeAll();
     globalTestMessage(testInfo.getDisplayName(),"class-start");
-    globalContainerMessage(getTestcontainer(),"container-start");
+    globalContainerMessage(getTcContainerCustom(),"container-start");
   }
 
 
@@ -53,8 +51,7 @@ public class ServiceTemplateRepoAnnot {
   public static void afterAll(TestInfo testInfo) {
     globalAfterAll();
     globalTestMessage(testInfo.getDisplayName(),"class-end");
-    globalContainerMessage(getTestcontainer(),"container-end");
-    restartTestcontainer();
+    globalContainerMessage(getTcContainerCustom(),"container-end");
   }
 
 
@@ -62,6 +59,9 @@ public class ServiceTemplateRepoAnnot {
   public void setUp(TestInfo testInfo) {
     globalTestMessage(testInfo.getTestMethod()
                               .toString(),"method-start");
+
+
+    globalContainerMessage(getTcContainerCustom(),"container-state");
   }
 
 
@@ -81,50 +81,17 @@ public class ServiceTemplateRepoAnnot {
 
 
   @Test
-  @DisplayName("FindAll")
-  @EnabledIf(expression = enabledTest, loadContext = true)
-  public void findAll() {
-    generatePerson_savePerson_testThisSaving();
-
-    StepVerifier.create(
-         serviceTemplateRepo.findAll()
-                            .log())
-                .expectSubscription()
-                .expectNextCount(1L)
-                .verifyComplete();
-  }
-
-
-  @Test
   @DisplayName("FindById")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void findById() {
     Person localPerson = generatePerson_savePerson_testThisSaving();
 
     StepVerifier
-         .create(serviceTemplateRepo.findById(localPerson.getId())
-                                    .log())
+         .create(serviceCrudRepo.findById(localPerson.getId())
+                                .log())
          .expectSubscription()
          .expectNextMatches(item -> localPerson.getId()
                                                .equals(item.getId()))
-         .verifyComplete();
-  }
-
-
-  @Test
-  @DisplayName("DeleteAll")
-  @EnabledIf(expression = enabledTest, loadContext = true)
-  public void deleteAll() {
-    generatePerson_savePerson_testThisSaving();
-
-    StepVerifier.create(serviceTemplateRepo.deleteAll())
-                .verifyComplete();
-
-    StepVerifier
-         .create(serviceTemplateRepo.findAll()
-                                    .log())
-         .expectSubscription()
-         .expectNextCount(0L)
          .verifyComplete();
   }
 
@@ -136,12 +103,12 @@ public class ServiceTemplateRepoAnnot {
     Person localPerson = generatePerson_savePerson_testThisSaving();
 
     StepVerifier
-         .create(serviceTemplateRepo.deleteById(localPerson.getId()))
+         .create(serviceCrudRepo.deleteById(localPerson.getId()))
          .expectSubscription()
          .verifyComplete();
 
     StepVerifier
-         .create(serviceTemplateRepo.findById(localPerson.getId()))
+         .create(serviceCrudRepo.findById(localPerson.getId()))
          .expectSubscription()
          .expectNextCount(0L)
          .verifyComplete();
@@ -152,7 +119,7 @@ public class ServiceTemplateRepoAnnot {
   @DisplayName("Container")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void checkContainer() {
-    assertTrue(getTestcontainer()
+    assertTrue(getTcContainerCustom()
                     .isRunning());
   }
 
@@ -178,11 +145,53 @@ public class ServiceTemplateRepoAnnot {
   }
 
 
+  @Test
+  @DisplayName("DeleteAll")
+  @EnabledIf(expression = enabledTest, loadContext = true)
+  public void deleteAll() {
+    generatePerson_savePerson_testThisSaving();
+
+    StepVerifier.create(serviceCrudRepo.deleteAll())
+                .verifyComplete();
+
+    StepVerifier
+         .create(serviceCrudRepo.findAll()
+                                .log())
+         .expectSubscription()
+         .expectNextCount(0L)
+         .verifyComplete();
+  }
+
+
+  @Test
+  @DisplayName("findAll")
+  @EnabledIf(expression = enabledTest, loadContext = true)
+  public void findAll() {
+    Person localPerson = generatePerson_savePerson_testThisSaving();
+
+    StepVerifier.create(serviceCrudRepo.findAll()
+                                       .log())
+                .thenConsumeWhile(person -> {
+//                  System.out.println(person.getName());
+                  Assertions.assertEquals((person.getId()),localPerson.getId());
+                  return true;
+                })
+                .verifyComplete();
+  }
+
+
   private Person generatePerson_savePerson_testThisSaving() {
     Person localPerson = personWithIdAndName().create();
 
     StepVerifier
-         .create(serviceTemplateRepo.save(localPerson))
+         .create(serviceCrudRepo.deleteAll()
+                                .log())
+         .expectSubscription()
+         .expectNextCount(0L)
+         .verifyComplete();
+
+    StepVerifier
+         .create(serviceCrudRepo.save(localPerson))
          .expectSubscription()
          .expectNext(localPerson)
          .verifyComplete();

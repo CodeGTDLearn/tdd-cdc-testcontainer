@@ -1,4 +1,4 @@
-package com.tdd.testsconfig.annotation;
+package com.tdd.testsconfig.globalAnnotations;
 
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
@@ -16,5 +16,6 @@ import static org.springframework.test.annotation.DirtiesContext.ClassMode.BEFOR
 @DirtiesContext(classMode = BEFORE_EACH_TEST_METHOD)
 @TestPropertySource("classpath:application-test.properties")
 @ActiveProfiles("test")
-public @interface TestsGlobalConfigAnn {
+//@Slf4j
+public @interface GlobalConfig {
 }

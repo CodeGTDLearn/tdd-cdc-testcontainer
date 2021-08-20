@@ -1,60 +1,55 @@
-package com.tdd.parallel.service.annotation;
+package com.tdd.parallel.service.tcContainer.inheritance;
 
+import com.tdd.parallel.service.ServiceMongoRepo;
+import com.tdd.testsconfig.tcContainer.inheritance.TestscontainerConfigInhe;
 import com.tdd.parallel.entity.Person;
 import com.tdd.parallel.service.IService;
-import com.tdd.parallel.service.ServiceMongoRepo;
-import com.tdd.testsconfig.annotation.TestcontainerAnn;
-import com.tdd.testsconfig.annotation.TestsGlobalConfigAnn;
-import com.tdd.testsconfig.annotation.TestsMongoConfigAnn;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit.jupiter.EnabledIf;
 import reactor.blockhound.BlockingOperationError;
+import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import static com.tdd.databuilder.PersonBuilder.personWithIdAndName;
-import static com.tdd.testsconfig.TestsGlobalMethods.*;
-import static com.tdd.testsconfig.annotation.TestcontainerConfigAnn.getTestcontainer;
-import static com.tdd.testsconfig.annotation.TestcontainerConfigAnn.restartTestcontainer;
+import static com.tdd.testsconfig.utils.TestsGlobalMethods.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
-
-@DisplayName("ServiceMongoRepoAnnot")
+@Slf4j
+@DisplayName("ServiceMongoRepoInhe")
 @Import({ServiceMongoRepo.class})
-@TestcontainerAnn
-@TestsMongoConfigAnn
-@TestsGlobalConfigAnn
-public class ServiceMongoRepoAnnot {
+public class ServiceMongoRepoInhe extends TestscontainerConfigInhe {
 
   final private String enabledTest = "true";
   final private int repet = 1;
+  private List<Person> personList;
+  private Mono<Person> personMono;
 
   @Autowired
   private IService serviceMongoRepo;
 
 
   @BeforeAll
-  public static void beforeAll(TestInfo testInfo) {
+  public static void beforeAll() {
     globalBeforeAll();
-    globalTestMessage(testInfo.getDisplayName(),"class-start");
-    globalContainerMessage(getTestcontainer(),"container-start");
+    globalTestMessage(ServiceCrudRepoInhe.class.getSimpleName(),"class-start");
   }
 
 
   @AfterAll
-  public static void afterAll(TestInfo testInfo) {
+  public static void afterAll() {
     globalAfterAll();
-    globalTestMessage(testInfo.getDisplayName(),"class-end");
-    globalContainerMessage(getTestcontainer(),"container-end");
-    restartTestcontainer();
+    globalTestMessage(ServiceCrudRepoInhe.class.getSimpleName(),"class-end");
   }
 
 
@@ -62,11 +57,27 @@ public class ServiceMongoRepoAnnot {
   public void setUp(TestInfo testInfo) {
     globalTestMessage(testInfo.getTestMethod()
                               .toString(),"method-start");
+
+    Person person1 = personWithIdAndName().create();
+    personList = Collections.singletonList(person1);
+    personMono = Mono.just(person1);
+    StepVerifier
+         .create(serviceMongoRepo.save(person1)
+                                 .log())
+         .expectNext(person1)
+         .verifyComplete();
   }
 
 
   @AfterEach
   void tearDown(TestInfo testInfo) {
+    StepVerifier
+         .create(serviceMongoRepo.deleteAll()
+                                 .log())
+         .expectSubscription()
+         .expectNextCount(0L)
+         .verifyComplete();
+
     globalTestMessage(testInfo.getTestMethod()
                               .toString(),"method-end");
   }
@@ -76,7 +87,11 @@ public class ServiceMongoRepoAnnot {
   @DisplayName("Save")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void save() {
-    generatePerson_savePerson_testThisSaving();
+    StepVerifier
+         .create(personMono)
+         .expectSubscription()
+         .expectNextCount(1L)
+         .verifyComplete();
   }
 
 
@@ -84,16 +99,16 @@ public class ServiceMongoRepoAnnot {
   @DisplayName("FindAll")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void findAll() {
-    Person localPerson = generatePerson_savePerson_testThisSaving();
-
-    StepVerifier.create(serviceMongoRepo.findAll()
-                                        .log())
-                .thenConsumeWhile(person -> {
-                  System.out.println(person.getName());
-                  Assertions.assertEquals((person.getId()),localPerson.getId());
-                  return true;
-                })
+    StepVerifier.create(personMono)
+                .expectNextSequence(personList)
                 .verifyComplete();
+
+    StepVerifier
+         .create(serviceMongoRepo.findAll()
+                                 .log())
+         .expectSubscription()
+         .expectNextCount(1L)
+         .verifyComplete();
   }
 
 
@@ -101,14 +116,12 @@ public class ServiceMongoRepoAnnot {
   @DisplayName("FindById")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void findById() {
-    Person localPerson = generatePerson_savePerson_testThisSaving();
-
     StepVerifier
-         .create(serviceMongoRepo.findById(localPerson.getId())
-                                 .log())
+         .create(personMono.log())
          .expectSubscription()
-         .expectNextMatches(item -> localPerson.getId()
-                                               .equals(item.getId()))
+         .expectNextMatches(person -> personList.get(0)
+                                                .getName()
+                                                .equals(person.getName()))
          .verifyComplete();
   }
 
@@ -117,8 +130,6 @@ public class ServiceMongoRepoAnnot {
   @DisplayName("DeleteAll")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void deleteAll() {
-    generatePerson_savePerson_testThisSaving();
-
     StepVerifier.create(serviceMongoRepo.deleteAll())
                 .verifyComplete();
 
@@ -135,28 +146,29 @@ public class ServiceMongoRepoAnnot {
   @DisplayName("DeleteById")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void deleteById() {
-    Person localPerson = generatePerson_savePerson_testThisSaving();
-
     StepVerifier
-         .create(serviceMongoRepo.deleteById(localPerson.getId()))
+         .create(serviceMongoRepo.deleteById(personList.get(0)
+                                                       .getId()))
          .expectSubscription()
          .verifyComplete();
 
+    Mono<Person> personMono = serviceMongoRepo.findById(personList.get(0)
+                                                                  .getId());
+
     StepVerifier
-         .create(serviceMongoRepo.findById(localPerson.getId()))
+         .create(personMono)
          .expectSubscription()
          .expectNextCount(0L)
          .verifyComplete();
   }
 
 
-  @Test
-  @DisplayName("Container")
-  @EnabledIf(expression = enabledTest, loadContext = true)
-  public void checkContainer() {
-    assertTrue(getTestcontainer()
-                    .isRunning());
-  }
+  //  @Test
+  //  @DisplayName("Container")
+  //  @EnabledIf(expression = enabledTest, loadContext = true)
+  //  public void checkContainer() {
+  //    assertTrue(TestcontainerConfigClass.getContainerAnn().isRunning());
+  //  }
 
 
   @Test
@@ -173,23 +185,10 @@ public class ServiceMongoRepoAnnot {
                 .schedule(task);
 
       task.get(10,TimeUnit.SECONDS);
-      fail("should fail");
+      Assertions.fail("should fail");
     } catch (ExecutionException | InterruptedException | TimeoutException e) {
       assertTrue(e.getCause() instanceof BlockingOperationError,"detected");
     }
-  }
-
-
-  private Person generatePerson_savePerson_testThisSaving() {
-    Person localPerson = personWithIdAndName().create();
-
-    StepVerifier
-         .create(serviceMongoRepo.save(localPerson))
-         .expectSubscription()
-         .expectNext(localPerson)
-         .verifyComplete();
-
-    return localPerson;
   }
 }
 
