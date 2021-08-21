@@ -11,6 +11,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
 @Testcontainers
-@ExtendWith(TcComposeConfig.class)
+//@ExtendWith(TcComposeConfig.class)
 public @interface TcCompose {
 }

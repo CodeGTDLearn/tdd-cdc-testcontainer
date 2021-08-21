@@ -1,8 +1,8 @@
-package com.tdd.parallel.resource.tcCompose;
+package com.tdd.parallel.resource;
 
 import com.tdd.parallel.entity.Person;
 import com.tdd.parallel.service.IService;
-import com.tdd.parallel.service.ServiceCrudRepo;
+import com.tdd.parallel.service.ServiceMongoRepo;
 import com.tdd.testsconfig.globalAnnotations.GlobalConfig;
 import com.tdd.testsconfig.globalAnnotations.ResourceConfig;
 import com.tdd.testsconfig.tcCompose.TcCompose;
@@ -17,6 +17,8 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.junit.jupiter.Container;
 import reactor.blockhound.BlockingOperationError;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
 
@@ -26,39 +28,37 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import static com.tdd.databuilder.PersonBuilder.personWithIdAndName;
-import static com.tdd.parallel.core.Routes.REQ_MAP;
-import static com.tdd.testsconfig.tcCompose.TcComposeConfig.checkTestcontainerComposeService;
+import static com.tdd.parallel.core.Routes.*;
 import static com.tdd.testsconfig.tcContainer.annotations.TcContainerConfig.getTcContainerCustom;
 import static com.tdd.testsconfig.utils.TestsGlobalMethods.*;
 import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.*;
 
-@DisplayName("ResourceCrudRepo")
-@Import({ServiceCrudRepo.class})
+@DisplayName("ResourceMongoRepoComp")
+@Import({ServiceMongoRepo.class})
 @ResourceConfig
 @GlobalConfig
 @TcCompose
-public class ResourceCrudRepo {
-
-  final private String enabledTest = "true";
-  final private int repet = 1;
-  final ContentType CONT_ANY = ContentType.ANY;
-  final ContentType CONT_JSON = ContentType.JSON;
+public class ResourceMongoRepoComp {
 
   @Container
   private static final DockerComposeContainer<?> compose = new TcComposeConfig().tcCompose;
 
-  //  @Lazy
-  @Autowired
-  private IService serviceCrudRepo;
+  final ContentType CONT_ANY = ContentType.ANY;
+  final ContentType CONT_JSON = ContentType.JSON;
+  final private String enabledTest = "true";
+  final private int repet = 1;
 
   // WEB-TEST-CLIENT(non-blocking client)'
   // SHOULD BE USED WITH 'TEST-CONTAINERS'
   // BECAUSE THERE IS NO 'REAL-SERVER' CREATED VIA DOCKER-COMPOSE
   @Autowired
   WebTestClient mockedWebClient;
+
+  @Autowired
+  private IService serviceMongoRepo;
 
 
   @BeforeAll
@@ -76,7 +76,6 @@ public class ResourceCrudRepo {
     globalTestMessage(testInfo.getTestClass()
                               .toString(),"class-end");
     globalContainerMessage(getTcContainerCustom(),"container-end");
-    compose.close();
   }
 
 
@@ -103,10 +102,44 @@ public class ResourceCrudRepo {
 
 
   @Test
+  @DisplayName("Save")
+  @EnabledIf(expression = enabledTest, loadContext = true)
+  public void save() {
+    Person localPerson = generatePerson_savePerson_checkSaving();
+
+    RestAssuredWebTestClient
+         .given()
+         .webTestClient(mockedWebClient)
+         .header("Accept",CONT_ANY)
+         .header("Content-type",CONT_JSON)
+
+         .body(localPerson)
+
+         .when()
+         .post(ROUTE_MGO_REPO)
+
+         .then()
+         .statusCode(CREATED.value())
+         .contentType(CONT_JSON)
+         .log()
+         .headers()
+         .and()
+         .log()
+
+         .body()
+         .body("id",containsString(localPerson.getId()))
+         .body("name",containsString(localPerson.getName()))
+    ;
+
+    StepVerifierFindPerson(serviceMongoRepo.findById(localPerson.getId()),1L);
+  }
+
+
+  @Test
   @DisplayName("FindAll")
   @EnabledIf(expression = enabledTest, loadContext = true)
   void findAll() {
-    Person localPerson = generatePerson_savePerson_testThisSaving();
+    Person localPerson = generatePerson_savePerson_checkSaving();
 
     RestAssuredWebTestClient
          .given()
@@ -115,7 +148,7 @@ public class ResourceCrudRepo {
          .header("Content-type",CONT_JSON)
 
          .when()
-         .get(REQ_MAP)
+         .get(ROUTE_MGO_REPO)
 
          .then()
          .statusCode(OK.value())
@@ -132,28 +165,32 @@ public class ResourceCrudRepo {
 
 
   @Test
-  @DisplayName("Check Service")
-  @EnabledIf(expression = enabledTest, loadContext = true)
-  void checkServices() {
-    checkTestcontainerComposeService(
-         compose,
-         TcComposeConfig.SERVICE,
-         TcComposeConfig.SERVICE_PORT);
-  }
-
-
-
-  @Test
-  @DisplayName("Save")
-  @EnabledIf(expression = enabledTest, loadContext = true)
-  public void save() {
-  }
-
-
-  @Test
   @DisplayName("FindById")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void findById() {
+    Person localPerson = generatePerson_savePerson_checkSaving();
+
+    RestAssuredWebTestClient
+         .given()
+         .webTestClient(mockedWebClient)
+         .header("Accept",CONT_ANY)
+         .header("Content-type",CONT_JSON)
+
+         .when()
+         .get(ROUTE_MGO_REPO + ID_MGO_REPO,localPerson.getId())
+
+         .then()
+         .statusCode(OK.value())
+         .log()
+         .headers()
+         .and()
+         .log()
+
+         .body()
+         .body("id",equalTo(localPerson.getId()))
+    ;
+
+    StepVerifierFindPerson(serviceMongoRepo.findById(localPerson.getId()),1L);
   }
 
 
@@ -161,6 +198,26 @@ public class ResourceCrudRepo {
   @DisplayName("DeleteAll")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void deleteAll() {
+    Person localPerson = generatePerson_savePerson_checkSaving();
+
+    RestAssuredWebTestClient
+         .given()
+         .webTestClient(mockedWebClient)
+         .header("Accept",CONT_ANY)
+         .header("Content-type",CONT_JSON)
+
+         .body(localPerson)
+
+         .when()
+         .delete(ROUTE_MGO_REPO)
+
+         .then()
+         .log()
+         .headers()
+         .statusCode(NO_CONTENT.value())
+    ;
+
+    StepVerifierCountPersonInDb(serviceMongoRepo.findAll(),0L);
   }
 
 
@@ -168,6 +225,26 @@ public class ResourceCrudRepo {
   @DisplayName("DeleteById")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void deleteById() {
+    Person localPerson = generatePerson_savePerson_checkSaving();
+
+    RestAssuredWebTestClient
+         .given()
+         .webTestClient(mockedWebClient)
+         .header("Accept",CONT_ANY)
+         .header("Content-type",CONT_JSON)
+
+         .body(localPerson)
+
+         .when()
+         .delete(ROUTE_MGO_REPO + ID_MGO_REPO,localPerson.getId())
+
+         .then()
+         .log()
+         .headers()
+         .statusCode(NO_CONTENT.value())
+    ;
+
+    StepVerifierFindPerson(serviceMongoRepo.findById(localPerson.getId()),0L);
   }
 
 
@@ -192,22 +269,52 @@ public class ResourceCrudRepo {
   }
 
 
-  private Person generatePerson_savePerson_testThisSaving() {
+  @Test
+  @DisplayName("Check Service")
+  @EnabledIf(expression = enabledTest, loadContext = true)
+  void checkServices() {
+    globalComposeServiceContainerMessage(
+         compose,
+         TcComposeConfig.SERVICE,
+         TcComposeConfig.SERVICE_PORT
+                                        );
+  }
+
+
+  private Person generatePerson_savePerson_checkSaving() {
     Person localPerson = personWithIdAndName().create();
 
     StepVerifier
-         .create(serviceCrudRepo.deleteAll()
-                                .log())
+         .create(serviceMongoRepo.deleteAll()
+                                 .log())
          .expectSubscription()
          .expectNextCount(0L)
          .verifyComplete();
 
     StepVerifier
-         .create(serviceCrudRepo.save(localPerson))
+         .create(serviceMongoRepo.save(localPerson))
          .expectSubscription()
          .expectNext(localPerson)
          .verifyComplete();
 
     return localPerson;
+  }
+
+
+  private void StepVerifierCountPersonInDb(Flux<Person> flux,Long totalElements) {
+    StepVerifier
+         .create(flux)
+         .expectSubscription()
+         .expectNextCount(totalElements)
+         .verifyComplete();
+  }
+
+
+  private void StepVerifierFindPerson(Mono<Person> flux,Long totalElements) {
+    StepVerifier
+         .create(flux)
+         .expectSubscription()
+         .expectNextCount(totalElements)
+         .verifyComplete();
   }
 }

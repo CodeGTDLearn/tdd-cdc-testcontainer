@@ -3,7 +3,6 @@ package com.tdd.testsconfig.tcCompose;
 import org.junit.jupiter.api.extension.Extension;
 import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
-import org.testcontainers.junit.jupiter.Container;
 
 import java.io.File;
 
@@ -15,9 +14,10 @@ https://medium.com/pictet-technologies-blog/speeding-up-your-integration-tests-w
  */
 public class TcComposeConfig implements Extension {
 
-  final private String COMPOSE_PATH = "src/test/resources/compose-testcontainers.yml";
   final static public int SERVICE_PORT = 27017;
-  final static public String SERVICE = "db";
+  final static public String SERVICE = "db-service";
+  final private String COMPOSE_PATH = "src/test/resources/compose-tcContainers.yml";
+
 
   //@Container // Nao anotar aqui. Annotacao deve ficar na classe receptora
   public DockerComposeContainer<?> tcCompose =
@@ -26,23 +26,6 @@ public class TcComposeConfig implements Extension {
             .withExposedService(SERVICE,SERVICE_PORT,Wait.forListeningPort());
 
 
-  public static void checkTestcontainerComposeService(
-       DockerComposeContainer<?> compose,
-       String service,
-       Integer port) {
-    String status =
-         "\nHost: " + compose.getServiceHost(service,port) +
-              "\nPort: " + compose.getServicePort(service,port) +
-              "\nCreated: " + compose.getContainerByServiceName(service + "_1")
-                                     .get()
-                                     .isCreated() +
-              "\nRunning: " + compose.getContainerByServiceName(service + "_1")
-                                     .get()
-                                     .isRunning();
-
-    System.out.println(
-         "------------\n" + "SERVICE: " + service + status + "\n------------");
-  }
 }
 
 

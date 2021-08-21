@@ -8,50 +8,49 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import static com.tdd.parallel.core.Routes.ID_CRUD_REPO;
-import static com.tdd.parallel.core.Routes.ROUTE_CRUD_REPO;
+import static com.tdd.parallel.core.Routes.*;
 import static org.springframework.http.HttpStatus.*;
 
 @AllArgsConstructor
 @Slf4j
 @RestController
-@RequestMapping(ROUTE_CRUD_REPO)
-public class ResourceCrudRepo {
+@RequestMapping(ROUTE_RCT_MGO_TPL_REPO)
+public class ResourceReactMongoTempl {
 
-  private final IService serviceCrudRepo;
+  private final IService serviceReactMongoTempl;
 
 
   @PostMapping
   @ResponseStatus(CREATED)
   public Mono<Person> save(@RequestBody Person customer) {
-    return serviceCrudRepo.save(customer);
+    return serviceReactMongoTempl.save(customer);
   }
 
 
   @GetMapping
   @ResponseStatus(OK)
   public Flux<Person> findAll() {
-    return serviceCrudRepo.findAll();
+    return serviceReactMongoTempl.findAll();
   }
 
 
-  @GetMapping(ID_CRUD_REPO)
+  @GetMapping(ID_RCT_MGO_TPL_REPO)
   @ResponseStatus(OK)
   public Mono<Person> findById(@PathVariable String id) {
-    return serviceCrudRepo.findById(id);
+    return serviceReactMongoTempl.findById(id);
   }
 
 
   @DeleteMapping
   @ResponseStatus(NO_CONTENT)
   public Mono<Void> deleteAll() {
-    return serviceCrudRepo.deleteAll();
+    return serviceReactMongoTempl.deleteAll();
   }
 
 
-  @DeleteMapping(ID_CRUD_REPO)
+  @DeleteMapping(ID_RCT_MGO_TPL_REPO)
   @ResponseStatus(NO_CONTENT)
   public Mono<Void> deleteById(@PathVariable String id) {
-    return serviceCrudRepo.deleteById(id);
+    return serviceReactMongoTempl.deleteById(id);
   }
 }

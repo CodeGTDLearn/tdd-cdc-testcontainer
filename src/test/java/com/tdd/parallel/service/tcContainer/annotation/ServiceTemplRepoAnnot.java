@@ -1,6 +1,6 @@
 package com.tdd.parallel.service.tcContainer.annotation;
 
-import com.tdd.parallel.core.config.arquive.ServiceTemplateRepoCfg;
+import com.tdd.parallel.core.config.ServiceTemplateRepoCfg;
 import com.tdd.parallel.entity.Person;
 import com.tdd.parallel.service.IService;
 import com.tdd.testsconfig.tcContainer.annotations.TcContainer;
