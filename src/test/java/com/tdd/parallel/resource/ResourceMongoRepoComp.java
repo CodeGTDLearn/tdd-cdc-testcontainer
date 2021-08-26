@@ -5,7 +5,6 @@ import com.tdd.parallel.service.IService;
 import com.tdd.parallel.service.ServiceMongoRepo;
 import com.tdd.testsconfig.globalAnnotations.GlobalConfig;
 import com.tdd.testsconfig.globalAnnotations.ResourceConfig;
-import com.tdd.testsconfig.tcCompose.TcCompose;
 import com.tdd.testsconfig.tcCompose.TcComposeConfig;
 import io.restassured.http.ContentType;
 import io.restassured.module.webtestclient.RestAssuredWebTestClient;
@@ -16,6 +15,7 @@ import org.springframework.test.context.junit.jupiter.EnabledIf;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import reactor.blockhound.BlockingOperationError;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -28,8 +28,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import static com.tdd.databuilder.PersonBuilder.personWithIdAndName;
-import static com.tdd.parallel.core.Routes.*;
-import static com.tdd.testsconfig.tcContainer.annotations.TcContainerConfig.getTcContainerCustom;
+import static com.tdd.parallel.core.Routes.ID_MGO_REPO;
+import static com.tdd.parallel.core.Routes.ROUTE_MGO_REPO;
+import static com.tdd.testsconfig.tcContainer.annotations.TcContainerConfig.getTcContainer;
 import static com.tdd.testsconfig.utils.TestsGlobalMethods.*;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.Matchers.*;
@@ -40,11 +41,13 @@ import static org.springframework.http.HttpStatus.*;
 @Import({ServiceMongoRepo.class})
 @ResourceConfig
 @GlobalConfig
-@TcCompose
+@Testcontainers
 public class ResourceMongoRepoComp {
 
+  //STATIC: one service for ALL tests
+  //NON-STATIC: one service for EACH test
   @Container
-  private static final DockerComposeContainer<?> compose = new TcComposeConfig().tcCompose;
+  private static final DockerComposeContainer<?> compose = new TcComposeConfig().getTcCompose();
 
   final ContentType CONT_ANY = ContentType.ANY;
   final ContentType CONT_JSON = ContentType.JSON;
@@ -64,18 +67,14 @@ public class ResourceMongoRepoComp {
   @BeforeAll
   public static void beforeAll(TestInfo testInfo) {
     globalBeforeAll();
-    globalTestMessage(testInfo.getTestClass()
-                              .toString(),"class-start");
-    globalContainerMessage(getTcContainerCustom(),"container-start");
+    globalTestMessage(testInfo.getDisplayName(),"class-start");
   }
 
 
   @AfterAll
   public static void afterAll(TestInfo testInfo) {
     globalAfterAll();
-    globalTestMessage(testInfo.getTestClass()
-                              .toString(),"class-end");
-    globalContainerMessage(getTcContainerCustom(),"container-end");
+    globalTestMessage(testInfo.getDisplayName(),"class-end");
   }
 
 
@@ -266,18 +265,6 @@ public class ResourceMongoRepoComp {
     } catch (ExecutionException | InterruptedException | TimeoutException e) {
       assertTrue(e.getCause() instanceof BlockingOperationError,"detected");
     }
-  }
-
-
-  @Test
-  @DisplayName("Check Service")
-  @EnabledIf(expression = enabledTest, loadContext = true)
-  void checkServices() {
-    globalComposeServiceContainerMessage(
-         compose,
-         TcComposeConfig.SERVICE,
-         TcComposeConfig.SERVICE_PORT
-                                        );
   }
 
 

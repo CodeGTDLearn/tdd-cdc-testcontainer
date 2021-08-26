@@ -5,7 +5,6 @@ import com.tdd.parallel.service.IService;
 import com.tdd.parallel.service.ServiceReactMongoTempl;
 import com.tdd.testsconfig.globalAnnotations.GlobalConfig;
 import com.tdd.testsconfig.globalAnnotations.ResourceConfig;
-import com.tdd.testsconfig.tcCompose.TcCompose;
 import com.tdd.testsconfig.tcCompose.TcComposeConfig;
 import io.restassured.http.ContentType;
 import io.restassured.module.webtestclient.RestAssuredWebTestClient;
@@ -16,6 +15,7 @@ import org.springframework.test.context.junit.jupiter.EnabledIf;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import reactor.blockhound.BlockingOperationError;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -28,8 +28,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import static com.tdd.databuilder.PersonBuilder.personWithIdAndName;
-import static com.tdd.parallel.core.Routes.*;
-import static com.tdd.testsconfig.tcContainer.annotations.TcContainerConfig.getTcContainerCustom;
+import static com.tdd.parallel.core.Routes.ID_RCT_MGO_TPL_REPO;
+import static com.tdd.parallel.core.Routes.ROUTE_RCT_MGO_TPL_REPO;
+import static com.tdd.testsconfig.tcContainer.annotations.TcContainerConfig.getTcContainer;
 import static com.tdd.testsconfig.utils.TestsGlobalMethods.*;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.Matchers.*;
@@ -40,11 +41,13 @@ import static org.springframework.http.HttpStatus.*;
 @Import({ServiceReactMongoTempl.class})
 @ResourceConfig
 @GlobalConfig
-@TcCompose
+@Testcontainers
 public class ResourceReactMongoTemplComp {
 
+  //STATIC: one service for ALL tests
+  //NON-STATIC: one service for EACH test
   @Container
-  private static final DockerComposeContainer<?> compose = new TcComposeConfig().tcCompose;
+  private static final DockerComposeContainer<?> compose = new TcComposeConfig().getTcCompose();
 
   final ContentType CONT_ANY = ContentType.ANY;
   final ContentType CONT_JSON = ContentType.JSON;
@@ -58,24 +61,20 @@ public class ResourceReactMongoTemplComp {
   WebTestClient mockedWebClient;
 
   @Autowired
-  private IService serviceMongoRepo;
+  private IService serviceReactMongoTempl;
 
 
   @BeforeAll
   public static void beforeAll(TestInfo testInfo) {
     globalBeforeAll();
-    globalTestMessage(testInfo.getTestClass()
-                              .toString(),"class-start");
-    globalContainerMessage(getTcContainerCustom(),"container-start");
+    globalTestMessage(testInfo.getDisplayName(),"class-start");
   }
 
 
   @AfterAll
   public static void afterAll(TestInfo testInfo) {
     globalAfterAll();
-    globalTestMessage(testInfo.getTestClass()
-                              .toString(),"class-end");
-    globalContainerMessage(getTcContainerCustom(),"container-end");
+    globalTestMessage(testInfo.getDisplayName(),"class-end");
   }
 
 
@@ -131,7 +130,7 @@ public class ResourceReactMongoTemplComp {
          .body("name",containsString(localPerson.getName()))
     ;
 
-    StepVerifierFindPerson(serviceMongoRepo.findById(localPerson.getId()),1L);
+    StepVerifierFindPerson(serviceReactMongoTempl.findById(localPerson.getId()),1L);
   }
 
 
@@ -190,7 +189,7 @@ public class ResourceReactMongoTemplComp {
          .body("id",equalTo(localPerson.getId()))
     ;
 
-    StepVerifierFindPerson(serviceMongoRepo.findById(localPerson.getId()),1L);
+    StepVerifierFindPerson(serviceReactMongoTempl.findById(localPerson.getId()),1L);
   }
 
 
@@ -217,7 +216,7 @@ public class ResourceReactMongoTemplComp {
          .statusCode(NO_CONTENT.value())
     ;
 
-    StepVerifierCountPersonInDb(serviceMongoRepo.findAll(),0L);
+    StepVerifierCountPersonInDb(serviceReactMongoTempl.findAll(),0L);
   }
 
 
@@ -244,7 +243,7 @@ public class ResourceReactMongoTemplComp {
          .statusCode(NO_CONTENT.value())
     ;
 
-    StepVerifierFindPerson(serviceMongoRepo.findById(localPerson.getId()),0L);
+    StepVerifierFindPerson(serviceReactMongoTempl.findById(localPerson.getId()),0L);
   }
 
 
@@ -269,30 +268,18 @@ public class ResourceReactMongoTemplComp {
   }
 
 
-  @Test
-  @DisplayName("Check Service")
-  @EnabledIf(expression = enabledTest, loadContext = true)
-  void checkServices() {
-    globalComposeServiceContainerMessage(
-         compose,
-         TcComposeConfig.SERVICE,
-         TcComposeConfig.SERVICE_PORT
-                                        );
-  }
-
-
   private Person generatePerson_savePerson_checkSaving() {
     Person localPerson = personWithIdAndName().create();
 
     StepVerifier
-         .create(serviceMongoRepo.deleteAll()
-                                 .log())
+         .create(serviceReactMongoTempl.deleteAll()
+                                       .log())
          .expectSubscription()
          .expectNextCount(0L)
          .verifyComplete();
 
     StepVerifier
-         .create(serviceMongoRepo.save(localPerson))
+         .create(serviceReactMongoTempl.save(localPerson))
          .expectSubscription()
          .expectNext(localPerson)
          .verifyComplete();

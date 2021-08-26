@@ -3,10 +3,8 @@ package com.tdd.parallel.service.tcCompose;
 import com.tdd.parallel.core.config.ServiceTemplateRepoCfg;
 import com.tdd.parallel.entity.Person;
 import com.tdd.parallel.service.IService;
-import com.tdd.parallel.service.ServiceTemplateRepo;
 import com.tdd.testsconfig.globalAnnotations.GlobalConfig;
 import com.tdd.testsconfig.globalAnnotations.MongoDbConfig;
-import com.tdd.testsconfig.tcCompose.TcCompose;
 import com.tdd.testsconfig.tcCompose.TcComposeConfig;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +12,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit.jupiter.EnabledIf;
 import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import reactor.blockhound.BlockingOperationError;
 import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
@@ -24,23 +23,19 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import static com.tdd.databuilder.PersonBuilder.personWithIdAndName;
-import static com.tdd.testsconfig.tcContainer.annotations.TcContainerConfig.getTcContainerCustom;
-import static com.tdd.testsconfig.tcContainer.annotations.TcContainerConfig.restartTestcontainer;
 import static com.tdd.testsconfig.utils.TestsGlobalMethods.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-
-@DisplayName("ServiceTemplateRepoAnnot")
+@Testcontainers
+@DisplayName("ServiceTemplRepoComp")
 @Import({ServiceTemplateRepoCfg.class})
-//@Import({ServiceTemplateRepo.class})
 @MongoDbConfig
 @GlobalConfig
-@TcCompose
 public class ServiceTemplRepoComp {
 
   @Container
-  private static final DockerComposeContainer<?> compose = new TcComposeConfig().tcCompose;
+  private final DockerComposeContainer<?> compose = new TcComposeConfig().getTcCompose();
 
   final private String enabledTest = "true";
   final private int repet = 1;
@@ -53,12 +48,6 @@ public class ServiceTemplRepoComp {
   public static void beforeAll(TestInfo testInfo) {
     globalBeforeAll();
     globalTestMessage(testInfo.getDisplayName(),"class-start");
-    globalContainerMessage(getTcContainerCustom(),"container-start");
-    globalComposeServiceContainerMessage(
-         compose,
-         TcComposeConfig.SERVICE,
-         TcComposeConfig.SERVICE_PORT
-                                        );
   }
 
 
@@ -66,8 +55,6 @@ public class ServiceTemplRepoComp {
   public static void afterAll(TestInfo testInfo) {
     globalAfterAll();
     globalTestMessage(testInfo.getDisplayName(),"class-end");
-    globalContainerMessage(getTcContainerCustom(),"container-end");
-    restartTestcontainer();
   }
 
 
@@ -75,9 +62,6 @@ public class ServiceTemplRepoComp {
   public void setUp(TestInfo testInfo) {
     globalTestMessage(testInfo.getTestMethod()
                               .toString(),"method-start");
-
-
-    globalContainerMessage(getTcContainerCustom(),"container-state");
   }
 
 
@@ -161,18 +145,6 @@ public class ServiceTemplRepoComp {
          .expectSubscription()
          .expectNextCount(0L)
          .verifyComplete();
-  }
-
-
-  @Test
-  @DisplayName("Check Service")
-  @EnabledIf(expression = enabledTest, loadContext = true)
-  void checkServices() {
-    globalComposeServiceContainerMessage(
-         compose,
-         TcComposeConfig.SERVICE,
-         TcComposeConfig.SERVICE_PORT
-                                        );
   }
 
 

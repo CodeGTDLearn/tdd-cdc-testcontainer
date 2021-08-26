@@ -4,6 +4,8 @@ import org.junit.jupiter.api.extension.Extension;
 import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.utility.DockerImageName;
 
+import static com.tdd.testsconfig.utils.TestsGlobalMethods.globalContainerMessage;
+
 public class TcContainerConfig implements Extension {
 
   private final static String MONGO_IMAGE = "mongo:4.4.2";
@@ -11,7 +13,9 @@ public class TcContainerConfig implements Extension {
 
   private static MongoDBContainer testContainer;
 
-  // KEEP: in 'ANNOTATION+EXTENSION-CLASSES' only this STATIC-METHOD is allowed
+  // KEEP:
+  // a) in 'ANNOTATION+EXTENSION-CLASSES' only this STATIC-METHOD is allowed
+  // b) this sort of method will be started automatically when the class is called/started via annotation
   static {
     startTestcontainer();
   }
@@ -20,21 +24,25 @@ public class TcContainerConfig implements Extension {
     testContainer = new MongoDBContainer(DockerImageName.parse(MONGO_IMAGE));
     testContainer.start();
     System.setProperty(APP_PROPERTIES_MONGO_URI,testContainer.getReplicaSetUrl());
+    globalContainerMessage(getTcContainer(),"container-start");
+    globalContainerMessage(getTcContainer(),"container-state");
   }
 
 
   public static void restartTestcontainer() {
+    globalContainerMessage(getTcContainer(),"container-end");
     testContainer.close();
     startTestcontainer();
   }
 
 
   public static void closeTestcontainer() {
+    globalContainerMessage(getTcContainer(),"container-end");
     testContainer.close();
   }
 
 
-  public static MongoDBContainer getTcContainerCustom() {
+  public static MongoDBContainer getTcContainer() {
     return testContainer;
   }
 }

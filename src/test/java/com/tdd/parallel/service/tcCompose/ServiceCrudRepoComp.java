@@ -5,7 +5,6 @@ import com.tdd.parallel.service.IService;
 import com.tdd.parallel.service.ServiceCrudRepo;
 import com.tdd.testsconfig.globalAnnotations.GlobalConfig;
 import com.tdd.testsconfig.globalAnnotations.MongoDbConfig;
-import com.tdd.testsconfig.tcCompose.TcCompose;
 import com.tdd.testsconfig.tcCompose.TcComposeConfig;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +12,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit.jupiter.EnabledIf;
 import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import reactor.blockhound.BlockingOperationError;
 import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
@@ -23,20 +23,22 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import static com.tdd.databuilder.PersonBuilder.personWithIdAndName;
-import static com.tdd.testsconfig.tcContainer.annotations.TcContainerConfig.getTcContainerCustom;
 import static com.tdd.testsconfig.utils.TestsGlobalMethods.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+
+@Testcontainers
 @DisplayName("ServiceCrudRepoComp")
 @Import({ServiceCrudRepo.class})
 @MongoDbConfig
 @GlobalConfig
-@TcCompose
 public class ServiceCrudRepoComp {
 
+  //STATIC: one service for ALL tests
+  //NON-STATIC: one service for EACH test
   @Container
-  private static final DockerComposeContainer<?> compose = new TcComposeConfig().tcCompose;
+  private final DockerComposeContainer<?> compose = new TcComposeConfig().getTcCompose();
 
   final private String enabledTest = "true";
   final private int repet = 1;
@@ -45,18 +47,10 @@ public class ServiceCrudRepoComp {
   private IService serviceCrudRepo;
 
 
-  //STATIC: one service for ALL tests
-  //NON-STATIC: one service for EACH test
   @BeforeAll
   public static void beforeAll(TestInfo testInfo) {
     globalBeforeAll();
     globalTestMessage(testInfo.getDisplayName(),"class-start");
-    globalContainerMessage(getTcContainerCustom(),"container-start");
-    globalComposeServiceContainerMessage(
-         compose,
-         TcComposeConfig.SERVICE,
-         TcComposeConfig.SERVICE_PORT
-                                        );
   }
 
 
@@ -64,7 +58,6 @@ public class ServiceCrudRepoComp {
   public static void afterAll(TestInfo testInfo) {
     globalAfterAll();
     globalTestMessage(testInfo.getDisplayName(),"class-end");
-    globalContainerMessage(getTcContainerCustom(),"container-end");
   }
 
 
@@ -72,8 +65,6 @@ public class ServiceCrudRepoComp {
   public void setUp(TestInfo testInfo) {
     globalTestMessage(testInfo.getTestMethod()
                               .toString(),"method-start");
-
-    globalContainerMessage(getTcContainerCustom(),"container-state");
   }
 
 
@@ -124,18 +115,6 @@ public class ServiceCrudRepoComp {
          .expectSubscription()
          .expectNextCount(0L)
          .verifyComplete();
-  }
-
-
-  @Test
-  @DisplayName("Check Service")
-  @EnabledIf(expression = enabledTest, loadContext = true)
-  void checkServices() {
-    globalComposeServiceContainerMessage(
-         compose,
-         TcComposeConfig.SERVICE,
-         TcComposeConfig.SERVICE_PORT
-                                        );
   }
 
 

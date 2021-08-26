@@ -3,5 +3,6 @@ version: '3.4'
 services:
   db-service:
     image: mongo:4.0
+    restart: always
     ports:
       - 27017:27017

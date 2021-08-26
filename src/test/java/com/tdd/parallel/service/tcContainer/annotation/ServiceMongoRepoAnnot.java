@@ -3,9 +3,9 @@ package com.tdd.parallel.service.tcContainer.annotation;
 import com.tdd.parallel.entity.Person;
 import com.tdd.parallel.service.IService;
 import com.tdd.parallel.service.ServiceMongoRepo;
-import com.tdd.testsconfig.tcContainer.annotations.TcContainer;
 import com.tdd.testsconfig.globalAnnotations.GlobalConfig;
 import com.tdd.testsconfig.globalAnnotations.MongoDbConfig;
+import com.tdd.testsconfig.tcContainer.annotations.TcContainer;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
@@ -21,15 +21,16 @@ import java.util.concurrent.TimeoutException;
 
 import static com.tdd.databuilder.PersonBuilder.personWithIdAndName;
 import static com.tdd.testsconfig.utils.TestsGlobalMethods.*;
-import static com.tdd.testsconfig.tcContainer.annotations.TcContainerConfig.getTcContainerCustom;
-import static com.tdd.testsconfig.tcContainer.annotations.TcContainerConfig.restartTestcontainer;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 
+// KEEP: Anotacao de TcContainer
+// - sera inocua, se imports staticos, da classe de extensao dessa anotacao, forem feitos
+// - a classe de extensao da anotacao, tem static-automatic-initialization, por isso seu importe ja a inicia independente da anotacao
+@TcContainer
 @DisplayName("ServiceMongoRepoAnnot")
 @Import({ServiceMongoRepo.class})
-@TcContainer
 @MongoDbConfig
 @GlobalConfig
 public class ServiceMongoRepoAnnot {
@@ -45,7 +46,6 @@ public class ServiceMongoRepoAnnot {
   public static void beforeAll(TestInfo testInfo) {
     globalBeforeAll();
     globalTestMessage(testInfo.getDisplayName(),"class-start");
-    globalContainerMessage(getTcContainerCustom(),"container-start");
   }
 
 
@@ -53,8 +53,6 @@ public class ServiceMongoRepoAnnot {
   public static void afterAll(TestInfo testInfo) {
     globalAfterAll();
     globalTestMessage(testInfo.getDisplayName(),"class-end");
-    globalContainerMessage(getTcContainerCustom(),"container-end");
-    restartTestcontainer();
   }
 
 
@@ -62,9 +60,6 @@ public class ServiceMongoRepoAnnot {
   public void setUp(TestInfo testInfo) {
     globalTestMessage(testInfo.getTestMethod()
                               .toString(),"method-start");
-
-
-    globalContainerMessage(getTcContainerCustom(),"container-state");
   }
 
 
@@ -92,7 +87,6 @@ public class ServiceMongoRepoAnnot {
     StepVerifier.create(serviceMongoRepo.findAll()
                                         .log())
                 .thenConsumeWhile(person -> {
-//                  System.out.println(person.getName());
                   Assertions.assertEquals((person.getId()),localPerson.getId());
                   return true;
                 })
@@ -150,15 +144,6 @@ public class ServiceMongoRepoAnnot {
          .expectSubscription()
          .expectNextCount(0L)
          .verifyComplete();
-  }
-
-
-  @Test
-  @DisplayName("Container")
-  @EnabledIf(expression = enabledTest, loadContext = true)
-  public void checkContainer() {
-    assertTrue(getTcContainerCustom()
-                    .isRunning());
   }
 
 

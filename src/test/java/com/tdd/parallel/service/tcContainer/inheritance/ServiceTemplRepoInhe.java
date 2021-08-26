@@ -162,15 +162,6 @@ public class ServiceTemplRepoInhe extends TestscontainerConfigInhe {
   }
 
 
-  //  @Test
-  //  @DisplayName("Container")
-  //  @EnabledIf(expression = enabledTest, loadContext = true)
-  //  public void checkContainer() {
-  //    assertTrue(TestcontainerConfigClass.getContainerAnn()
-  //                                       .isRunning());
-  //  }
-
-
   @Test
   @DisplayName("BHWorks")
   @EnabledIf(expression = enabledTest, loadContext = true)

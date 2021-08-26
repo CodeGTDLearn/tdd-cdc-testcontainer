@@ -1,9 +1,9 @@
 package com.tdd.parallel.service.tcContainer.inheritance;
 
-import com.tdd.parallel.service.ServiceMongoRepo;
-import com.tdd.testsconfig.tcContainer.inheritance.TestscontainerConfigInhe;
 import com.tdd.parallel.entity.Person;
 import com.tdd.parallel.service.IService;
+import com.tdd.parallel.service.ServiceMongoRepo;
+import com.tdd.testsconfig.tcContainer.inheritance.TestscontainerConfigInhe;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -161,14 +161,6 @@ public class ServiceMongoRepoInhe extends TestscontainerConfigInhe {
          .expectNextCount(0L)
          .verifyComplete();
   }
-
-
-  //  @Test
-  //  @DisplayName("Container")
-  //  @EnabledIf(expression = enabledTest, loadContext = true)
-  //  public void checkContainer() {
-  //    assertTrue(TestcontainerConfigClass.getContainerAnn().isRunning());
-  //  }
 
 
   @Test

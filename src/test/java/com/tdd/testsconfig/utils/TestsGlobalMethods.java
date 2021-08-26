@@ -132,6 +132,7 @@ public class TestsGlobalMethods {
          "%n%n" +
               "╔═══════════════════════════════════════════════════════════════════════╗%n" +
               "║                           %s                        ║%n" +
+              "║ --> Container: %s\n" +
               "║ --> Service: %s\n" +
               "║ --> Host: %s\n" +
               "║ --> Port: %s\n" +
@@ -139,6 +140,7 @@ public class TestsGlobalMethods {
               "║ --> Running: %s\n" +
               "╚═══════════════════════════════════════════════════════════════════════╝%n%n",
          "TC-CONTAINER-COMPOSE",
+         compose.getContainerByServiceName(service),
          service,
          compose.getServiceHost(service,port),
          compose.getServicePort(service,port),
