@@ -3,8 +3,6 @@ package com.tdd.parallel.service.tcCompose;
 import com.tdd.parallel.core.config.ServiceTemplateRepoCfg;
 import com.tdd.parallel.entity.Person;
 import com.tdd.parallel.service.IService;
-import com.tdd.testsconfig.globalAnnotations.GlobalConfig;
-import com.tdd.testsconfig.globalAnnotations.MongoDbConfig;
 import com.tdd.testsconfig.tcCompose.TcComposeConfig;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +10,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit.jupiter.EnabledIf;
 import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 import reactor.blockhound.BlockingOperationError;
 import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
@@ -27,11 +24,9 @@ import static com.tdd.testsconfig.utils.TestsGlobalMethods.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-@Testcontainers
 @DisplayName("ServiceTemplRepoComp")
 @Import({ServiceTemplateRepoCfg.class})
-@MongoDbConfig
-@GlobalConfig
+@MergedAnnotations
 public class ServiceTemplRepoComp {
 
   @Container

@@ -3,9 +3,6 @@ package com.tdd.parallel.service.tcContainer.annotation;
 import com.tdd.parallel.entity.Person;
 import com.tdd.parallel.service.IService;
 import com.tdd.parallel.service.ServiceReactMongoTempl;
-import com.tdd.testsconfig.globalAnnotations.GlobalConfig;
-import com.tdd.testsconfig.globalAnnotations.MongoDbConfig;
-import com.tdd.testsconfig.tcContainer.annotations.TcContainer;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
@@ -26,11 +23,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 // KEEP: Anotacao de TcContainer
 // - sera inocua, se imports staticos, da classe de extensao dessa anotacao, forem feitos
 // - a classe de extensao da anotacao, tem static-automatic-initialization, por isso seu importe ja a inicia independente da anotacao
-//@TcContainer
 @DisplayName("ServiceReactiveTemplAnnot")
 @Import({ServiceReactMongoTempl.class})
-@MongoDbConfig
-@GlobalConfig
+@MergedAnnotations
 public class ServiceReactMongoTemplAnnot {
 
   final private String enabledTest = "true";

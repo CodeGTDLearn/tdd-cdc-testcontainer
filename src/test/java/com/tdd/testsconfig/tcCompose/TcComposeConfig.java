@@ -4,6 +4,7 @@ import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 
 import java.io.File;
+import java.time.Duration;
 
 import static com.tdd.testsconfig.utils.TestsGlobalMethods.globalComposeServiceContainerMessage;
 
@@ -13,9 +14,9 @@ https://callistaenterprise.se/blogg/teknik/2020/10/09/speed-up-your-testcontaine
 https://medium.com/pictet-technologies-blog/speeding-up-your-integration-tests-with
 -testcontainers-e54ab655c03d
  */
-//public class TcComposeConfig implements Extension {
 public class TcComposeConfig {
 
+  final static public int COMPOSE_STARTUP_TIMEOUT = 30;
   final static public int COMPOSE_SERVICE_PORT = 27017;
   final static public String COMPOSE_SERVICE = "db-service";
   final static private String COMPOSE_PATH = "src/test/resources/compose-tcContainers.yml";
@@ -29,19 +30,12 @@ public class TcComposeConfig {
                  COMPOSE_SERVICE,
                  COMPOSE_SERVICE_PORT,
                  Wait.forListeningPort()
+                     .withStartupTimeout(Duration.ofSeconds(COMPOSE_STARTUP_TIMEOUT))
                                );
-//       .withOptions("sslEnabled(true)");
 
 
   //format 02: using a getter/accessor to create the tcContainerCompose
   public DockerComposeContainer<?> getTcCompose() {
-    tcCompose.start();
-
-    globalComposeServiceContainerMessage(
-         tcCompose,
-         TcComposeConfig.COMPOSE_SERVICE,
-         TcComposeConfig.COMPOSE_SERVICE_PORT
-                                        );
     return tcCompose;
   }
 }
