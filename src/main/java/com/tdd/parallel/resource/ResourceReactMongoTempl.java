@@ -22,8 +22,8 @@ public class ResourceReactMongoTempl {
 
   @PostMapping
   @ResponseStatus(CREATED)
-  public Mono<Person> save(@RequestBody Person customer) {
-    return serviceReactMongoTempl.save(customer);
+  public Mono<Person> save(@RequestBody Person person) {
+    return serviceReactMongoTempl.save(person);
   }
 
 

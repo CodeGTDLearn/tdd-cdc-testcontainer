@@ -1,0 +1,11 @@
+{
+  "products": {
+    "-MiTVwH6fcvpGv9wiesl": {
+      "description": "The best Red tomatoes ever.",
+      "imageUrl": "https://images.freeimages.com/images/large-previews/294/tomatoes-1326096.jpg",
+      "isFavorite": false,
+      "price": 99.99,
+      "title": "3 Red Tomatoes"
+    }
+  }
+}

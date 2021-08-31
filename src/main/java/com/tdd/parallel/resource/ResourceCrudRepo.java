@@ -23,8 +23,8 @@ public class ResourceCrudRepo {
 
   @PostMapping
   @ResponseStatus(CREATED)
-  public Mono<Person> save(@RequestBody Person customer) {
-    return serviceCrudRepo.save(customer);
+  public Mono<Person> save(@RequestBody Person person) {
+    return serviceCrudRepo.save(person);
   }
 
 

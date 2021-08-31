@@ -6,7 +6,6 @@ import com.tdd.parallel.service.IService;
 import com.tdd.parallel.service.ServiceCrudRepo;
 import com.tdd.testsconfig.tcCompose.TcComposeConfig;
 import io.restassured.http.ContentType;
-import io.restassured.module.jsv.JsonSchemaValidator;
 import io.restassured.module.webtestclient.RestAssuredWebTestClient;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +29,7 @@ import static com.tdd.databuilder.PersonBuilder.personWithIdAndName;
 import static com.tdd.parallel.core.Routes.ID_CRUD_REPO;
 import static com.tdd.parallel.core.Routes.ROUTE_CRUD_REPO;
 import static com.tdd.testsconfig.utils.TestsGlobalMethods.*;
-import static io.restassured.module.jsv.JsonSchemaValidator.*;
+import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -129,7 +128,7 @@ public class ResourceCrudRepoComp {
          .body()
          .body("id",containsString(localPerson.getId()))
          .body("name",containsString(localPerson.getName()))
-         .body(matchesJsonSchemaInClasspath("json_schemas/person.json"))
+         .body(matchesJsonSchemaInClasspath("cdc_contracts/person.json"))
     ;
 
     StepVerifierFindPerson(serviceCrudRepo.findById(localPerson.getId()),1L);
@@ -162,7 +161,7 @@ public class ResourceCrudRepoComp {
          .body()
          .body("size()",is(1))
          .body("id",hasItem(localPerson.getId()))
-         .body(matchesJsonSchemaInClasspath("json_schemas/person_list.json"))
+         .body(matchesJsonSchemaInClasspath("cdc_contracts/person.json"))
     ;
   }
 
@@ -191,7 +190,7 @@ public class ResourceCrudRepoComp {
 
          .body()
          .body("id",equalTo(localPerson.getId()))
-         .body(matchesJsonSchemaInClasspath("json_schemas/person.json"))
+         .body(matchesJsonSchemaInClasspath("cdc_contracts/person.json"))
     ;
 
     StepVerifierFindPerson(serviceCrudRepo.findById(localPerson.getId()),1L);

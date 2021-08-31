@@ -5,7 +5,6 @@ import com.tdd.parallel.service.IService;
 import com.tdd.parallel.service.ServiceReactMongoTempl;
 import com.tdd.testsconfig.tcCompose.TcComposeConfig;
 import io.restassured.http.ContentType;
-import io.restassured.module.jsv.JsonSchemaValidator;
 import io.restassured.module.webtestclient.RestAssuredWebTestClient;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -124,7 +123,7 @@ public class ResourceReactMongoTemplComp {
          .body()
          .body("id",containsString(localPerson.getId()))
          .body("name",containsString(localPerson.getName()))
-         .body(matchesJsonSchemaInClasspath("json_schemas/person.json"))
+         .body(matchesJsonSchemaInClasspath("cdc_contracts/person.json"))
     ;
 
     StepVerifierFindPerson(serviceReactMongoTempl.findById(localPerson.getId()),1L);
@@ -156,7 +155,7 @@ public class ResourceReactMongoTemplComp {
          .body()
          .body("size()",is(1))
          .body("id",hasItem(localPerson.getId()))
-         .body(matchesJsonSchemaInClasspath("json_schemas/person_list.json"))
+         .body(matchesJsonSchemaInClasspath("cdc_contracts/person.json"))
     ;
   }
 
@@ -185,7 +184,7 @@ public class ResourceReactMongoTemplComp {
 
          .body()
          .body("id",equalTo(localPerson.getId()))
-         .body(matchesJsonSchemaInClasspath("json_schemas/person.json"))
+         .body(matchesJsonSchemaInClasspath("cdc_contracts/person.json"))
     ;
 
     StepVerifierFindPerson(serviceReactMongoTempl.findById(localPerson.getId()),1L);

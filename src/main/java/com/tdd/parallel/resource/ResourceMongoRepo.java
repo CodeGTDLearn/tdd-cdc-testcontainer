@@ -22,8 +22,8 @@ public class ResourceMongoRepo {
 
   @PostMapping
   @ResponseStatus(CREATED)
-  public Mono<Person> save(@RequestBody Person customer) {
-    return serviceMongoRepo.save(customer);
+  public Mono<Person> save(@RequestBody Person person) {
+    return serviceMongoRepo.save(person);
   }
 
 

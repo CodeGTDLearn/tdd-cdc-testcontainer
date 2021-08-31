@@ -22,8 +22,8 @@ public class ResourceTemplRepo {
 
   @PostMapping
   @ResponseStatus(CREATED)
-  public Mono<Person> save(@RequestBody Person customer) {
-    return serviceTemplateRepo.save(customer);
+  public Mono<Person> save(@RequestBody Person person) {
+    return serviceTemplateRepo.save(person);
   }
 
 
