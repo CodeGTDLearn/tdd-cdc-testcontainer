@@ -1,6 +1,6 @@
 package com.tdd.parallel.service.tcCompose;
 
-import com.tdd.parallel.entity.Person;
+import com.tdd.parallel.entity.PersonStandard;
 import com.tdd.parallel.service.IService;
 import com.tdd.parallel.service.ServiceReactMongoTempl;
 import com.tdd.testsconfig.tcCompose.TcComposeConfig;
@@ -94,7 +94,7 @@ public class ServiceReactMongoTemplComp {
   @DisplayName("FindById")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void findById() {
-    Person localPerson = generatePerson_savePerson_testThisSaving();
+    PersonStandard localPerson = generatePerson_savePerson_testThisSaving();
 
     StepVerifier
          .create(serviceReactMongoTempl.findById(localPerson.getId())
@@ -128,7 +128,7 @@ public class ServiceReactMongoTemplComp {
   @DisplayName("DeleteById")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void deleteById() {
-    Person localPerson = generatePerson_savePerson_testThisSaving();
+    PersonStandard localPerson = generatePerson_savePerson_testThisSaving();
 
     StepVerifier
          .create(serviceReactMongoTempl.deleteById(localPerson.getId()))
@@ -164,8 +164,8 @@ public class ServiceReactMongoTemplComp {
   }
 
 
-  private Person generatePerson_savePerson_testThisSaving() {
-    Person localPerson = personWithIdAndName().create();
+  private PersonStandard generatePerson_savePerson_testThisSaving() {
+    PersonStandard localPerson = personWithIdAndName().create();
 
     StepVerifier
          .create(serviceReactMongoTempl.save(localPerson))

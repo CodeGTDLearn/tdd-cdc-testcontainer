@@ -1,14 +1,12 @@
 package com.tdd.parallel.service;
 
-import com.tdd.parallel.entity.Person;
+import com.tdd.parallel.entity.PersonStandard;
 import com.tdd.parallel.repository.ITemplateRepo;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.util.List;
 
 @Slf4j
 @Service("serviceTemplateRepo")
@@ -20,13 +18,13 @@ public class ServiceTemplateRepo implements IService {
 
 
   @Override
-  public Mono<Person> save(Person person) {
+  public Mono<PersonStandard> save(PersonStandard person) {
     return templateRepo.save(person);
   }
 
 
   @Override
-  public Flux<Person> findAll() {
+  public Flux<PersonStandard> findAll() {
     return templateRepo.findAll();
   }
 
@@ -43,7 +41,7 @@ public class ServiceTemplateRepo implements IService {
   }
 
   @Override
-  public Mono<Person> findById(String id) {
+  public Mono<PersonStandard> findById(String id) {
     return templateRepo.findById(id);
   }
 }

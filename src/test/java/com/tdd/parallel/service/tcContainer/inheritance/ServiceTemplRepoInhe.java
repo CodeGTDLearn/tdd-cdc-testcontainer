@@ -1,7 +1,7 @@
 package com.tdd.parallel.service.tcContainer.inheritance;
 
 import com.tdd.parallel.core.config.ServiceTemplateRepoCfg;
-import com.tdd.parallel.entity.Person;
+import com.tdd.parallel.entity.PersonStandard;
 import com.tdd.parallel.service.IService;
 import com.tdd.testsconfig.tcContainer.inheritance.TestscontainerConfigInhe;
 import lombok.extern.slf4j.Slf4j;
@@ -32,8 +32,8 @@ public class ServiceTemplRepoInhe extends TestscontainerConfigInhe {
 
   final private String enabledTest = "true";
   final private int repet = 1;
-  private List<Person> personList;
-  private Mono<Person> personMono;
+  private List<PersonStandard> personList;
+  private Mono<PersonStandard> personMono;
 
   @Autowired
   private IService serviceTemplateRepo;
@@ -57,7 +57,7 @@ public class ServiceTemplRepoInhe extends TestscontainerConfigInhe {
   public void setUp(TestInfo testInfo) {
     globalTestMessage(testInfo.getTestMethod()
                               .toString(),"method-start");
-    Person person1 = personWithIdAndName().create();
+    PersonStandard person1 = personWithIdAndName().create();
     personList = Collections.singletonList(person1);
     personMono = Mono.just(person1);
     StepVerifier
@@ -151,8 +151,8 @@ public class ServiceTemplRepoInhe extends TestscontainerConfigInhe {
          .expectSubscription()
          .verifyComplete();
 
-    Mono<Person> personMono = serviceTemplateRepo.findById(personList.get(0)
-                                                                     .getId());
+    Mono<PersonStandard> personMono = serviceTemplateRepo.findById(personList.get(0)
+                                                                             .getId());
 
     StepVerifier
          .create(personMono)

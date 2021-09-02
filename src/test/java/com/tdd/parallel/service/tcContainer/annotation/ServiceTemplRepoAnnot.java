@@ -1,7 +1,7 @@
 package com.tdd.parallel.service.tcContainer.annotation;
 
 import com.tdd.parallel.core.config.ServiceTemplateRepoCfg;
-import com.tdd.parallel.entity.Person;
+import com.tdd.parallel.entity.PersonStandard;
 import com.tdd.parallel.service.IService;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,7 +77,7 @@ public class ServiceTemplRepoAnnot {
   @DisplayName("FindAll")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void findAll() {
-    Person localPerson = generatePerson_savePerson_testThisSaving();
+    PersonStandard localPerson = generatePerson_savePerson_testThisSaving();
 
     StepVerifier.create(serviceTemplateRepo.findAll()
                                            .log())
@@ -93,7 +93,7 @@ public class ServiceTemplRepoAnnot {
   @DisplayName("FindById")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void findById() {
-    Person localPerson = generatePerson_savePerson_testThisSaving();
+    PersonStandard localPerson = generatePerson_savePerson_testThisSaving();
 
     StepVerifier
          .create(serviceTemplateRepo.findById(localPerson.getId())
@@ -127,7 +127,7 @@ public class ServiceTemplRepoAnnot {
   @DisplayName("DeleteById")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void deleteById() {
-    Person localPerson = generatePerson_savePerson_testThisSaving();
+    PersonStandard localPerson = generatePerson_savePerson_testThisSaving();
 
     StepVerifier
          .create(serviceTemplateRepo.deleteById(localPerson.getId()))
@@ -163,8 +163,8 @@ public class ServiceTemplRepoAnnot {
   }
 
 
-  private Person generatePerson_savePerson_testThisSaving() {
-    Person localPerson = personWithIdAndName().create();
+  private PersonStandard generatePerson_savePerson_testThisSaving() {
+    PersonStandard localPerson = personWithIdAndName().create();
 
     StepVerifier
          .create(serviceTemplateRepo.save(localPerson))

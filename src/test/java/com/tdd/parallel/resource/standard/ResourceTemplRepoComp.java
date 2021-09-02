@@ -1,6 +1,6 @@
-package com.tdd.parallel.resource;
+package com.tdd.parallel.resource.standard;
 
-import com.tdd.parallel.entity.Person;
+import com.tdd.parallel.entity.PersonStandard;
 import com.tdd.parallel.service.IService;
 import com.tdd.parallel.service.ServiceTemplateRepo;
 import com.tdd.testsconfig.tcCompose.TcComposeConfig;
@@ -25,8 +25,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import static com.tdd.databuilder.PersonBuilder.personWithIdAndName;
-import static com.tdd.parallel.core.Routes.ID_TPL_REPO;
-import static com.tdd.parallel.core.Routes.REQ_MAP_TPL_REPO;
+import static com.tdd.parallel.core.routes.RoutesStandard.ID_STD;
+import static com.tdd.parallel.core.routes.RoutesStandard.REQ_MAP_TPL_REPO_STD;
 import static com.tdd.testsconfig.utils.TestsGlobalMethods.*;
 import static io.restassured.module.jsv.JsonSchemaValidator.*;
 import static org.hamcrest.CoreMatchers.hasItem;
@@ -99,7 +99,7 @@ public class ResourceTemplRepoComp {
   @DisplayName("Save")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void save() {
-    Person localPerson = generatePerson_savePerson_checkSaving();
+    PersonStandard localPerson = generatePerson_savePerson_checkSaving();
 
     RestAssuredWebTestClient
          .given()
@@ -110,7 +110,7 @@ public class ResourceTemplRepoComp {
          .body(localPerson)
 
          .when()
-         .post(REQ_MAP_TPL_REPO)
+         .post(REQ_MAP_TPL_REPO_STD)
 
          .then()
          .statusCode(CREATED.value())
@@ -134,7 +134,7 @@ public class ResourceTemplRepoComp {
   @DisplayName("FindAll")
   @EnabledIf(expression = enabledTest, loadContext = true)
   void findAll() {
-    Person localPerson = generatePerson_savePerson_checkSaving();
+    PersonStandard localPerson = generatePerson_savePerson_checkSaving();
 
     RestAssuredWebTestClient
          .given()
@@ -143,7 +143,7 @@ public class ResourceTemplRepoComp {
          .header("Content-type",CONT_JSON)
 
          .when()
-         .get(REQ_MAP_TPL_REPO)
+         .get(REQ_MAP_TPL_REPO_STD)
 
          .then()
          .statusCode(OK.value())
@@ -164,7 +164,7 @@ public class ResourceTemplRepoComp {
   @DisplayName("FindById")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void findById() {
-    Person localPerson = generatePerson_savePerson_checkSaving();
+    PersonStandard localPerson = generatePerson_savePerson_checkSaving();
 
     RestAssuredWebTestClient
          .given()
@@ -173,7 +173,7 @@ public class ResourceTemplRepoComp {
          .header("Content-type",CONT_JSON)
 
          .when()
-         .get(REQ_MAP_TPL_REPO + ID_TPL_REPO,localPerson.getId())
+         .get(REQ_MAP_TPL_REPO_STD + ID_STD,localPerson.getId())
 
          .then()
          .statusCode(OK.value())
@@ -195,7 +195,7 @@ public class ResourceTemplRepoComp {
   @DisplayName("DeleteAll")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void deleteAll() {
-    Person localPerson = generatePerson_savePerson_checkSaving();
+    PersonStandard localPerson = generatePerson_savePerson_checkSaving();
 
     RestAssuredWebTestClient
          .given()
@@ -206,7 +206,7 @@ public class ResourceTemplRepoComp {
          .body(localPerson)
 
          .when()
-         .delete(REQ_MAP_TPL_REPO)
+         .delete(REQ_MAP_TPL_REPO_STD)
 
          .then()
          .log()
@@ -222,7 +222,7 @@ public class ResourceTemplRepoComp {
   @DisplayName("DeleteById")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void deleteById() {
-    Person localPerson = generatePerson_savePerson_checkSaving();
+    PersonStandard localPerson = generatePerson_savePerson_checkSaving();
 
     RestAssuredWebTestClient
          .given()
@@ -233,7 +233,7 @@ public class ResourceTemplRepoComp {
          .body(localPerson)
 
          .when()
-         .delete(REQ_MAP_TPL_REPO + ID_TPL_REPO,localPerson.getId())
+         .delete(REQ_MAP_TPL_REPO_STD + ID_STD,localPerson.getId())
 
          .then()
          .log()
@@ -266,8 +266,8 @@ public class ResourceTemplRepoComp {
   }
 
 
-  private Person generatePerson_savePerson_checkSaving() {
-    Person localPerson = personWithIdAndName().create();
+  private PersonStandard generatePerson_savePerson_checkSaving() {
+    PersonStandard localPerson = personWithIdAndName().create();
 
     StepVerifier
          .create(serviceTemplateRepo.deleteAll()
@@ -286,7 +286,7 @@ public class ResourceTemplRepoComp {
   }
 
 
-  private void StepVerifierCountPersonInDb(Flux<Person> flux,Long totalElements) {
+  private void StepVerifierCountPersonInDb(Flux<PersonStandard> flux,Long totalElements) {
     StepVerifier
          .create(flux)
          .expectSubscription()
@@ -295,7 +295,7 @@ public class ResourceTemplRepoComp {
   }
 
 
-  private void StepVerifierFindPerson(Mono<Person> flux,Long totalElements) {
+  private void StepVerifierFindPerson(Mono<PersonStandard> flux,Long totalElements) {
     StepVerifier
          .create(flux)
          .expectSubscription()

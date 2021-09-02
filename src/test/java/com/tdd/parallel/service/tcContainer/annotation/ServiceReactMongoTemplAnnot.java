@@ -1,6 +1,6 @@
 package com.tdd.parallel.service.tcContainer.annotation;
 
-import com.tdd.parallel.entity.Person;
+import com.tdd.parallel.entity.PersonStandard;
 import com.tdd.parallel.service.IService;
 import com.tdd.parallel.service.ServiceReactMongoTempl;
 import org.junit.jupiter.api.*;
@@ -75,7 +75,7 @@ public class ServiceReactMongoTemplAnnot {
   @DisplayName("FindAll")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void findAll() {
-    Person localPerson = generatePerson_savePerson_testThisSaving();
+    PersonStandard localPerson = generatePerson_savePerson_testThisSaving();
 
     StepVerifier.create(serviceReactMongoTempl.findAll()
                                        .log())
@@ -91,7 +91,7 @@ public class ServiceReactMongoTemplAnnot {
   @DisplayName("FindById")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void findById() {
-    Person localPerson = generatePerson_savePerson_testThisSaving();
+    PersonStandard localPerson = generatePerson_savePerson_testThisSaving();
 
     StepVerifier
          .create(serviceReactMongoTempl.findById(localPerson.getId())
@@ -125,7 +125,7 @@ public class ServiceReactMongoTemplAnnot {
   @DisplayName("DeleteById")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void deleteById() {
-    Person localPerson = generatePerson_savePerson_testThisSaving();
+    PersonStandard localPerson = generatePerson_savePerson_testThisSaving();
 
     StepVerifier
          .create(serviceReactMongoTempl.deleteById(localPerson.getId()))
@@ -161,8 +161,8 @@ public class ServiceReactMongoTemplAnnot {
   }
 
 
-  private Person generatePerson_savePerson_testThisSaving() {
-    Person localPerson = personWithIdAndName().create();
+  private PersonStandard generatePerson_savePerson_testThisSaving() {
+    PersonStandard localPerson = personWithIdAndName().create();
 
     StepVerifier
          .create(serviceReactMongoTempl.save(localPerson))

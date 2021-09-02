@@ -1,7 +1,7 @@
 package com.tdd.parallel.service.tcCompose;
 
 import com.tdd.parallel.core.config.ServiceTemplateRepoCfg;
-import com.tdd.parallel.entity.Person;
+import com.tdd.parallel.entity.PersonStandard;
 import com.tdd.parallel.service.IService;
 import com.tdd.testsconfig.tcCompose.TcComposeConfig;
 import org.junit.jupiter.api.*;
@@ -94,7 +94,7 @@ public class ServiceTemplRepoComp {
   @DisplayName("FindById")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void findById() {
-    Person localPerson = generatePerson_savePerson_testThisSaving();
+    PersonStandard localPerson = generatePerson_savePerson_testThisSaving();
 
     StepVerifier
          .create(serviceTemplateRepo.findById(localPerson.getId())
@@ -128,7 +128,7 @@ public class ServiceTemplRepoComp {
   @DisplayName("DeleteById")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void deleteById() {
-    Person localPerson = generatePerson_savePerson_testThisSaving();
+    PersonStandard localPerson = generatePerson_savePerson_testThisSaving();
 
     StepVerifier
          .create(serviceTemplateRepo.deleteById(localPerson.getId()))
@@ -164,8 +164,8 @@ public class ServiceTemplRepoComp {
   }
 
 
-  private Person generatePerson_savePerson_testThisSaving() {
-    Person localPerson = personWithIdAndName().create();
+  private PersonStandard generatePerson_savePerson_testThisSaving() {
+    PersonStandard localPerson = personWithIdAndName().create();
 
     StepVerifier
          .create(serviceTemplateRepo.save(localPerson))

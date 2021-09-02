@@ -1,6 +1,6 @@
-package com.tdd.parallel.resource;
+package com.tdd.parallel.resource.standard;
 
-import com.tdd.parallel.entity.Person;
+import com.tdd.parallel.entity.PersonStandard;
 import com.tdd.parallel.repository.ICrudRepo;
 import com.tdd.parallel.service.IService;
 import com.tdd.parallel.service.ServiceCrudRepo;
@@ -26,8 +26,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import static com.tdd.databuilder.PersonBuilder.personWithIdAndName;
-import static com.tdd.parallel.core.Routes.ID_CRUD_REPO;
-import static com.tdd.parallel.core.Routes.ROUTE_CRUD_REPO;
+import static com.tdd.parallel.core.routes.RoutesStandard.ID_STD;
+import static com.tdd.parallel.core.routes.RoutesStandard.CRUD_REPO_STD;
 import static com.tdd.testsconfig.utils.TestsGlobalMethods.*;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.CoreMatchers.hasItem;
@@ -35,7 +35,7 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.http.HttpStatus.*;
 
-@DisplayName("ResourceCrudRepo")
+@DisplayName("ResourceCrudRepoComp")
 @Import({ServiceCrudRepo.class})
 @MergedAnnotations
 public class ResourceCrudRepoComp {
@@ -104,9 +104,10 @@ public class ResourceCrudRepoComp {
   @DisplayName("Save")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void save() {
-    Person localPerson = generatePerson_savePerson_checkSaving();
+    PersonStandard localPerson = generatePerson_savePerson_checkSaving();
 
     RestAssuredWebTestClient
+
          .given()
          .webTestClient(mockedWebClient)
          .header("Accept",CONT_ANY)
@@ -115,7 +116,7 @@ public class ResourceCrudRepoComp {
          .body(localPerson)
 
          .when()
-         .post(ROUTE_CRUD_REPO)
+         .post(CRUD_REPO_STD)
 
          .then()
          .statusCode(CREATED.value())
@@ -139,7 +140,7 @@ public class ResourceCrudRepoComp {
   @DisplayName("FindAll")
   @EnabledIf(expression = enabledTest, loadContext = true)
   void findAll() {
-    Person localPerson = generatePerson_savePerson_checkSaving();
+    PersonStandard localPerson = generatePerson_savePerson_checkSaving();
 
     RestAssuredWebTestClient
 
@@ -149,7 +150,7 @@ public class ResourceCrudRepoComp {
          .header("Content-type",CONT_JSON)
 
          .when()
-         .get(ROUTE_CRUD_REPO)
+         .get(CRUD_REPO_STD)
 
          .then()
          .statusCode(OK.value())
@@ -170,16 +171,17 @@ public class ResourceCrudRepoComp {
   @DisplayName("FindById")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void findById() {
-    Person localPerson = generatePerson_savePerson_checkSaving();
+    PersonStandard localPerson = generatePerson_savePerson_checkSaving();
 
     RestAssuredWebTestClient
+
          .given()
          .webTestClient(mockedWebClient)
          .header("Accept",CONT_ANY)
          .header("Content-type",CONT_JSON)
 
          .when()
-         .get(ROUTE_CRUD_REPO + ID_CRUD_REPO,localPerson.getId())
+         .get(CRUD_REPO_STD + ID_STD,localPerson.getId())
 
          .then()
          .statusCode(OK.value())
@@ -201,9 +203,10 @@ public class ResourceCrudRepoComp {
   @DisplayName("DeleteAll")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void deleteAll() {
-    Person localPerson = generatePerson_savePerson_checkSaving();
+    PersonStandard localPerson = generatePerson_savePerson_checkSaving();
 
     RestAssuredWebTestClient
+
          .given()
          .webTestClient(mockedWebClient)
          .header("Accept",CONT_ANY)
@@ -212,7 +215,7 @@ public class ResourceCrudRepoComp {
          .body(localPerson)
 
          .when()
-         .delete(ROUTE_CRUD_REPO)
+         .delete(CRUD_REPO_STD)
 
          .then()
          .log()
@@ -228,9 +231,10 @@ public class ResourceCrudRepoComp {
   @DisplayName("DeleteById")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void deleteById() {
-    Person localPerson = generatePerson_savePerson_checkSaving();
+    PersonStandard localPerson = generatePerson_savePerson_checkSaving();
 
     RestAssuredWebTestClient
+
          .given()
          .webTestClient(mockedWebClient)
          .header("Accept",CONT_ANY)
@@ -239,7 +243,7 @@ public class ResourceCrudRepoComp {
          .body(localPerson)
 
          .when()
-         .delete(ROUTE_CRUD_REPO + ID_CRUD_REPO,localPerson.getId())
+         .delete(CRUD_REPO_STD + ID_STD,localPerson.getId())
 
          .then()
          .log()
@@ -272,8 +276,8 @@ public class ResourceCrudRepoComp {
   }
 
 
-  private Person generatePerson_savePerson_checkSaving() {
-    Person localPerson = personWithIdAndName().create();
+  private PersonStandard generatePerson_savePerson_checkSaving() {
+    PersonStandard localPerson = personWithIdAndName().create();
 
     StepVerifier
          .create(serviceCrudRepo.deleteAll()
@@ -292,7 +296,7 @@ public class ResourceCrudRepoComp {
   }
 
 
-  private void StepVerifierCountPersonInDb(Flux<Person> flux,Long totalElements) {
+  private void StepVerifierCountPersonInDb(Flux<PersonStandard> flux,Long totalElements) {
     StepVerifier
          .create(flux)
          .expectSubscription()
@@ -301,7 +305,7 @@ public class ResourceCrudRepoComp {
   }
 
 
-  private void StepVerifierFindPerson(Mono<Person> flux,Long totalElements) {
+  private void StepVerifierFindPerson(Mono<PersonStandard> flux,Long totalElements) {
     StepVerifier
          .create(flux)
          .expectSubscription()

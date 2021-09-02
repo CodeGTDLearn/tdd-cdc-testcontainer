@@ -1,6 +1,6 @@
 package com.tdd.parallel.service.tcContainer.nestedTestClasses;
 
-import com.tdd.parallel.entity.Person;
+import com.tdd.parallel.entity.PersonStandard;
 import com.tdd.parallel.service.IService;
 import com.tdd.parallel.service.ServiceCrudRepo;
 import com.tdd.testsconfig.tcContainer.annotations.TcContainer;
@@ -52,7 +52,7 @@ public class NestedTestClassLab {
     @EnabledIf(expression = enabledTest, loadContext = true)
     public void test1findAll() {
 
-      Person localPerson = generatePerson_savePerson_testThisSaving();
+      PersonStandard localPerson = generatePerson_savePerson_testThisSaving();
 
       StepVerifier.create(serviceCrudRepo.findAll()
                                          .log())
@@ -70,7 +70,7 @@ public class NestedTestClassLab {
     @EnabledIf(expression = enabledTest, loadContext = true)
     public void test2findAll() {
 
-      Person localPerson = generatePerson_savePerson_testThisSaving();
+      PersonStandard localPerson = generatePerson_savePerson_testThisSaving();
 
       StepVerifier.create(serviceCrudRepo.findAll()
                                          .log())
@@ -95,7 +95,7 @@ public class NestedTestClassLab {
     @EnabledIf(expression = enabledTest, loadContext = true)
     public void findAll3() {
 
-      Person localPerson = generatePerson_savePerson_testThisSaving();
+      PersonStandard localPerson = generatePerson_savePerson_testThisSaving();
 
       StepVerifier.create(serviceCrudRepo.findAll()
                                          .log())
@@ -109,13 +109,13 @@ public class NestedTestClassLab {
   }
 
 
-  private Person getPerson() {
+  private PersonStandard getPerson() {
     return personWithIdAndName().create();
   }
 
 
-  private Person generatePerson_savePerson_testThisSaving() {
-    Person localPerson = getPerson();
+  private PersonStandard generatePerson_savePerson_testThisSaving() {
+    PersonStandard localPerson = getPerson();
 
     StepVerifier
          .create(serviceCrudRepo.save(localPerson))

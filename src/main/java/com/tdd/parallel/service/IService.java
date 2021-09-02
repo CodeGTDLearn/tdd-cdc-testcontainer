@@ -1,19 +1,17 @@
 package com.tdd.parallel.service;
 
-import com.tdd.parallel.entity.Person;
+import com.tdd.parallel.entity.PersonStandard;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
-
 public interface IService {
-  Mono<Person> save(Person person);
+  Mono<PersonStandard> save(PersonStandard person);
 
-  Flux<Person> findAll();
+  Flux<PersonStandard> findAll();
 
   Mono<Void> deleteById(String id);
 
   Mono<Void> deleteAll();
 
-  Mono<Person> findById(String id);
+  Mono<PersonStandard> findById(String id);
 }

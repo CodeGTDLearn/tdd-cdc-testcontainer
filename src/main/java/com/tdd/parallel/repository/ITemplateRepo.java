@@ -1,15 +1,13 @@
 package com.tdd.parallel.repository;
 
-import com.tdd.parallel.entity.Person;
+import com.tdd.parallel.entity.PersonStandard;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
-
 public interface ITemplateRepo {
-  Mono<Person> save(Person person);
+  Mono<PersonStandard> save(PersonStandard person);
 
-  Flux<Person> findAll();
+  Flux<PersonStandard> findAll();
 
   Mono<Void> deleteById(String id);
 
@@ -17,5 +15,5 @@ public interface ITemplateRepo {
 
   Mono<Boolean> collectionExists(String collection);
 
-  Mono<Person> findById(String id);
+  Mono<PersonStandard> findById(String id);
 }

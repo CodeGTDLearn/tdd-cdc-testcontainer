@@ -1,6 +1,6 @@
 package com.tdd.parallel.service.tcCompose;
 
-import com.tdd.parallel.entity.Person;
+import com.tdd.parallel.entity.PersonStandard;
 import com.tdd.parallel.service.IService;
 import com.tdd.parallel.service.ServiceCrudRepo;
 import com.tdd.testsconfig.tcCompose.TcComposeConfig;
@@ -82,7 +82,7 @@ public class ServiceCrudRepoComp {
   @DisplayName("FindById")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void findById() {
-    Person localPerson = generatePerson_savePerson_testThisSaving();
+    PersonStandard localPerson = generatePerson_savePerson_testThisSaving();
 
     StepVerifier
          .create(serviceCrudRepo.findById(localPerson.getId())
@@ -98,7 +98,7 @@ public class ServiceCrudRepoComp {
   @DisplayName("DeleteById")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void deleteById() {
-    Person localPerson = generatePerson_savePerson_testThisSaving();
+    PersonStandard localPerson = generatePerson_savePerson_testThisSaving();
 
     StepVerifier
          .create(serviceCrudRepo.deleteById(localPerson.getId()))
@@ -156,7 +156,7 @@ public class ServiceCrudRepoComp {
   @DisplayName("findAll")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void findAll() {
-    Person localPerson = generatePerson_savePerson_testThisSaving();
+    PersonStandard localPerson = generatePerson_savePerson_testThisSaving();
 
     StepVerifier.create(serviceCrudRepo.findAll()
                                        .log())
@@ -169,8 +169,8 @@ public class ServiceCrudRepoComp {
   }
 
 
-  private Person generatePerson_savePerson_testThisSaving() {
-    Person localPerson = personWithIdAndName().create();
+  private PersonStandard generatePerson_savePerson_testThisSaving() {
+    PersonStandard localPerson = personWithIdAndName().create();
 
     StepVerifier
          .create(serviceCrudRepo.deleteAll()

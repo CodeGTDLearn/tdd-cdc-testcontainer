@@ -1,15 +1,12 @@
 package com.tdd.parallel.repository;
 
-import com.tdd.parallel.entity.Person;
+import com.tdd.parallel.entity.PersonStandard;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.util.List;
 
 
 @AllArgsConstructor
@@ -20,14 +17,14 @@ public class TemplateRepo implements ITemplateRepo {
 
 
   @Override
-  public Mono<Person> save(Person person) {
+  public Mono<PersonStandard> save(PersonStandard person) {
     return reactiveMongoTemplate.save(person);
   }
 
 
   @Override
-  public Flux<Person> findAll() {
-    return reactiveMongoTemplate.findAll(Person.class);
+  public Flux<PersonStandard> findAll() {
+    return reactiveMongoTemplate.findAll(PersonStandard.class);
   }
 
 
@@ -42,7 +39,7 @@ public class TemplateRepo implements ITemplateRepo {
   @Override
   public Mono<Void> deleteAll() {
     return reactiveMongoTemplate
-         .remove(new Query(),Person.class)
+         .remove(new Query(),PersonStandard.class)
          .then(Mono.empty());
   }
 
@@ -55,7 +52,7 @@ public class TemplateRepo implements ITemplateRepo {
 
 
   @Override
-  public Mono<Person> findById(String id) {
-    return reactiveMongoTemplate.findById(id,Person.class);
+  public Mono<PersonStandard> findById(String id) {
+    return reactiveMongoTemplate.findById(id,PersonStandard.class);
   }
 }

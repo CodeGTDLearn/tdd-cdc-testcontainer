@@ -1,6 +1,6 @@
-package com.tdd.parallel.resource;
+package com.tdd.parallel.resource.standard;
 
-import com.tdd.parallel.entity.Person;
+import com.tdd.parallel.entity.PersonStandard;
 import com.tdd.parallel.service.IService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -8,13 +8,14 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import static com.tdd.parallel.core.Routes.*;
+import static com.tdd.parallel.core.routes.RoutesStandard.ID_STD;
+import static com.tdd.parallel.core.routes.RoutesStandard.REQ_MAP_TPL_REPO_STD;
 import static org.springframework.http.HttpStatus.*;
 
 @AllArgsConstructor
 @Slf4j
 @RestController
-@RequestMapping(REQ_MAP_TPL_REPO)
+@RequestMapping(REQ_MAP_TPL_REPO_STD)
 public class ResourceTemplRepo {
 
   private final IService serviceTemplateRepo;
@@ -22,21 +23,21 @@ public class ResourceTemplRepo {
 
   @PostMapping
   @ResponseStatus(CREATED)
-  public Mono<Person> save(@RequestBody Person person) {
+  public Mono<PersonStandard> save(@RequestBody PersonStandard person) {
     return serviceTemplateRepo.save(person);
   }
 
 
   @GetMapping
   @ResponseStatus(OK)
-  public Flux<Person> findAll() {
+  public Flux<PersonStandard> findAll() {
     return serviceTemplateRepo.findAll();
   }
 
 
-  @GetMapping(ID_TPL_REPO)
+  @GetMapping(ID_STD)
   @ResponseStatus(OK)
-  public Mono<Person> findById(@PathVariable String id) {
+  public Mono<PersonStandard> findById(@PathVariable String id) {
     return serviceTemplateRepo.findById(id);
   }
 
@@ -48,7 +49,7 @@ public class ResourceTemplRepo {
   }
 
 
-  @DeleteMapping(ID_TPL_REPO)
+  @DeleteMapping(ID_STD)
   @ResponseStatus(NO_CONTENT)
   public Mono<Void> deleteById(@PathVariable String id) {
     return serviceTemplateRepo.deleteById(id);

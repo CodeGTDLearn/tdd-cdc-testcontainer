@@ -1,4 +1,4 @@
-package com.tdd.parallel.resource;
+package com.tdd.parallel.resource.standard;
 
 import com.tdd.testsconfig.globalAnnotations.GlobalConfig;
 import com.tdd.testsconfig.globalAnnotations.MongoDbConfig;
