@@ -1,10 +1,9 @@
-package com.tdd.parallel.service;
+package com.tdd.parallel.repository;
 
-import com.tdd.parallel.entity.standard.PersonStandard;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-public interface IService<E> {
+public interface ITemplGeneric<E> {
   Mono<E> save(E person);
 
   Flux<E> findAll();
@@ -12,6 +11,8 @@ public interface IService<E> {
   Mono<Void> deleteById(String id);
 
   Mono<Void> deleteAll();
+
+  Mono<Boolean> collectionExists(String collection);
 
   Mono<E> findById(String id);
 }

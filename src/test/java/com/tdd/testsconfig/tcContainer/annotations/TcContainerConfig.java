@@ -4,7 +4,7 @@ import org.junit.jupiter.api.extension.Extension;
 import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.utility.DockerImageName;
 
-import static com.tdd.testsconfig.utils.TestsGlobalMethods.globalContainerMessage;
+import static com.tdd.testsconfig.utils.TestMethodUtils.globalContainerMessage;
 
 public class TcContainerConfig implements Extension {
 

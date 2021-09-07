@@ -1,7 +1,7 @@
 package com.tdd.parallel.core.config;
 
-import com.tdd.parallel.repository.ICrudRepo;
-import com.tdd.parallel.service.ServiceCrudRepo;
+import com.tdd.parallel.repository.standard.ICrudStandard;
+import com.tdd.parallel.service.standard.ServCrudStandard;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -10,12 +10,12 @@ import org.springframework.context.annotation.Bean;
 public class ServiceCrudRepoCfg {
 
   @Autowired
-  private ICrudRepo iCrudRepo;
+  private ICrudStandard iCrudStandard;
 
 
   @Bean
-  public ServiceCrudRepo serviceCrudRepo() {
-    return new ServiceCrudRepo(iCrudRepo);
+  public ServCrudStandard serviceCrudRepo() {
+    return new ServCrudStandard(iCrudStandard);
   }
 
 }

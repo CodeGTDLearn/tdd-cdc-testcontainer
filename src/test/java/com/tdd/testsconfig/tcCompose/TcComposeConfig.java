@@ -6,8 +6,6 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import java.io.File;
 import java.time.Duration;
 
-import static com.tdd.testsconfig.utils.TestsGlobalMethods.globalComposeServiceContainerMessage;
-
 /*
 SPEED-UP TESTCONTAINERS
 https://callistaenterprise.se/blogg/teknik/2020/10/09/speed-up-your-testcontainers-tests/
