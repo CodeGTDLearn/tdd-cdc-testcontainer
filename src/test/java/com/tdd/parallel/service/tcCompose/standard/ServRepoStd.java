@@ -5,6 +5,7 @@ import com.tdd.parallel.service.IService;
 import com.tdd.parallel.service.standard.ServRepoStandard;
 import com.tdd.parallel.service.tcCompose.MergedAnnotations;
 import com.tdd.testsconfig.tcCompose.TcComposeConfig;
+import com.tdd.testsconfig.utils.TestDbUtils;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
@@ -20,8 +21,7 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import static com.tdd.databuilder.PersonBuilder.personWithIdAndName;
-import static com.tdd.testsconfig.utils.TestMethodUtils.*;
+import static com.tdd.testsconfig.utils.TestUtils.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -37,8 +37,10 @@ public class ServRepoStd {
   final private String enabledTest = "true";
   final private int repet = 1;
 
+  private final TestDbUtils<PersonStandard> utils = new TestDbUtils<>();
+
   @Autowired
-  private IService<PersonStandard>  servRepoStandard;
+  private IService<PersonStandard> servRepoStandard;
 
 
   @BeforeAll
@@ -73,7 +75,7 @@ public class ServRepoStd {
   @DisplayName("Save")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void save() {
-    generatePerson_savePerson_testThisSaving();
+    utils.personStandard_save_check(servRepoStandard);
   }
 
 
@@ -81,7 +83,7 @@ public class ServRepoStd {
   @DisplayName("FindAll")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void findAll() {
-    PersonStandard localPerson = generatePerson_savePerson_testThisSaving();
+    PersonStandard localPerson = utils.personStandard_save_check(servRepoStandard);
 
     StepVerifier.create(servRepoStandard.findAll()
                                         .log())
@@ -98,7 +100,7 @@ public class ServRepoStd {
   @DisplayName("FindById")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void findById() {
-    PersonStandard localPerson = generatePerson_savePerson_testThisSaving();
+    PersonStandard localPerson = utils.personStandard_save_check(servRepoStandard);
 
     StepVerifier
          .create(servRepoStandard.findById(localPerson.getId())
@@ -114,7 +116,7 @@ public class ServRepoStd {
   @DisplayName("DeleteAll")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void deleteAll() {
-    generatePerson_savePerson_testThisSaving();
+    utils.personStandard_save_check(servRepoStandard);
 
     StepVerifier.create(servRepoStandard.deleteAll())
                 .verifyComplete();
@@ -132,7 +134,7 @@ public class ServRepoStd {
   @DisplayName("DeleteById")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void deleteById() {
-    PersonStandard localPerson = generatePerson_savePerson_testThisSaving();
+    PersonStandard localPerson = utils.personStandard_save_check(servRepoStandard);
 
     StepVerifier
          .create(servRepoStandard.deleteById(localPerson.getId()))
@@ -165,19 +167,6 @@ public class ServRepoStd {
     } catch (ExecutionException | InterruptedException | TimeoutException e) {
       assertTrue(e.getCause() instanceof BlockingOperationError,"detected");
     }
-  }
-
-
-  private PersonStandard generatePerson_savePerson_testThisSaving() {
-    PersonStandard localPerson = personWithIdAndName().create();
-
-    StepVerifier
-         .create(servRepoStandard.save(localPerson))
-         .expectSubscription()
-         .expectNext(localPerson)
-         .verifyComplete();
-
-    return localPerson;
   }
 }
 

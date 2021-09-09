@@ -5,6 +5,7 @@ import com.tdd.parallel.resource.MergedAnnotations;
 import com.tdd.parallel.service.IService;
 import com.tdd.parallel.service.standard.ServTemplStandard;
 import com.tdd.testsconfig.tcCompose.TcComposeConfig;
+import com.tdd.testsconfig.utils.TestDbUtils;
 import io.restassured.http.ContentType;
 import io.restassured.module.webtestclient.RestAssuredWebTestClient;
 import org.junit.jupiter.api.*;
@@ -15,21 +16,16 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.junit.jupiter.Container;
 import reactor.blockhound.BlockingOperationError;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
-import reactor.test.StepVerifier;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import static com.tdd.databuilder.PersonBuilder.personWithIdAndName;
-import static com.tdd.parallel.core.routes.RoutesStandard.ID_STD;
-import static com.tdd.parallel.core.routes.RoutesStandard.REQ_MAP_STD;
-import static com.tdd.testsconfig.utils.TestMethodUtils.*;
-import static io.restassured.module.jsv.JsonSchemaValidator.*;
+import static com.tdd.parallel.core.routes.RoutesStandard.*;
+import static com.tdd.testsconfig.utils.TestUtils.*;
+import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -49,15 +45,14 @@ public class ResTemplStd {
   final ContentType CONT_JSON = ContentType.JSON;
   final private String enabledTest = "true";
   final private int repet = 1;
-
+  private final TestDbUtils<PersonStandard> utils = new TestDbUtils<>();
   // WEB-TEST-CLIENT(non-blocking client)'
   // SHOULD BE USED WITH 'TEST-CONTAINERS'
   // BECAUSE THERE IS NO 'REAL-SERVER' CREATED VIA DOCKER-COMPOSE
   @Autowired
   WebTestClient mockedWebClient;
-
   @Autowired
-  private IService<PersonStandard>  servTemplStandard;
+  private IService<PersonStandard> servTemplStandard;
 
 
   @BeforeAll
@@ -100,7 +95,7 @@ public class ResTemplStd {
   @DisplayName("Save")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void save() {
-    PersonStandard localPerson = generatePerson_savePerson_checkSaving();
+    PersonStandard localPerson = utils.personStandard_save_check(servTemplStandard);
 
     RestAssuredWebTestClient
          .given()
@@ -111,7 +106,7 @@ public class ResTemplStd {
          .body(localPerson)
 
          .when()
-         .post(REQ_MAP_STD)
+         .post(REQ_MAP_STD + TPL_STD)
 
          .then()
          .statusCode(CREATED.value())
@@ -127,7 +122,7 @@ public class ResTemplStd {
          .body(matchesJsonSchemaInClasspath("cdc_contracts/person.json"))
     ;
 
-    StepVerifierFindPerson(servTemplStandard.findById(localPerson.getId()),1L);
+    utils.findPersonInDb(servTemplStandard.findById(localPerson.getId()),1L);
   }
 
 
@@ -135,7 +130,7 @@ public class ResTemplStd {
   @DisplayName("FindAll")
   @EnabledIf(expression = enabledTest, loadContext = true)
   void findAll() {
-    PersonStandard localPerson = generatePerson_savePerson_checkSaving();
+    PersonStandard localPerson = utils.personStandard_save_check(servTemplStandard);
 
     RestAssuredWebTestClient
          .given()
@@ -144,7 +139,7 @@ public class ResTemplStd {
          .header("Content-type",CONT_JSON)
 
          .when()
-         .get(REQ_MAP_STD)
+         .get(REQ_MAP_STD + TPL_STD)
 
          .then()
          .statusCode(OK.value())
@@ -165,7 +160,7 @@ public class ResTemplStd {
   @DisplayName("FindById")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void findById() {
-    PersonStandard localPerson = generatePerson_savePerson_checkSaving();
+    PersonStandard localPerson = utils.personStandard_save_check(servTemplStandard);
 
     RestAssuredWebTestClient
          .given()
@@ -174,7 +169,7 @@ public class ResTemplStd {
          .header("Content-type",CONT_JSON)
 
          .when()
-         .get(REQ_MAP_STD + ID_STD,localPerson.getId())
+         .get(REQ_MAP_STD + TPL_STD + ID_STD,localPerson.getId())
 
          .then()
          .statusCode(OK.value())
@@ -188,7 +183,7 @@ public class ResTemplStd {
          .body(matchesJsonSchemaInClasspath("cdc_contracts/person.json"))
     ;
 
-    StepVerifierFindPerson(servTemplStandard.findById(localPerson.getId()),1L);
+    utils.findPersonInDb(servTemplStandard.findById(localPerson.getId()),1L);
   }
 
 
@@ -196,7 +191,7 @@ public class ResTemplStd {
   @DisplayName("DeleteAll")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void deleteAll() {
-    PersonStandard localPerson = generatePerson_savePerson_checkSaving();
+    PersonStandard localPerson = utils.personStandard_save_check(servTemplStandard);
 
     RestAssuredWebTestClient
          .given()
@@ -207,7 +202,7 @@ public class ResTemplStd {
          .body(localPerson)
 
          .when()
-         .delete(REQ_MAP_STD)
+         .delete(REQ_MAP_STD + TPL_STD)
 
          .then()
          .log()
@@ -215,7 +210,7 @@ public class ResTemplStd {
          .statusCode(NO_CONTENT.value())
     ;
 
-    StepVerifierCountPersonInDb(servTemplStandard.findAll(),0L);
+    utils.countPersonInDb(servTemplStandard.findAll(),0L);
   }
 
 
@@ -223,7 +218,7 @@ public class ResTemplStd {
   @DisplayName("DeleteById")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void deleteById() {
-    PersonStandard localPerson = generatePerson_savePerson_checkSaving();
+    PersonStandard localPerson = utils.personStandard_save_check(servTemplStandard);
 
     RestAssuredWebTestClient
          .given()
@@ -234,7 +229,7 @@ public class ResTemplStd {
          .body(localPerson)
 
          .when()
-         .delete(REQ_MAP_STD + ID_STD,localPerson.getId())
+         .delete(REQ_MAP_STD + TPL_STD + ID_STD,localPerson.getId())
 
          .then()
          .log()
@@ -242,7 +237,7 @@ public class ResTemplStd {
          .statusCode(NO_CONTENT.value())
     ;
 
-    StepVerifierFindPerson(servTemplStandard.findById(localPerson.getId()),0L);
+    utils.findPersonInDb(servTemplStandard.findById(localPerson.getId()),0L);
   }
 
 
@@ -265,42 +260,4 @@ public class ResTemplStd {
       assertTrue(e.getCause() instanceof BlockingOperationError,"detected");
     }
   }
-
-
-//  private PersonStandard generatePerson_savePerson_checkSaving() {
-//    PersonStandard localPerson = personWithIdAndName().create();
-//
-//    StepVerifier
-//         .create(servTemplStandard.deleteAll()
-//                                  .log())
-//         .expectSubscription()
-//         .expectNextCount(0L)
-//         .verifyComplete();
-//
-//    StepVerifier
-//         .create(servTemplStandard.save(localPerson))
-//         .expectSubscription()
-//         .expectNext(localPerson)
-//         .verifyComplete();
-//
-//    return localPerson;
-//  }
-//
-//
-//  private void StepVerifierCountPersonInDb(Flux<PersonStandard> flux,Long totalElements) {
-//    StepVerifier
-//         .create(flux)
-//         .expectSubscription()
-//         .expectNextCount(totalElements)
-//         .verifyComplete();
-//  }
-//
-//
-//  private void StepVerifierFindPerson(Mono<PersonStandard> flux,Long totalElements) {
-//    StepVerifier
-//         .create(flux)
-//         .expectSubscription()
-//         .expectNextCount(totalElements)
-//         .verifyComplete();
-//  }
 }

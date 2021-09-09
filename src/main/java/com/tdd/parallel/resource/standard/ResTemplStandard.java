@@ -8,8 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import static com.tdd.parallel.core.routes.RoutesStandard.ID_STD;
-import static com.tdd.parallel.core.routes.RoutesStandard.REQ_MAP_STD;
+import static com.tdd.parallel.core.routes.RoutesStandard.*;
 import static org.springframework.http.HttpStatus.*;
 
 @AllArgsConstructor
@@ -18,38 +17,38 @@ import static org.springframework.http.HttpStatus.*;
 @RequestMapping(REQ_MAP_STD)
 public class ResTemplStandard {
 
-  private final IService servTemplStandard;
+  private final IService<PersonStandard> servTemplStandard;
 
 
-  @PostMapping
+  @PostMapping(TPL_STD)
   @ResponseStatus(CREATED)
   public Mono<PersonStandard> save(@RequestBody PersonStandard person) {
     return servTemplStandard.save(person);
   }
 
 
-  @GetMapping
+  @GetMapping(TPL_STD)
   @ResponseStatus(OK)
   public Flux<PersonStandard> findAll() {
     return servTemplStandard.findAll();
   }
 
 
-  @GetMapping(ID_STD)
+  @GetMapping(TPL_STD + ID_STD)
   @ResponseStatus(OK)
   public Mono<PersonStandard> findById(@PathVariable String id) {
     return servTemplStandard.findById(id);
   }
 
 
-  @DeleteMapping
+  @DeleteMapping(TPL_STD)
   @ResponseStatus(NO_CONTENT)
   public Mono<Void> deleteAll() {
     return servTemplStandard.deleteAll();
   }
 
 
-  @DeleteMapping(ID_STD)
+  @DeleteMapping(TPL_STD + ID_STD)
   @ResponseStatus(NO_CONTENT)
   public Mono<Void> deleteById(@PathVariable String id) {
     return servTemplStandard.deleteById(id);

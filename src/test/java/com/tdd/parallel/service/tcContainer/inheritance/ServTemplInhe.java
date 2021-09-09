@@ -21,8 +21,9 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import static com.tdd.databuilder.PersonBuilder.personWithIdAndName;
-import static com.tdd.testsconfig.utils.TestMethodUtils.*;
+
+import static com.tdd.databuilder.PersonStandardBuilder.personWithIdAndNameStandard;
+import static com.tdd.testsconfig.utils.TestUtils.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
@@ -57,7 +58,7 @@ public class ServTemplInhe extends TestscontainerConfigInhe {
   public void setUp(TestInfo testInfo) {
     globalTestMessage(testInfo.getTestMethod()
                               .toString(),"method-start");
-    PersonStandard person1 = personWithIdAndName().create();
+    PersonStandard person1 = personWithIdAndNameStandard().create();
     personList = Collections.singletonList(person1);
     personMono = Mono.just(person1);
     StepVerifier

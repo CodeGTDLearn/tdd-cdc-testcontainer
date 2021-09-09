@@ -1,6 +1,7 @@
 package com.tdd.parallel.core.config;
 
-import com.tdd.parallel.repository.standard.TemplStandard;
+import com.tdd.parallel.repository.jsonview.TemplJsonview;
+import com.tdd.parallel.service.jsonview.ServTemplJsonview;
 import com.tdd.parallel.service.standard.ServTemplStandard;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -8,20 +9,20 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 
 @TestConfiguration
-public class ServiceTemplateStandardCfg {
+public class ServiceTemplateJsonviewCfg {
 
   @Autowired
   private ReactiveMongoTemplate reactiveMongoTemplate;
 
 
   @Bean
-  public ServTemplStandard serviceTemplateRepo() {
-    return new ServTemplStandard(templateRepoStandard());
+  public ServTemplJsonview serviceTemplateRepo() {
+    return new ServTemplJsonview(templateRepoJsonview());
   }
 
 
-  private TemplStandard templateRepoStandard() {
-    return new TemplStandard(reactiveMongoTemplate);
+  private TemplJsonview templateRepoJsonview() {
+    return new TemplJsonview(reactiveMongoTemplate);
   }
 
 }

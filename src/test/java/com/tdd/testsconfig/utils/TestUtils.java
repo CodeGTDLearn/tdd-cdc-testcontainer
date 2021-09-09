@@ -13,7 +13,7 @@ import org.testcontainers.containers.MongoDBContainer;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 
 @Slf4j
-public class TestMethodUtils {
+public class TestUtils {
 
   final static Long MAX_TIMEOUT = 15000L;
   final static ContentType JSON_CONTENT_TYPE = ContentType.JSON;

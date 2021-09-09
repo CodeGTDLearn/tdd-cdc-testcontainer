@@ -1,8 +1,8 @@
-package com.tdd.parallel.service.tcCompose.standard;
+package com.tdd.parallel.service.tcCompose.jsonview;
 
-import com.tdd.parallel.core.config.ServiceTemplateStandardCfg;
-import com.tdd.parallel.entity.standard.PersonStandard;
+import com.tdd.parallel.entity.jsonview.PersonJsonview;
 import com.tdd.parallel.service.IService;
+import com.tdd.parallel.service.jsonview.ServCrudJsonview;
 import com.tdd.parallel.service.tcCompose.MergedAnnotations;
 import com.tdd.testsconfig.tcCompose.TcComposeConfig;
 import com.tdd.testsconfig.utils.TestDbUtils;
@@ -21,27 +21,28 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-
-import static com.tdd.databuilder.PersonStandardBuilder.personWithIdAndNameStandard;
 import static com.tdd.testsconfig.utils.TestUtils.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-@DisplayName("ServTemplStd")
-@Import({ServiceTemplateStandardCfg.class})
-@MergedAnnotations
-public class ServTemplStd {
 
+@DisplayName("ServCrudJview")
+@Import({ServCrudJsonview.class})
+@MergedAnnotations
+public class ServCrudJview {
+
+  //STATIC: one service for ALL tests
+  //NON-STATIC: one service for EACH test
   @Container
   private final DockerComposeContainer<?> compose = new TcComposeConfig().getTcCompose();
 
   final private String enabledTest = "true";
   final private int repet = 1;
 
-  private final TestDbUtils<PersonStandard> utils = new TestDbUtils<>();
+  private final TestDbUtils<PersonJsonview> utils = new TestDbUtils<>();
 
   @Autowired
-  private IService<PersonStandard>  servTemplStandard;
+  private IService<PersonJsonview> servCrudJsonview;
 
 
   @BeforeAll
@@ -76,22 +77,7 @@ public class ServTemplStd {
   @DisplayName("Save")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void save() {
-    utils.personStandard_save_check(servTemplStandard);
-  }
-
-
-  @Test
-  @DisplayName("FindAll")
-  @EnabledIf(expression = enabledTest, loadContext = true)
-  public void findAll() {
-    utils.personStandard_save_check(servTemplStandard);
-
-    StepVerifier.create(
-         servTemplStandard.findAll()
-                          .log())
-                .expectSubscription()
-                .expectNextCount(1L)
-                .verifyComplete();
+    utils.personJsonview_save_check(servCrudJsonview);
   }
 
 
@@ -99,11 +85,11 @@ public class ServTemplStd {
   @DisplayName("FindById")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void findById() {
-    PersonStandard localPerson = utils.personStandard_save_check(servTemplStandard);
+    PersonJsonview localPerson = utils.personJsonview_save_check(servCrudJsonview);
 
     StepVerifier
-         .create(servTemplStandard.findById(localPerson.getId())
-                                  .log())
+         .create(servCrudJsonview.findById(localPerson.getId())
+                                 .log())
          .expectSubscription()
          .expectNextMatches(item -> localPerson.getId()
                                                .equals(item.getId()))
@@ -112,36 +98,18 @@ public class ServTemplStd {
 
 
   @Test
-  @DisplayName("DeleteAll")
-  @EnabledIf(expression = enabledTest, loadContext = true)
-  public void deleteAll() {
-    utils.personStandard_save_check(servTemplStandard);
-
-    StepVerifier.create(servTemplStandard.deleteAll())
-                .verifyComplete();
-
-    StepVerifier
-         .create(servTemplStandard.findAll()
-                                  .log())
-         .expectSubscription()
-         .expectNextCount(0L)
-         .verifyComplete();
-  }
-
-
-  @Test
   @DisplayName("DeleteById")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void deleteById() {
-    PersonStandard localPerson = utils.personStandard_save_check(servTemplStandard);
+    PersonJsonview localPerson = utils.personJsonview_save_check(servCrudJsonview);
 
     StepVerifier
-         .create(servTemplStandard.deleteById(localPerson.getId()))
+         .create(servCrudJsonview.deleteById(localPerson.getId()))
          .expectSubscription()
          .verifyComplete();
 
     StepVerifier
-         .create(servTemplStandard.findById(localPerson.getId()))
+         .create(servCrudJsonview.findById(localPerson.getId()))
          .expectSubscription()
          .expectNextCount(0L)
          .verifyComplete();
@@ -166,6 +134,41 @@ public class ServTemplStd {
     } catch (ExecutionException | InterruptedException | TimeoutException e) {
       assertTrue(e.getCause() instanceof BlockingOperationError,"detected");
     }
+  }
+
+
+  @Test
+  @DisplayName("DeleteAll")
+  @EnabledIf(expression = enabledTest, loadContext = true)
+  public void deleteAll() {
+    utils.personJsonview_save_check(servCrudJsonview);
+
+    StepVerifier.create(servCrudJsonview.deleteAll())
+                .verifyComplete();
+
+    StepVerifier
+         .create(servCrudJsonview.findAll()
+                                 .log())
+         .expectSubscription()
+         .expectNextCount(0L)
+         .verifyComplete();
+  }
+
+
+  @Test
+  @DisplayName("findAll")
+  @EnabledIf(expression = enabledTest, loadContext = true)
+  public void findAll() {
+    PersonJsonview localPerson = utils.personJsonview_save_check(servCrudJsonview);
+
+    StepVerifier.create(servCrudJsonview.findAll()
+                                        .log())
+                .thenConsumeWhile(person -> {
+                  //                  System.out.println(person.getName());
+                  Assertions.assertEquals((person.getId()),localPerson.getId());
+                  return true;
+                })
+                .verifyComplete();
   }
 }
 

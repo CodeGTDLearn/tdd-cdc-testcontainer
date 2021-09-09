@@ -6,6 +6,7 @@ import com.tdd.parallel.service.standard.ServCrudStandard;
 import com.tdd.testsconfig.globalAnnotations.GlobalConfig;
 import com.tdd.testsconfig.globalAnnotations.MongoDbConfig;
 import com.tdd.testsconfig.tcContainer.annotations.TcContainer;
+import com.tdd.testsconfig.utils.TestDbUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -18,7 +19,7 @@ import reactor.test.StepVerifier;
 
 import java.util.Stack;
 
-import static com.tdd.databuilder.PersonBuilder.personWithIdAndName;
+import static com.tdd.databuilder.PersonStandardBuilder.personWithIdAndNameStandard;
 import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
 
@@ -30,6 +31,8 @@ import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
 public class NestedClassLab {
 
   final private String enabledTest = "true";
+
+  private final TestDbUtils<PersonStandard> utils = new TestDbUtils<>();
 
   @Autowired
   IService<PersonStandard> serviceCrudRepo;
@@ -43,21 +46,9 @@ public class NestedClassLab {
 
 
   private PersonStandard getPerson() {
-    return personWithIdAndName().create();
+    return personWithIdAndNameStandard().create();
   }
 
-
-  private PersonStandard generatePerson_savePerson_testThisSaving() {
-    PersonStandard localPerson = getPerson();
-
-    StepVerifier
-         .create(serviceCrudRepo.save(localPerson))
-         .expectSubscription()
-         .expectNext(localPerson)
-         .verifyComplete();
-
-    return localPerson;
-  }
 
   @MongoDbConfig
   @Nested
@@ -69,7 +60,7 @@ public class NestedClassLab {
     @EnabledIf(expression = enabledTest, loadContext = true)
     public void test1findAll() {
 
-      PersonStandard localPerson = generatePerson_savePerson_testThisSaving();
+      PersonStandard localPerson = utils.personStandard_save_check(serviceCrudRepo);
 
       StepVerifier.create(serviceCrudRepo.findAll()
                                          .log())
@@ -87,7 +78,7 @@ public class NestedClassLab {
     @EnabledIf(expression = enabledTest, loadContext = true)
     public void test2findAll() {
 
-      PersonStandard localPerson = generatePerson_savePerson_testThisSaving();
+      PersonStandard localPerson = utils.personStandard_save_check(serviceCrudRepo);
 
       StepVerifier.create(serviceCrudRepo.findAll()
                                          .log())
@@ -112,7 +103,7 @@ public class NestedClassLab {
     @EnabledIf(expression = enabledTest, loadContext = true)
     public void findAll3() {
 
-      PersonStandard localPerson = generatePerson_savePerson_testThisSaving();
+      PersonStandard localPerson = utils.personStandard_save_check(serviceCrudRepo);
 
       StepVerifier.create(serviceCrudRepo.findAll()
                                          .log())

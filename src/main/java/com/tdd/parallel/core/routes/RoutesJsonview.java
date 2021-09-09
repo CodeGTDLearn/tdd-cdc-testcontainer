@@ -5,10 +5,15 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class RoutesJsonview {
-  public static final String CRUD_REPO_JVIEW_ADMIN = "/personCrudRepoJsonviewAdmin";
-  public static final String CRUD_REPO_JVIEW_USER = "/personCrudRepoJsonviewUser";
-  public static final String ID_JVIEW = "/{id}";
-  public static final String MGO_REPO_JVIEW = "/personMongoRepoJsonview";
-  public static final String RCT_MGO_TPL_REP_JVIEW = "/personReactMongoTemplRepoJsonview";
-  public static final String REQ_MAP_TPL_REPO_JVIEW = "/personTemplJsonview";
+  public static final String REQ_MAP_JV = "/personTemplJview";
+
+  public static final String CRUD_JV_ADMIN = "/personCrudJviewAdmin";
+  public static final String CRUD_JV_USER = "/personCrudJviewUser";
+
+  public static final String REPO_JV_ADMIN= "/personRepoJviewAdmin";
+  public static final String REPO_JV_USER= "/personRepoJviewUser";
+
+  public static final String TPL_JV_ADMIN = "/personTemplJviewAdmin";
+  public static final String TPL_JV_USER = "/personTemplJviewUser";
+  public static final String ID_JV = "/{id}";
 }

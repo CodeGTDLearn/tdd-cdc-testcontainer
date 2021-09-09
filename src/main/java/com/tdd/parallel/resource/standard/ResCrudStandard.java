@@ -8,48 +8,47 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import static com.tdd.parallel.core.routes.RoutesStandard.CRUD_STD;
-import static com.tdd.parallel.core.routes.RoutesStandard.ID_STD;
+import static com.tdd.parallel.core.routes.RoutesStandard.*;
 import static org.springframework.http.HttpStatus.*;
 
 @AllArgsConstructor
 @Slf4j
 @RestController
-@RequestMapping(CRUD_STD)
+@RequestMapping(REQ_MAP_STD)
 public class ResCrudStandard {
 
-  private final IService servCrudStandard;
+  private final IService<PersonStandard> servCrudStandard;
 
 
-  @PostMapping
+  @PostMapping(CRUD_STD)
   @ResponseStatus(CREATED)
   public Mono<PersonStandard> save(@RequestBody PersonStandard person) {
     return servCrudStandard.save(person);
   }
 
 
-  @GetMapping
+  @GetMapping(CRUD_STD)
   @ResponseStatus(OK)
   public Flux<PersonStandard> findAll() {
     return servCrudStandard.findAll();
   }
 
 
-  @GetMapping(ID_STD)
+  @GetMapping(CRUD_STD + ID_STD)
   @ResponseStatus(OK)
   public Mono<PersonStandard> findById(@PathVariable String id) {
     return servCrudStandard.findById(id);
   }
 
 
-  @DeleteMapping
+  @DeleteMapping(CRUD_STD)
   @ResponseStatus(NO_CONTENT)
   public Mono<Void> deleteAll() {
     return servCrudStandard.deleteAll();
   }
 
 
-  @DeleteMapping(ID_STD)
+  @DeleteMapping(CRUD_STD + ID_STD)
   @ResponseStatus(NO_CONTENT)
   public Mono<Void> deleteById(@PathVariable String id) {
     return servCrudStandard.deleteById(id);
