@@ -14,41 +14,34 @@ import static org.springframework.http.HttpStatus.*;
 @AllArgsConstructor
 @Slf4j
 @RestController
-@RequestMapping(REQ_MAP_STD)
+@RequestMapping(STD_REQ_MAP)
 public class ResRepoStandard {
 
   private final IService<PersonStandard> servRepoStandard;
 
 
-  @PostMapping(REPO_STD)
+  @PostMapping(STD_REPO)
   @ResponseStatus(CREATED)
   public Mono<PersonStandard> save(@RequestBody PersonStandard person) {
     return servRepoStandard.save(person);
   }
 
 
-  @GetMapping(REPO_STD)
+  @GetMapping(STD_REPO)
   @ResponseStatus(OK)
   public Flux<PersonStandard> findAll() {
     return servRepoStandard.findAll();
   }
 
 
-  @GetMapping(REPO_STD+ID_STD)
+  @GetMapping(STD_REPO + STD_ID)
   @ResponseStatus(OK)
   public Mono<PersonStandard> findById(@PathVariable String id) {
     return servRepoStandard.findById(id);
   }
 
 
-  @DeleteMapping(REPO_STD)
-  @ResponseStatus(NO_CONTENT)
-  public Mono<Void> deleteAll() {
-    return servRepoStandard.deleteAll();
-  }
-
-
-  @DeleteMapping(REPO_STD+ID_STD)
+  @DeleteMapping(STD_REPO + STD_ID)
   @ResponseStatus(NO_CONTENT)
   public Mono<Void> deleteById(@PathVariable String id) {
     return servRepoStandard.deleteById(id);

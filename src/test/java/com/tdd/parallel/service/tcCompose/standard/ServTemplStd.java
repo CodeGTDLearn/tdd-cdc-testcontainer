@@ -112,24 +112,6 @@ public class ServTemplStd {
 
 
   @Test
-  @DisplayName("DeleteAll")
-  @EnabledIf(expression = enabledTest, loadContext = true)
-  public void deleteAll() {
-    utils.personStandard_save_check(servTemplStandard);
-
-    StepVerifier.create(servTemplStandard.deleteAll())
-                .verifyComplete();
-
-    StepVerifier
-         .create(servTemplStandard.findAll()
-                                  .log())
-         .expectSubscription()
-         .expectNextCount(0L)
-         .verifyComplete();
-  }
-
-
-  @Test
   @DisplayName("DeleteById")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void deleteById() {

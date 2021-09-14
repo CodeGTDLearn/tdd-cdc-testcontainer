@@ -51,6 +51,7 @@ public class ResTemplStd {
   // BECAUSE THERE IS NO 'REAL-SERVER' CREATED VIA DOCKER-COMPOSE
   @Autowired
   WebTestClient mockedWebClient;
+
   @Autowired
   private IService<PersonStandard> servTemplStandard;
 
@@ -106,7 +107,7 @@ public class ResTemplStd {
          .body(localPerson)
 
          .when()
-         .post(REQ_MAP_STD + TPL_STD)
+         .post(STD_REQ_MAP + STD_TEMPL)
 
          .then()
          .statusCode(CREATED.value())
@@ -117,9 +118,11 @@ public class ResTemplStd {
          .log()
 
          .body()
+         .body("$",hasKey("id"))
+         .body("$",hasKey("name"))
          .body("id",containsString(localPerson.getId()))
          .body("name",containsString(localPerson.getName()))
-         .body(matchesJsonSchemaInClasspath("cdc_contracts/person.json"))
+         .body(matchesJsonSchemaInClasspath("contracts/person/admin.json"))
     ;
 
     utils.findPersonInDb(servTemplStandard.findById(localPerson.getId()),1L);
@@ -139,7 +142,7 @@ public class ResTemplStd {
          .header("Content-type",CONT_JSON)
 
          .when()
-         .get(REQ_MAP_STD + TPL_STD)
+         .get(STD_REQ_MAP + STD_TEMPL)
 
          .then()
          .statusCode(OK.value())
@@ -149,9 +152,13 @@ public class ResTemplStd {
          .log()
 
          .body()
-         .body("size()",is(1))
+         .body("[0]",hasKey("id"))
+         .body("[0]",hasKey("name"))
+         .body("[0].id",containsString(localPerson.getId()))
+         .body("[0].name",containsString(localPerson.getName()))
          .body("id",hasItem(localPerson.getId()))
-         .body(matchesJsonSchemaInClasspath("cdc_contracts/person.json"))
+         .body("name",hasItem(localPerson.getName()))
+         .body(matchesJsonSchemaInClasspath("contracts/person/adminList.json"))
     ;
   }
 
@@ -169,7 +176,7 @@ public class ResTemplStd {
          .header("Content-type",CONT_JSON)
 
          .when()
-         .get(REQ_MAP_STD + TPL_STD + ID_STD,localPerson.getId())
+         .get(STD_REQ_MAP + STD_TEMPL + STD_ID,localPerson.getId())
 
          .then()
          .statusCode(OK.value())
@@ -179,38 +186,14 @@ public class ResTemplStd {
          .log()
 
          .body()
-         .body("id",equalTo(localPerson.getId()))
-         .body(matchesJsonSchemaInClasspath("cdc_contracts/person.json"))
+         .body("$",hasKey("id"))
+         .body("$",hasKey("name"))
+         .body("id",containsString(localPerson.getId()))
+         .body("name",containsString(localPerson.getName()))
+         .body(matchesJsonSchemaInClasspath("contracts/person/admin.json"))
     ;
 
     utils.findPersonInDb(servTemplStandard.findById(localPerson.getId()),1L);
-  }
-
-
-  @Test
-  @DisplayName("DeleteAll")
-  @EnabledIf(expression = enabledTest, loadContext = true)
-  public void deleteAll() {
-    PersonStandard localPerson = utils.personStandard_save_check(servTemplStandard);
-
-    RestAssuredWebTestClient
-         .given()
-         .webTestClient(mockedWebClient)
-         .header("Accept",CONT_ANY)
-         .header("Content-type",CONT_JSON)
-
-         .body(localPerson)
-
-         .when()
-         .delete(REQ_MAP_STD + TPL_STD)
-
-         .then()
-         .log()
-         .headers()
-         .statusCode(NO_CONTENT.value())
-    ;
-
-    utils.countPersonInDb(servTemplStandard.findAll(),0L);
   }
 
 
@@ -229,7 +212,7 @@ public class ResTemplStd {
          .body(localPerson)
 
          .when()
-         .delete(REQ_MAP_STD + TPL_STD + ID_STD,localPerson.getId())
+         .delete(STD_REQ_MAP + STD_TEMPL + STD_ID,localPerson.getId())
 
          .then()
          .log()

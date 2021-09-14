@@ -1,7 +1,7 @@
 package com.tdd.parallel.resource.jsonview;
 
 import com.tdd.parallel.entity.jsonview.PersonJsonview;
-import com.tdd.parallel.repository.standard.ICrudStandard;
+import com.tdd.parallel.entity.slim.PersonOnlyName;
 import com.tdd.parallel.resource.MergedAnnotations;
 import com.tdd.parallel.service.IService;
 import com.tdd.parallel.service.jsonview.ServCrudJsonview;
@@ -24,9 +24,8 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import static com.tdd.databuilder.PersonSlimBuilder.personOnlyName;
 import static com.tdd.parallel.core.routes.RoutesJsonview.*;
-import static com.tdd.parallel.core.routes.RoutesStandard.CRUD_STD;
-import static com.tdd.parallel.core.routes.RoutesStandard.ID_STD;
 import static com.tdd.testsconfig.utils.TestUtils.*;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.CoreMatchers.hasItem;
@@ -57,10 +56,7 @@ public class ResCrudJview {
   WebTestClient mockedWebClient;
 
   @Autowired
-  ICrudStandard repository;
-
-  @Autowired
-  private IService<PersonJsonview> serviceCrudJsonview;
+  private IService<PersonJsonview> servCrudJsonview;
 
 
   @BeforeAll
@@ -100,10 +96,10 @@ public class ResCrudJview {
 
 
   @Test
-  @DisplayName("SaveAdmin")
+  @DisplayName("SaveAdminReqView")
   @EnabledIf(expression = enabledTest, loadContext = true)
-  public void saveAdmin() {
-    PersonJsonview localPerson = utils.personJsonview_save_check(serviceCrudJsonview);
+  public void saveAdminRequestView() {
+    PersonOnlyName personOnlyName = personOnlyName().create();
 
     RestAssuredWebTestClient
 
@@ -111,11 +107,10 @@ public class ResCrudJview {
          .webTestClient(mockedWebClient)
          .header("Accept",CONT_ANY)
          .header("Content-type",CONT_JSON)
-
-         .body(localPerson)
+         .body(personOnlyName)
 
          .when()
-         .post(REQ_MAP_JV + CRUD_JV_ADMIN)
+         .post(JV_REQ_MAP + JV_CRUD_ADMIN_POST_REQUEST)
 
          .then()
          .statusCode(CREATED.value())
@@ -126,12 +121,48 @@ public class ResCrudJview {
          .log()
 
          .body()
+         .body("$",hasKey("id"))
+         .body("$",hasKey("name"))
+         .body("name",containsString(personOnlyName.getName()))
+         .body(matchesJsonSchemaInClasspath("contracts/person/admin.json"))
+    ;
+  }
+
+
+  @Test
+  @DisplayName("SaveAdmin")
+  @EnabledIf(expression = enabledTest, loadContext = true)
+  public void saveAdmin() {
+    PersonJsonview localPerson = utils.personJsonview_save_check(servCrudJsonview);
+
+    RestAssuredWebTestClient
+
+         .given()
+         .webTestClient(mockedWebClient)
+         .header("Accept",CONT_ANY)
+         .header("Content-type",CONT_JSON)
+         .body(localPerson)
+
+         .when()
+         .post(JV_REQ_MAP + JV_CRUD_ADMIN)
+
+         .then()
+         .statusCode(CREATED.value())
+         .contentType(CONT_JSON)
+         .log()
+         .headers()
+         .and()
+         .log()
+
+         .body()
+         .body("$",hasKey("id"))
+         .body("$",hasKey("name"))
          .body("id",containsString(localPerson.getId()))
          .body("name",containsString(localPerson.getName()))
-         .body(matchesJsonSchemaInClasspath("cdc_contracts/person.json"))
+         .body(matchesJsonSchemaInClasspath("contracts/person/admin.json"))
     ;
 
-    utils.findPersonInDb(serviceCrudJsonview.findById(localPerson.getId()),1L);
+    utils.findPersonInDb(servCrudJsonview.findById(localPerson.getId()),1L);
   }
 
 
@@ -139,7 +170,7 @@ public class ResCrudJview {
   @DisplayName("SaveUser")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void saveUser() {
-    PersonJsonview localPerson = utils.personJsonview_save_check(serviceCrudJsonview);
+    PersonJsonview localPerson = utils.personJsonview_save_check(servCrudJsonview);
 
     RestAssuredWebTestClient
 
@@ -151,7 +182,7 @@ public class ResCrudJview {
          .body(localPerson)
 
          .when()
-         .post(REQ_MAP_JV + CRUD_JV_USER)
+         .post(JV_REQ_MAP + JV_CRUD_USER)
 
          .then()
          .statusCode(CREATED.value())
@@ -162,12 +193,14 @@ public class ResCrudJview {
          .log()
 
          .body()
-         .body("id",containsString(localPerson.getId()))
+         .body("$",not(hasKey("id")))
+         .body("$",hasKey("name"))
+         .body("id",emptyOrNullString())
          .body("name",containsString(localPerson.getName()))
-         .body(matchesJsonSchemaInClasspath("cdc_contracts/person.json"))
+         .body(matchesJsonSchemaInClasspath("contracts/person/user.json"))
     ;
 
-    utils.findPersonInDb(serviceCrudJsonview.findById(localPerson.getId()),1L);
+    utils.findPersonInDb(servCrudJsonview.findById(localPerson.getId()),1L);
   }
 
 
@@ -175,7 +208,7 @@ public class ResCrudJview {
   @DisplayName("FindAllAdmin")
   @EnabledIf(expression = enabledTest, loadContext = true)
   void findAllAdmin() {
-    PersonJsonview localPerson = utils.personJsonview_save_check(serviceCrudJsonview);
+    PersonJsonview localPerson = utils.personJsonview_save_check(servCrudJsonview);
 
     RestAssuredWebTestClient
 
@@ -185,7 +218,7 @@ public class ResCrudJview {
          .header("Content-type",CONT_JSON)
 
          .when()
-         .get(REQ_MAP_JV + CRUD_JV_ADMIN)
+         .get(JV_REQ_MAP + JV_CRUD_ADMIN)
 
          .then()
          .statusCode(OK.value())
@@ -195,9 +228,13 @@ public class ResCrudJview {
          .log()
 
          .body()
-         .body("size()",is(1))
+         .body("[0]",hasKey("id"))
+         .body("[0]",hasKey("name"))
+         .body("[0].id",containsString(localPerson.getId()))
+         .body("[0].name",containsString(localPerson.getName()))
          .body("id",hasItem(localPerson.getId()))
-         .body(matchesJsonSchemaInClasspath("cdc_contracts/person.json"))
+         .body("name",hasItem(localPerson.getName()))
+         .body(matchesJsonSchemaInClasspath("contracts/person/adminList.json"))
     ;
   }
 
@@ -206,7 +243,7 @@ public class ResCrudJview {
   @DisplayName("FindAllUser")
   @EnabledIf(expression = enabledTest, loadContext = true)
   void findAllUser() {
-    PersonJsonview localPerson = utils.personJsonview_save_check(serviceCrudJsonview);
+    PersonJsonview localPerson = utils.personJsonview_save_check(servCrudJsonview);
 
     RestAssuredWebTestClient
 
@@ -216,7 +253,7 @@ public class ResCrudJview {
          .header("Content-type",CONT_JSON)
 
          .when()
-         .get(REQ_MAP_JV + CRUD_JV_USER)
+         .get(JV_REQ_MAP + JV_CRUD_USER)
 
          .then()
          .statusCode(OK.value())
@@ -226,9 +263,11 @@ public class ResCrudJview {
          .log()
 
          .body()
-         .body("size()",is(1))
-         .body("id",hasItem(localPerson.getId()))
-         .body(matchesJsonSchemaInClasspath("cdc_contracts/person.json"))
+         .body("[0]",not(hasKey("id")))
+         .body("[0]",hasKey("name"))
+         .body("[0].name",containsString(localPerson.getName()))
+         .body("name",hasItem(localPerson.getName()))
+         .body(matchesJsonSchemaInClasspath("contracts/person/userList.json"))
     ;
   }
 
@@ -237,7 +276,7 @@ public class ResCrudJview {
   @DisplayName("FindByIdAdmin")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void findByIdAdmin() {
-    PersonJsonview localPerson = utils.personJsonview_save_check(serviceCrudJsonview);
+    PersonJsonview localPerson = utils.personJsonview_save_check(servCrudJsonview);
 
     RestAssuredWebTestClient
 
@@ -247,7 +286,7 @@ public class ResCrudJview {
          .header("Content-type",CONT_JSON)
 
          .when()
-         .get(REQ_MAP_JV + CRUD_JV_ADMIN + ID_JV,localPerson.getId())
+         .get(JV_REQ_MAP + JV_CRUD_ADMIN + JV_ID,localPerson.getId())
 
          .then()
          .statusCode(OK.value())
@@ -257,11 +296,14 @@ public class ResCrudJview {
          .log()
 
          .body()
-         .body("id",equalTo(localPerson.getId()))
-         .body(matchesJsonSchemaInClasspath("cdc_contracts/person.json"))
+         .body("$",hasKey("id"))
+         .body("$",hasKey("name"))
+         .body("id",containsString(localPerson.getId()))
+         .body("name",containsString(localPerson.getName()))
+         .body(matchesJsonSchemaInClasspath("contracts/person/admin.json"))
     ;
 
-    utils.findPersonInDb(serviceCrudJsonview.findById(localPerson.getId()),1L);
+    utils.findPersonInDb(servCrudJsonview.findById(localPerson.getId()),1L);
   }
 
 
@@ -269,7 +311,7 @@ public class ResCrudJview {
   @DisplayName("FindByIdUser")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void findByIdUser() {
-    PersonJsonview localPerson = utils.personJsonview_save_check(serviceCrudJsonview);
+    PersonJsonview localPerson = utils.personJsonview_save_check(servCrudJsonview);
 
     RestAssuredWebTestClient
 
@@ -279,7 +321,7 @@ public class ResCrudJview {
          .header("Content-type",CONT_JSON)
 
          .when()
-         .get(REQ_MAP_JV + CRUD_JV_USER + ID_JV,localPerson.getId())
+         .get(JV_REQ_MAP + JV_CRUD_USER + JV_ID,localPerson.getId())
 
          .then()
          .statusCode(OK.value())
@@ -289,47 +331,22 @@ public class ResCrudJview {
          .log()
 
          .body()
-         .body("id",equalTo(localPerson.getId()))
-         .body(matchesJsonSchemaInClasspath("cdc_contracts/person.json"))
+         .body("$",not(hasKey("id")))
+         .body("$",hasKey("name"))
+         .body("id",emptyOrNullString())
+         .body("name",containsString(localPerson.getName()))
+         .body(matchesJsonSchemaInClasspath("contracts/person/user.json"))
     ;
 
-    utils.findPersonInDb(serviceCrudJsonview.findById(localPerson.getId()),1L);
-  }
-
-
-  @Test
-  @DisplayName("DeleteAll")
-  @EnabledIf(expression = enabledTest, loadContext = true)
-  public void deleteAll() {
-    PersonJsonview localPerson = utils.personJsonview_save_check(serviceCrudJsonview);
-
-    RestAssuredWebTestClient
-
-         .given()
-         .webTestClient(mockedWebClient)
-         .header("Accept",CONT_ANY)
-         .header("Content-type",CONT_JSON)
-
-         .body(localPerson)
-
-         .when()
-         .delete(REQ_MAP_JV + CRUD_JV_ADMIN)
-
-         .then()
-         .log()
-         .headers()
-         .statusCode(NO_CONTENT.value())
-    ;
-
-    utils.countPersonInDb(serviceCrudJsonview.findAll(),0L);
+    utils.findPersonInDb(servCrudJsonview.findById(localPerson.getId()),1L);
   }
 
 
   @Test
   @DisplayName("DeleteById")
   @EnabledIf(expression = enabledTest, loadContext = true)
-  public void deleteByIdAdmin() {
-    PersonJsonview localPerson = utils.personJsonview_save_check(serviceCrudJsonview);
+  public void deleteById() {
+    PersonJsonview localPerson = utils.personJsonview_save_check(servCrudJsonview);
 
     RestAssuredWebTestClient
 
@@ -341,7 +358,7 @@ public class ResCrudJview {
          .body(localPerson)
 
          .when()
-         .delete(REQ_MAP_JV + CRUD_JV_ADMIN + ID_JV,localPerson.getId())
+         .delete(JV_REQ_MAP + JV_CRUD_DEL + JV_ID,localPerson.getId())
 
          .then()
          .log()
@@ -349,7 +366,7 @@ public class ResCrudJview {
          .statusCode(NO_CONTENT.value())
     ;
 
-    utils.findPersonInDb(serviceCrudJsonview.findById(localPerson.getId()),0L);
+    utils.findPersonInDb(servCrudJsonview.findById(localPerson.getId()),0L);
   }
 
 

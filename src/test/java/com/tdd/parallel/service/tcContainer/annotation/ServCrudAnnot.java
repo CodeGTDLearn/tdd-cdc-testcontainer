@@ -134,25 +134,6 @@ public class ServCrudAnnot {
 
 
   @Test
-  @DisplayName("DeleteAll")
-  @EnabledIf(expression = enabledTest, loadContext = true)
-  public void deleteAll() {
-    utils.personStandard_save_check(serviceCrudRepo);
-
-
-    StepVerifier.create(serviceCrudRepo.deleteAll())
-                .verifyComplete();
-
-    StepVerifier
-         .create(serviceCrudRepo.findAll()
-                                .log())
-         .expectSubscription()
-         .expectNextCount(0L)
-         .verifyComplete();
-  }
-
-
-  @Test
   @DisplayName("findAll")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void findAll() {

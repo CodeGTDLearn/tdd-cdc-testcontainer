@@ -127,22 +127,6 @@ public class ServTemplInhe extends TestscontainerConfigInhe {
 
 
   @Test
-  @DisplayName("DeleteAll")
-  @EnabledIf(expression = enabledTest, loadContext = true)
-  public void deleteAll() {
-    StepVerifier.create(serviceTemplateRepo.deleteAll())
-                .verifyComplete();
-
-    StepVerifier
-         .create(serviceTemplateRepo.findAll()
-                                    .log())
-         .expectSubscription()
-         .expectNextCount(0L)
-         .verifyComplete();
-  }
-
-
-  @Test
   @DisplayName("DeleteById")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void deleteById() {

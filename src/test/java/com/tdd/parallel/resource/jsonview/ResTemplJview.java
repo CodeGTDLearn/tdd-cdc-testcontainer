@@ -1,9 +1,10 @@
-package com.tdd.parallel.resource.standard;
+package com.tdd.parallel.resource.jsonview;
 
-import com.tdd.parallel.entity.standard.PersonStandard;
+import com.tdd.parallel.entity.jsonview.PersonJsonview;
+import com.tdd.parallel.entity.slim.PersonOnlyName;
 import com.tdd.parallel.resource.MergedAnnotations;
 import com.tdd.parallel.service.IService;
-import com.tdd.parallel.service.standard.ServRepoStandard;
+import com.tdd.parallel.service.jsonview.ServTemplJsonview;
 import com.tdd.testsconfig.tcCompose.TcComposeConfig;
 import com.tdd.testsconfig.utils.TestDbUtils;
 import io.restassured.http.ContentType;
@@ -23,18 +24,19 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import static com.tdd.parallel.core.routes.RoutesStandard.*;
+import static com.tdd.databuilder.PersonSlimBuilder.personOnlyName;
+import static com.tdd.parallel.core.routes.RoutesJsonview.*;
 import static com.tdd.testsconfig.utils.TestUtils.*;
-import static io.restassured.module.jsv.JsonSchemaValidator.*;
+import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.http.HttpStatus.*;
 
-@DisplayName("ResRepoStd")
-@Import({ServRepoStandard.class})
+@DisplayName("ResTemplJview")
+@Import({ServTemplJsonview.class})
 @MergedAnnotations
-public class ResRepoStd {
+public class ResTemplJview {
 
   //STATIC: one service for ALL tests
   //NON-STATIC: one service for EACH test
@@ -43,19 +45,19 @@ public class ResRepoStd {
 
   final ContentType CONT_ANY = ContentType.ANY;
   final ContentType CONT_JSON = ContentType.JSON;
+
   final private String enabledTest = "true";
   final private int repet = 1;
-
+  private final TestDbUtils<PersonJsonview> utils = new TestDbUtils<>();
   // WEB-TEST-CLIENT(non-blocking client)'
   // SHOULD BE USED WITH 'TEST-CONTAINERS'
   // BECAUSE THERE IS NO 'REAL-SERVER' CREATED VIA DOCKER-COMPOSE
   @Autowired
   WebTestClient mockedWebClient;
 
-  @Autowired
-  private IService<PersonStandard>  servRepoStandard;
 
-  private final TestDbUtils<PersonStandard> utils = new TestDbUtils<>();
+  @Autowired
+  private IService<PersonJsonview> servTemplJsonview;
 
 
   @BeforeAll
@@ -95,10 +97,10 @@ public class ResRepoStd {
 
 
   @Test
-  @DisplayName("Save")
+  @DisplayName("SaveAdminReqView")
   @EnabledIf(expression = enabledTest, loadContext = true)
-  public void save() {
-    PersonStandard localPerson = utils.personStandard_save_check(servRepoStandard);
+  public void saveAdminRequestView() {
+    PersonOnlyName personOnlyName = personOnlyName().create();
 
     RestAssuredWebTestClient
 
@@ -106,11 +108,44 @@ public class ResRepoStd {
          .webTestClient(mockedWebClient)
          .header("Accept",CONT_ANY)
          .header("Content-type",CONT_JSON)
+         .body(personOnlyName)
 
+         .when()
+         .post(JV_REQ_MAP + JV_CRUD_ADMIN_POST_REQUEST)
+
+         .then()
+         .statusCode(CREATED.value())
+         .contentType(CONT_JSON)
+         .log()
+         .headers()
+         .and()
+         .log()
+
+         .body()
+         .body("$",hasKey("id"))
+         .body("$",hasKey("name"))
+         .body("name",containsString(personOnlyName.getName()))
+         .body(matchesJsonSchemaInClasspath("contracts/person/admin.json"))
+    ;
+  }
+
+
+  @Test
+  @DisplayName("SaveAdmin")
+  @EnabledIf(expression = enabledTest, loadContext = true)
+  public void saveAdmin() {
+    PersonJsonview localPerson = utils.personJsonview_save_check(servTemplJsonview);
+
+    RestAssuredWebTestClient
+
+         .given()
+         .webTestClient(mockedWebClient)
+         .header("Accept",CONT_ANY)
+         .header("Content-type",CONT_JSON)
          .body(localPerson)
 
          .when()
-         .post(STD_REQ_MAP + STD_REPO)
+         .post(JV_REQ_MAP + JV_CRUD_ADMIN)
 
          .then()
          .statusCode(CREATED.value())
@@ -128,15 +163,53 @@ public class ResRepoStd {
          .body(matchesJsonSchemaInClasspath("contracts/person/admin.json"))
     ;
 
-    utils.findPersonInDb(servRepoStandard.findById(localPerson.getId()),1L);
+    utils.findPersonInDb(servTemplJsonview.findById(localPerson.getId()),1L);
   }
 
 
   @Test
-  @DisplayName("FindAll")
+  @DisplayName("SaveUser")
   @EnabledIf(expression = enabledTest, loadContext = true)
-  void findAll() {
-    PersonStandard localPerson = utils.personStandard_save_check(servRepoStandard);
+  public void saveUser() {
+    PersonJsonview localPerson = utils.personJsonview_save_check(servTemplJsonview);
+
+    RestAssuredWebTestClient
+
+         .given()
+         .webTestClient(mockedWebClient)
+         .header("Accept",CONT_ANY)
+         .header("Content-type",CONT_JSON)
+
+         .body(localPerson)
+
+         .when()
+         .post(JV_REQ_MAP + JV_CRUD_USER)
+
+         .then()
+         .statusCode(CREATED.value())
+         .contentType(CONT_JSON)
+         .log()
+         .headers()
+         .and()
+         .log()
+
+         .body()
+         .body("$",not(hasKey("id")))
+         .body("$",hasKey("name"))
+         .body("id",emptyOrNullString())
+         .body("name",containsString(localPerson.getName()))
+         .body(matchesJsonSchemaInClasspath("contracts/person/user.json"))
+    ;
+
+    utils.findPersonInDb(servTemplJsonview.findById(localPerson.getId()),1L);
+  }
+
+
+  @Test
+  @DisplayName("FindAllAdmin")
+  @EnabledIf(expression = enabledTest, loadContext = true)
+  void findAllAdmin() {
+    PersonJsonview localPerson = utils.personJsonview_save_check(servTemplJsonview);
 
     RestAssuredWebTestClient
 
@@ -146,7 +219,7 @@ public class ResRepoStd {
          .header("Content-type",CONT_JSON)
 
          .when()
-         .get(STD_REQ_MAP + STD_REPO)
+         .get(JV_REQ_MAP + JV_CRUD_ADMIN)
 
          .then()
          .statusCode(OK.value())
@@ -168,10 +241,10 @@ public class ResRepoStd {
 
 
   @Test
-  @DisplayName("FindById")
+  @DisplayName("FindAllUser")
   @EnabledIf(expression = enabledTest, loadContext = true)
-  public void findById() {
-    PersonStandard localPerson = utils.personStandard_save_check(servRepoStandard);
+  void findAllUser() {
+    PersonJsonview localPerson = utils.personJsonview_save_check(servTemplJsonview);
 
     RestAssuredWebTestClient
 
@@ -181,7 +254,40 @@ public class ResRepoStd {
          .header("Content-type",CONT_JSON)
 
          .when()
-         .get(STD_REQ_MAP + STD_REPO + STD_ID,localPerson.getId())
+         .get(JV_REQ_MAP + JV_CRUD_USER)
+
+         .then()
+         .statusCode(OK.value())
+         .log()
+         .headers()
+         .and()
+         .log()
+
+         .body()
+         .body("[0]",not(hasKey("id")))
+         .body("[0]",hasKey("name"))
+         .body("[0].name",containsString(localPerson.getName()))
+         .body("name",hasItem(localPerson.getName()))
+         .body(matchesJsonSchemaInClasspath("contracts/person/userList.json"))
+    ;
+  }
+
+
+  @Test
+  @DisplayName("FindByIdAdmin")
+  @EnabledIf(expression = enabledTest, loadContext = true)
+  public void findByIdAdmin() {
+    PersonJsonview localPerson = utils.personJsonview_save_check(servTemplJsonview);
+
+    RestAssuredWebTestClient
+
+         .given()
+         .webTestClient(mockedWebClient)
+         .header("Accept",CONT_ANY)
+         .header("Content-type",CONT_JSON)
+
+         .when()
+         .get(JV_REQ_MAP + JV_CRUD_ADMIN + JV_ID,localPerson.getId())
 
          .then()
          .statusCode(OK.value())
@@ -198,7 +304,42 @@ public class ResRepoStd {
          .body(matchesJsonSchemaInClasspath("contracts/person/admin.json"))
     ;
 
-    utils.findPersonInDb(servRepoStandard.findById(localPerson.getId()),1L);
+    utils.findPersonInDb(servTemplJsonview.findById(localPerson.getId()),1L);
+  }
+
+
+  @Test
+  @DisplayName("FindByIdUser")
+  @EnabledIf(expression = enabledTest, loadContext = true)
+  public void findByIdUser() {
+    PersonJsonview localPerson = utils.personJsonview_save_check(servTemplJsonview);
+
+    RestAssuredWebTestClient
+
+         .given()
+         .webTestClient(mockedWebClient)
+         .header("Accept",CONT_ANY)
+         .header("Content-type",CONT_JSON)
+
+         .when()
+         .get(JV_REQ_MAP + JV_CRUD_USER + JV_ID,localPerson.getId())
+
+         .then()
+         .statusCode(OK.value())
+         .log()
+         .headers()
+         .and()
+         .log()
+
+         .body()
+         .body("$",not(hasKey("id")))
+         .body("$",hasKey("name"))
+         .body("id",emptyOrNullString())
+         .body("name",containsString(localPerson.getName()))
+         .body(matchesJsonSchemaInClasspath("contracts/person/user.json"))
+    ;
+
+    utils.findPersonInDb(servTemplJsonview.findById(localPerson.getId()),1L);
   }
 
 
@@ -206,7 +347,7 @@ public class ResRepoStd {
   @DisplayName("DeleteById")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void deleteById() {
-    PersonStandard localPerson = utils.personStandard_save_check(servRepoStandard);
+    PersonJsonview localPerson = utils.personJsonview_save_check(servTemplJsonview);
 
     RestAssuredWebTestClient
 
@@ -218,7 +359,7 @@ public class ResRepoStd {
          .body(localPerson)
 
          .when()
-         .delete(STD_REQ_MAP + STD_REPO + STD_ID,localPerson.getId())
+         .delete(JV_REQ_MAP + JV_TEMPL_DEL + JV_ID,localPerson.getId())
 
          .then()
          .log()
@@ -226,7 +367,7 @@ public class ResRepoStd {
          .statusCode(NO_CONTENT.value())
     ;
 
-    utils.findPersonInDb(servRepoStandard.findById(localPerson.getId()),0L);
+    utils.findPersonInDb(servTemplJsonview.findById(localPerson.getId()),0L);
   }
 
 
@@ -249,4 +390,5 @@ public class ResRepoStd {
       assertTrue(e.getCause() instanceof BlockingOperationError,"detected");
     }
   }
+
 }

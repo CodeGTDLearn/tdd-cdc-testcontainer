@@ -127,22 +127,6 @@ public class ServCrudInhe extends TestscontainerConfigInhe {
 
 
   @Test
-  @DisplayName("DeleteAll")
-  @EnabledIf(expression = enabledTest, loadContext = true)
-  public void deleteAll() {
-    StepVerifier.create(serviceCrudRepo.deleteAll())
-                .verifyComplete();
-
-    StepVerifier
-         .create(serviceCrudRepo.findAll()
-                                .log())
-         .expectSubscription()
-         .expectNextCount(0L)
-         .verifyComplete();
-  }
-
-
-  @Test
   @DisplayName("DeleteById")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void deleteById() {

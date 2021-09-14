@@ -109,24 +109,6 @@ public class ServRepoAnnot {
 
 
   @Test
-  @DisplayName("DeleteAll")
-  @EnabledIf(expression = enabledTest, loadContext = true)
-  public void deleteAll() {
-    utils.personStandard_save_check(servRepoStandard);
-
-    StepVerifier.create(servRepoStandard.deleteAll())
-                .verifyComplete();
-
-    StepVerifier
-         .create(servRepoStandard.findAll()
-                                 .log())
-         .expectSubscription()
-         .expectNextCount(0L)
-         .verifyComplete();
-  }
-
-
-  @Test
   @DisplayName("DeleteById")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void deleteById() {

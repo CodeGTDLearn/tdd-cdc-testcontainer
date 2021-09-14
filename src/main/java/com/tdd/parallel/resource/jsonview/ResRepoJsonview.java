@@ -11,81 +11,78 @@ import reactor.core.publisher.Mono;
 
 import static com.tdd.parallel.core.routes.RoutesJsonview.*;
 import static com.tdd.parallel.core.views.Views.PersonViews.*;
-import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.springframework.http.HttpStatus.*;
 
 @AllArgsConstructor
 @Slf4j
 @RestController
 @RequestMapping(JV_REQ_MAP)
-public class ResCrudJsonview {
+public class ResRepoJsonview {
 
-  private final IService<PersonJsonview> servCrudJsonview;
+  private final IService<PersonJsonview> servRepoJsonview;
 
 
-  @PostMapping(JV_CRUD_ADMIN_POST_REQUEST)
+  @PostMapping(JV_REPO_ADMIN_POST_REQUEST)
   @JsonView(AdminResponseView.class)
   @ResponseStatus(CREATED)
   public Mono<PersonJsonview> saveAdminRequestView(
        @RequestBody @JsonView(PostFilterRequestView.class) PersonJsonview person) {
-//    matchesJsonSchemaInClasspath("contracts/person/admin.json")
-
-    return servCrudJsonview.save(person);
+    return servRepoJsonview.save(person);
   }
 
 
-  @PostMapping(JV_CRUD_ADMIN)
+  @PostMapping(JV_REPO_ADMIN)
   @JsonView(AdminResponseView.class)
   @ResponseStatus(CREATED)
   public Mono<PersonJsonview> saveAdmin(@RequestBody PersonJsonview person) {
-    return servCrudJsonview.save(person);
+    return servRepoJsonview.save(person);
   }
 
 
-  @PostMapping(JV_CRUD_USER)
+  @PostMapping(JV_REPO_USER)
   @JsonView(UserResponseView.class)
   @ResponseStatus(CREATED)
   public Mono<PersonJsonview> saveUser(@RequestBody PersonJsonview person) {
-    return servCrudJsonview.save(person);
+    return servRepoJsonview.save(person);
   }
 
 
-  @GetMapping(JV_CRUD_ADMIN)
+  @GetMapping(JV_REPO_ADMIN)
   @JsonView(AdminResponseView.class)
   @ResponseStatus(OK)
   public Flux<PersonJsonview> findAllAdmin() {
-    return servCrudJsonview.findAll();
+    return servRepoJsonview.findAll();
   }
 
 
-  @GetMapping(JV_CRUD_USER)
+  @GetMapping(JV_REPO_USER)
   @JsonView(UserResponseView.class)
   @ResponseStatus(OK)
   public Flux<PersonJsonview> findAllUser() {
-    return servCrudJsonview.findAll();
+    return servRepoJsonview.findAll();
   }
 
 
-  @GetMapping(JV_CRUD_ADMIN + JV_ID)
+  @GetMapping(JV_REPO_ADMIN + JV_ID)
   @JsonView(AdminResponseView.class)
   @ResponseStatus(OK)
   public Mono<PersonJsonview> findByIdAdmin(@PathVariable String id) {
-    return servCrudJsonview.findById(id);
+    return servRepoJsonview.findById(id);
   }
 
 
-  @GetMapping(JV_CRUD_USER + JV_ID)
+  @GetMapping(JV_REPO_USER + JV_ID)
   @JsonView(UserResponseView.class)
   @ResponseStatus(OK)
   public Mono<PersonJsonview> findByIdUser(@PathVariable String id) {
-    return servCrudJsonview.findById(id);
+    return servRepoJsonview.findById(id);
   }
 
 
-  @DeleteMapping(JV_CRUD_DEL + JV_ID)
+  @DeleteMapping(JV_REPO_DEL + JV_ID)
   @ResponseStatus(NO_CONTENT)
   public Mono<Void> deleteById(@PathVariable String id) {
-    return servCrudJsonview.deleteById(id);
+    return servRepoJsonview.deleteById(id);
   }
 }
 

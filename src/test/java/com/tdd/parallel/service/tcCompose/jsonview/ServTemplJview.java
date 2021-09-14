@@ -138,24 +138,6 @@ public class ServTemplJview {
 
 
   @Test
-  @DisplayName("DeleteAll")
-  @EnabledIf(expression = enabledTest, loadContext = true)
-  public void deleteAll() {
-    utils.personJsonview_save_check(servTemplJsonview);
-
-    StepVerifier.create(servTemplJsonview.deleteAll())
-                .verifyComplete();
-
-    StepVerifier
-         .create(servTemplJsonview.findAll()
-                                  .log())
-         .expectSubscription()
-         .expectNextCount(0L)
-         .verifyComplete();
-  }
-
-
-  @Test
   @DisplayName("findAll")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void findAll() {

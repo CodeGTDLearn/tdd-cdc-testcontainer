@@ -1,7 +1,6 @@
 package com.tdd.parallel.resource.standard;
 
 import com.tdd.parallel.entity.standard.PersonStandard;
-import com.tdd.parallel.repository.standard.ICrudStandard;
 import com.tdd.parallel.resource.MergedAnnotations;
 import com.tdd.parallel.service.IService;
 import com.tdd.parallel.service.standard.ServCrudStandard;
@@ -28,7 +27,8 @@ import static com.tdd.parallel.core.routes.RoutesStandard.*;
 import static com.tdd.testsconfig.utils.TestUtils.*;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasKey;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.http.HttpStatus.*;
 
@@ -47,6 +47,7 @@ public class ResCrudStd {
 
   final private String enabledTest = "true";
   final private int repet = 1;
+
   private final TestDbUtils<PersonStandard> utils = new TestDbUtils<>();
   // WEB-TEST-CLIENT(non-blocking client)'
   // SHOULD BE USED WITH 'TEST-CONTAINERS'
@@ -54,8 +55,6 @@ public class ResCrudStd {
   @Autowired
   WebTestClient mockedWebClient;
 
-  @Autowired
-  ICrudStandard repository;
 
   @Autowired
   private IService<PersonStandard> servCrudStandard;
@@ -113,7 +112,7 @@ public class ResCrudStd {
          .body(localPerson)
 
          .when()
-         .post(REQ_MAP_STD + CRUD_STD)
+         .post(STD_REQ_MAP + STD_CRUD)
 
          .then()
          .statusCode(CREATED.value())
@@ -124,9 +123,11 @@ public class ResCrudStd {
          .log()
 
          .body()
+         .body("$",hasKey("id"))
+         .body("$",hasKey("name"))
          .body("id",containsString(localPerson.getId()))
          .body("name",containsString(localPerson.getName()))
-         .body(matchesJsonSchemaInClasspath("cdc_contracts/person.json"))
+         .body(matchesJsonSchemaInClasspath("contracts/person/admin.json"))
     ;
 
     utils.findPersonInDb(servCrudStandard.findById(localPerson.getId()),1L);
@@ -147,7 +148,7 @@ public class ResCrudStd {
          .header("Content-type",CONT_JSON)
 
          .when()
-         .get(REQ_MAP_STD + CRUD_STD)
+         .get(STD_REQ_MAP + STD_CRUD)
 
          .then()
          .statusCode(OK.value())
@@ -157,9 +158,13 @@ public class ResCrudStd {
          .log()
 
          .body()
-         .body("size()",is(1))
+         .body("[0]",hasKey("id"))
+         .body("[0]",hasKey("name"))
+         .body("[0].id",containsString(localPerson.getId()))
+         .body("[0].name",containsString(localPerson.getName()))
          .body("id",hasItem(localPerson.getId()))
-         .body(matchesJsonSchemaInClasspath("cdc_contracts/person.json"))
+         .body("name",hasItem(localPerson.getName()))
+         .body(matchesJsonSchemaInClasspath("contracts/person/adminList.json"))
     ;
   }
 
@@ -178,7 +183,7 @@ public class ResCrudStd {
          .header("Content-type",CONT_JSON)
 
          .when()
-         .get(REQ_MAP_STD + CRUD_STD + ID_STD,localPerson.getId())
+         .get(STD_REQ_MAP + STD_CRUD + STD_ID,localPerson.getId())
 
          .then()
          .statusCode(OK.value())
@@ -188,39 +193,14 @@ public class ResCrudStd {
          .log()
 
          .body()
-         .body("id",equalTo(localPerson.getId()))
-         .body(matchesJsonSchemaInClasspath("cdc_contracts/person.json"))
+         .body("$",hasKey("id"))
+         .body("$",hasKey("name"))
+         .body("id",containsString(localPerson.getId()))
+         .body("name",containsString(localPerson.getName()))
+         .body(matchesJsonSchemaInClasspath("contracts/person/admin.json"))
     ;
 
     utils.findPersonInDb(servCrudStandard.findById(localPerson.getId()),1L);
-  }
-
-
-  @Test
-  @DisplayName("DeleteAll")
-  @EnabledIf(expression = enabledTest, loadContext = true)
-  public void deleteAll() {
-    PersonStandard localPerson = utils.personStandard_save_check(servCrudStandard);
-
-    RestAssuredWebTestClient
-
-         .given()
-         .webTestClient(mockedWebClient)
-         .header("Accept",CONT_ANY)
-         .header("Content-type",CONT_JSON)
-
-         .body(localPerson)
-
-         .when()
-         .delete(REQ_MAP_STD + CRUD_STD)
-
-         .then()
-         .log()
-         .headers()
-         .statusCode(NO_CONTENT.value())
-    ;
-
-    utils.countPersonInDb(servCrudStandard.findAll(),0L);
   }
 
 
@@ -240,7 +220,7 @@ public class ResCrudStd {
          .body(localPerson)
 
          .when()
-         .delete(REQ_MAP_STD + CRUD_STD + ID_STD,localPerson.getId())
+         .delete(STD_REQ_MAP + STD_CRUD + STD_ID,localPerson.getId())
 
          .then()
          .log()

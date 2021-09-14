@@ -70,4 +70,23 @@ public class TestDbUtils<E> {
     return localPerson;
   }
 
+  //  public PersonSlim personSlim_save_check(IService<PersonSlim> service) {
+  //    PersonSlim personSlim = personSlimOnlyName().create();
+  //
+  //    StepVerifier
+  //         .create(service.deleteAll()
+  //                        .log())
+  //         .expectSubscription()
+  //         .expectNextCount(0L)
+  //         .verifyComplete();
+  //
+  //    StepVerifier
+  //         .create(service.save(personSlim))
+  //         .expectSubscription()
+  //         .expectNext(personSlim)
+  //         .verifyComplete();
+  //
+  //    return personSlim;
+  //  }
+
 }

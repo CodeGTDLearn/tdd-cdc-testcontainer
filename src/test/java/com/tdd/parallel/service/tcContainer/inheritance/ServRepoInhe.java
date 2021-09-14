@@ -128,22 +128,6 @@ public class ServRepoInhe extends TestscontainerConfigInhe {
 
 
   @Test
-  @DisplayName("DeleteAll")
-  @EnabledIf(expression = enabledTest, loadContext = true)
-  public void deleteAll() {
-    StepVerifier.create(serviceMongoRepo.deleteAll())
-                .verifyComplete();
-
-    StepVerifier
-         .create(serviceMongoRepo.findAll()
-                                 .log())
-         .expectSubscription()
-         .expectNextCount(0L)
-         .verifyComplete();
-  }
-
-
-  @Test
   @DisplayName("DeleteById")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void deleteById() {

@@ -138,24 +138,6 @@ public class ServRepoJview {
 
 
   @Test
-  @DisplayName("DeleteAll")
-  @EnabledIf(expression = enabledTest, loadContext = true)
-  public void deleteAll() {
-    utils.personJsonview_save_check(servRepoJsonview);
-
-    StepVerifier.create(servRepoJsonview.deleteAll())
-                .verifyComplete();
-
-    StepVerifier
-         .create(servRepoJsonview.findAll()
-                                 .log())
-         .expectSubscription()
-         .expectNextCount(0L)
-         .verifyComplete();
-  }
-
-
-  @Test
   @DisplayName("findAll")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void findAll() {
