@@ -1,4 +1,4 @@
-package com.tdd.parallel.entity.slim;
+package com.tdd.parallel.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

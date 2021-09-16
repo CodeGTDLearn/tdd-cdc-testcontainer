@@ -1,7 +1,7 @@
 package com.tdd.parallel.service.tcContainer.inheritance;
 
 import com.tdd.parallel.core.config.ServiceTemplateStandardCfg;
-import com.tdd.parallel.entity.standard.PersonStandard;
+import com.tdd.parallel.entity.PersonStandard;
 import com.tdd.parallel.service.IService;
 import com.tdd.testsconfig.tcContainer.inheritance.TestscontainerConfigInhe;
 import lombok.extern.slf4j.Slf4j;

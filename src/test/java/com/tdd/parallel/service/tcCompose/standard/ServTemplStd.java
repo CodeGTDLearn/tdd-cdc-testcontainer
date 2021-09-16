@@ -1,7 +1,7 @@
 package com.tdd.parallel.service.tcCompose.standard;
 
 import com.tdd.parallel.core.config.ServiceTemplateStandardCfg;
-import com.tdd.parallel.entity.standard.PersonStandard;
+import com.tdd.parallel.entity.PersonStandard;
 import com.tdd.parallel.service.IService;
 import com.tdd.parallel.service.tcCompose.MergedAnnotations;
 import com.tdd.testsconfig.tcCompose.TcComposeConfig;
@@ -22,7 +22,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 
-import static com.tdd.databuilder.PersonStandardBuilder.personWithIdAndNameStandard;
 import static com.tdd.testsconfig.utils.TestUtils.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;

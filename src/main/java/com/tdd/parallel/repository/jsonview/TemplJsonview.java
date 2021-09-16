@@ -1,6 +1,6 @@
 package com.tdd.parallel.repository.jsonview;
 
-import com.tdd.parallel.entity.jsonview.PersonJsonview;
+import com.tdd.parallel.entity.PersonJsonview;
 import com.tdd.parallel.repository.ITemplGeneric;
 import lombok.AllArgsConstructor;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;

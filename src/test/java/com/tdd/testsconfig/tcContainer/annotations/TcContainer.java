@@ -7,8 +7,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE})
+import static java.lang.annotation.ElementType.*;
+import static java.lang.annotation.RetentionPolicy.*;
+
+@Retention(RUNTIME)
+@Target({TYPE})
 @ExtendWith(TcContainerConfig.class)
 public @interface TcContainer {
 }

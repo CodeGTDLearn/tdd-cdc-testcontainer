@@ -1,4 +1,4 @@
-package com.tdd.parallel.entity.jsonview;
+package com.tdd.parallel.entity;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.AllArgsConstructor;

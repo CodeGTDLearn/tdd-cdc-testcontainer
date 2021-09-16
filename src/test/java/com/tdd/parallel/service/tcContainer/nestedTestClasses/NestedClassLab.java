@@ -1,6 +1,6 @@
 package com.tdd.parallel.service.tcContainer.nestedTestClasses;
 
-import com.tdd.parallel.entity.standard.PersonStandard;
+import com.tdd.parallel.entity.PersonStandard;
 import com.tdd.parallel.service.IService;
 import com.tdd.parallel.service.standard.ServCrudStandard;
 import com.tdd.testsconfig.globalAnnotations.GlobalConfig;

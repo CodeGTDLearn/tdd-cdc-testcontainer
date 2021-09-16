@@ -1,7 +1,7 @@
 package com.tdd.parallel.resource.jsonview;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.tdd.parallel.entity.jsonview.PersonJsonview;
+import com.tdd.parallel.entity.PersonJsonview;
 import com.tdd.parallel.service.IService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +11,6 @@ import reactor.core.publisher.Mono;
 
 import static com.tdd.parallel.core.routes.RoutesJsonview.*;
 import static com.tdd.parallel.core.views.Views.PersonViews.*;
-import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.springframework.http.HttpStatus.*;
 
 @AllArgsConstructor
@@ -26,13 +25,18 @@ public class ResCrudJsonview {
   @PostMapping(JV_CRUD_ADMIN_POST_REQUEST)
   @JsonView(AdminResponseView.class)
   @ResponseStatus(CREATED)
-  public Mono<PersonJsonview> saveAdminRequestView(
+  public Mono<PersonJsonview> saveAdminRequestViewOnlyName(
        @RequestBody @JsonView(PostFilterRequestView.class) PersonJsonview person) {
-//    matchesJsonSchemaInClasspath("contracts/person/admin.json")
+    // NO ID PROVIDED:
+    // - no Id provided in the ipnput Object (No ID, only Name)
+    // - the response will have an ID provided/created from the DB
 
+    // ID PROVIDED:
+    // Id provided in the Object (Full Object Body: ID + Name)
+    // However, because jsonView will nullify this initial Id given
+    // in the response, A new ID will be provided/created from the DB
     return servCrudJsonview.save(person);
   }
-
 
   @PostMapping(JV_CRUD_ADMIN)
   @JsonView(AdminResponseView.class)

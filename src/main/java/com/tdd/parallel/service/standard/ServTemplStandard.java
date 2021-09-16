@@ -1,6 +1,6 @@
 package com.tdd.parallel.service.standard;
 
-import com.tdd.parallel.entity.standard.PersonStandard;
+import com.tdd.parallel.entity.PersonStandard;
 import com.tdd.parallel.repository.ITemplGeneric;
 import com.tdd.parallel.service.IService;
 import lombok.AllArgsConstructor;

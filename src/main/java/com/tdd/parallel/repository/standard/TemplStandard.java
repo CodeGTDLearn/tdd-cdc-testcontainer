@@ -1,6 +1,6 @@
 package com.tdd.parallel.repository.standard;
 
-import com.tdd.parallel.entity.standard.PersonStandard;
+import com.tdd.parallel.entity.PersonStandard;
 import com.tdd.parallel.repository.ITemplGeneric;
 import lombok.AllArgsConstructor;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;

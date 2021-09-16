@@ -1,7 +1,7 @@
 package com.tdd.parallel.resource.jsonview;
 
-import com.tdd.parallel.entity.jsonview.PersonJsonview;
-import com.tdd.parallel.entity.slim.PersonOnlyName;
+import com.tdd.parallel.entity.PersonJsonview;
+import com.tdd.parallel.entity.PersonOnlyName;
 import com.tdd.parallel.resource.MergedAnnotations;
 import com.tdd.parallel.service.IService;
 import com.tdd.parallel.service.jsonview.ServTemplJsonview;
@@ -97,9 +97,11 @@ public class ResTemplJview {
 
 
   @Test
-  @DisplayName("SaveAdminReqView")
+  @DisplayName("SaveAdminJsonViewOnlyName")
   @EnabledIf(expression = enabledTest, loadContext = true)
-  public void saveAdminRequestView() {
+  public void SaveAdminJsonViewOnlyName() {
+    // no Id provided in the input Object (No ID, only Name)
+    // in the response, A new ID will be provided/created from the DB
     PersonOnlyName personOnlyName = personOnlyName().create();
 
     RestAssuredWebTestClient
@@ -111,7 +113,7 @@ public class ResTemplJview {
          .body(personOnlyName)
 
          .when()
-         .post(JV_REQ_MAP + JV_CRUD_ADMIN_POST_REQUEST)
+         .post(JV_REQ_MAP + JV_TEMPL_ADMIN_POST_REQUEST)
 
          .then()
          .statusCode(CREATED.value())
@@ -122,7 +124,43 @@ public class ResTemplJview {
          .log()
 
          .body()
-         .body("$",hasKey("id"))
+         .body("$",hasKey("id")) // the response has an ID provided/created from the DB
+         .body("$",hasKey("name"))
+         .body("name",containsString(personOnlyName.getName()))
+         .body(matchesJsonSchemaInClasspath("contracts/person/admin.json"))
+    ;
+  }
+
+  @Test
+  @DisplayName("SaveAdminJsonViewFullObject")
+  @EnabledIf(expression = enabledTest, loadContext = true)
+  public void SaveAdminJsonViewFullObject() {
+    // Id provided in the Object (Full Object Body: ID + Name)
+    // However, because jsonView will nullify this initial Id given
+    // in the response, A new ID will be provided/created from the DB
+    PersonJsonview personOnlyName = utils.personJsonview_save_check(servTemplJsonview);
+
+    RestAssuredWebTestClient
+
+         .given()
+         .webTestClient(mockedWebClient)
+         .header("Accept",CONT_ANY)
+         .header("Content-type",CONT_JSON)
+         .body(personOnlyName)
+
+         .when()
+         .post(JV_REQ_MAP + JV_TEMPL_ADMIN_POST_REQUEST)
+
+         .then()
+         .statusCode(CREATED.value())
+         .contentType(CONT_JSON)
+         .log()
+         .headers()
+         .and()
+         .log()
+
+         .body()
+         .body("$",hasKey("id")) // the response has an ID provided/created from the DB
          .body("$",hasKey("name"))
          .body("name",containsString(personOnlyName.getName()))
          .body(matchesJsonSchemaInClasspath("contracts/person/admin.json"))

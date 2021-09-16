@@ -1,7 +1,7 @@
 package com.tdd.databuilder;
 
 import com.github.javafaker.Faker;
-import com.tdd.parallel.entity.jsonview.PersonJsonview;
+import com.tdd.parallel.entity.PersonJsonview;
 import lombok.Builder;
 import lombok.Getter;
 

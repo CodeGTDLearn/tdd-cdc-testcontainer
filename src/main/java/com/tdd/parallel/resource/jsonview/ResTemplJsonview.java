@@ -1,7 +1,7 @@
 package com.tdd.parallel.resource.jsonview;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.tdd.parallel.entity.jsonview.PersonJsonview;
+import com.tdd.parallel.entity.PersonJsonview;
 import com.tdd.parallel.service.IService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +27,14 @@ public class ResTemplJsonview {
   @ResponseStatus(CREATED)
   public Mono<PersonJsonview> saveAdminRequestView(
        @RequestBody @JsonView(PostFilterRequestView.class) PersonJsonview person) {
+    // NO ID PROVIDED:
+    // - no Id provided in the ipnput Object (No ID, only Name)
+    // - the response will have an ID provided/created from the DB
+
+    // ID PROVIDED:
+    // Id provided in the Object (Full Object Body: ID + Name)
+    // However, because jsonView will nullify this initial Id given
+    // in the response, A new ID will be provided/created from the DB
     return servTemplJsonview.save(person);
   }
 

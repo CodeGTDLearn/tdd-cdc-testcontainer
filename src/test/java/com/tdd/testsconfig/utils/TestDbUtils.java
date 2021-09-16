@@ -1,7 +1,7 @@
 package com.tdd.testsconfig.utils;
 
-import com.tdd.parallel.entity.jsonview.PersonJsonview;
-import com.tdd.parallel.entity.standard.PersonStandard;
+import com.tdd.parallel.entity.PersonJsonview;
+import com.tdd.parallel.entity.PersonStandard;
 import com.tdd.parallel.service.IService;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;

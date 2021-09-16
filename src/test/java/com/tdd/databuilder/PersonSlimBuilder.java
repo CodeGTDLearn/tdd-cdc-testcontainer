@@ -1,7 +1,7 @@
 package com.tdd.databuilder;
 
 import com.github.javafaker.Faker;
-import com.tdd.parallel.entity.slim.PersonOnlyName;
+import com.tdd.parallel.entity.PersonOnlyName;
 import lombok.Builder;
 import lombok.Getter;
 

@@ -1,7 +1,7 @@
 package com.tdd.parallel.service.tcCompose.jsonview;
 
 import com.tdd.parallel.core.config.ServiceTemplateJsonviewCfg;
-import com.tdd.parallel.entity.jsonview.PersonJsonview;
+import com.tdd.parallel.entity.PersonJsonview;
 import com.tdd.parallel.service.IService;
 import com.tdd.parallel.service.tcCompose.MergedAnnotations;
 import com.tdd.testsconfig.tcCompose.TcComposeConfig;

@@ -1,7 +1,6 @@
 package com.tdd.parallel.service.jsonview;
 
-import com.tdd.parallel.entity.jsonview.PersonJsonview;
-import com.tdd.parallel.entity.standard.PersonStandard;
+import com.tdd.parallel.entity.PersonJsonview;
 import com.tdd.parallel.repository.jsonview.ICrudJsonview;
 import com.tdd.parallel.service.IService;
 import lombok.AllArgsConstructor;

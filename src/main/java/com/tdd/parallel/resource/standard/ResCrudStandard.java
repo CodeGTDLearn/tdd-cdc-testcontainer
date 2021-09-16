@@ -1,6 +1,6 @@
 package com.tdd.parallel.resource.standard;
 
-import com.tdd.parallel.entity.standard.PersonStandard;
+import com.tdd.parallel.entity.PersonStandard;
 import com.tdd.parallel.service.IService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
