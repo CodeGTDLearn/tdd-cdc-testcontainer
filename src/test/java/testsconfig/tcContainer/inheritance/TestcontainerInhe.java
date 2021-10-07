@@ -1,4 +1,4 @@
-package com.tdd.testsconfig.tcContainer.inheritance;
+package testsconfig.tcContainer.inheritance;
 
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;

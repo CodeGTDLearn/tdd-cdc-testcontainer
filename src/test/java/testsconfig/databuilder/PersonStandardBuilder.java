@@ -1,4 +1,4 @@
-package com.tdd.databuilder;
+package testsconfig.databuilder;
 
 import com.github.javafaker.Faker;
 import com.tdd.parallel.entity.PersonStandard;

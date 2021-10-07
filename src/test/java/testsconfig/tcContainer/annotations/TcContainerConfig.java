@@ -1,10 +1,9 @@
-package com.tdd.testsconfig.tcContainer.annotations;
+package testsconfig.tcContainer.annotations;
 
+import testsconfig.utils.TestUtils;
 import org.junit.jupiter.api.extension.Extension;
 import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.utility.DockerImageName;
-
-import static com.tdd.testsconfig.utils.TestUtils.globalContainerMessage;
 
 public class TcContainerConfig implements Extension {
 
@@ -24,20 +23,20 @@ public class TcContainerConfig implements Extension {
     testContainer = new MongoDBContainer(DockerImageName.parse(MONGO_IMAGE));
     testContainer.start();
     System.setProperty(APP_PROPERTIES_MONGO_URI,testContainer.getReplicaSetUrl());
-    globalContainerMessage(getTcContainer(),"container-start");
-    globalContainerMessage(getTcContainer(),"container-state");
+    TestUtils.globalContainerMessage(getTcContainer(),"container-start");
+    TestUtils.globalContainerMessage(getTcContainer(),"container-state");
   }
 
 
   public static void restartTestcontainer() {
-    globalContainerMessage(getTcContainer(),"container-end");
+    TestUtils.globalContainerMessage(getTcContainer(),"container-end");
     testContainer.close();
     startTestcontainer();
   }
 
 
   public static void closeTestcontainer() {
-    globalContainerMessage(getTcContainer(),"container-end");
+    TestUtils.globalContainerMessage(getTcContainer(),"container-end");
     testContainer.close();
   }
 

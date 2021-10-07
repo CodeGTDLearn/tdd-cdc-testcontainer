@@ -3,9 +3,9 @@ package com.tdd.parallel.service.tcCompose.standard;
 import com.tdd.parallel.entity.PersonStandard;
 import com.tdd.parallel.service.IService;
 import com.tdd.parallel.service.standard.ServRepoStandard;
-import com.tdd.parallel.service.tcCompose.MergedAnnotations;
-import com.tdd.testsconfig.tcCompose.TcComposeConfig;
-import com.tdd.testsconfig.utils.TestDbUtils;
+import testsconfig.annotations.MergedService;
+import testsconfig.tcCompose.TcComposeConfig;
+import testsconfig.utils.TestDbUtils;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
@@ -21,16 +21,18 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import static com.tdd.testsconfig.utils.TestUtils.*;
+import static testsconfig.utils.TestUtils.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 
 @DisplayName("ServRepoStd")
 @Import({ServRepoStandard.class})
-@MergedAnnotations
+@MergedService
 public class ServRepoStd {
 
+  //STATIC: one service for ALL tests -> SUPER FASTER
+  //NON-STATIC: one service for EACH test
   @Container
   private final DockerComposeContainer<?> compose = new TcComposeConfig().getTcCompose();
 

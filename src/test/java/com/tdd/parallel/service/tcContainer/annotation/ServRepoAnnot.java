@@ -3,7 +3,8 @@ package com.tdd.parallel.service.tcContainer.annotation;
 import com.tdd.parallel.entity.PersonStandard;
 import com.tdd.parallel.service.IService;
 import com.tdd.parallel.service.standard.ServRepoStandard;
-import com.tdd.testsconfig.utils.TestDbUtils;
+import testsconfig.annotations.MergedTcContainer;
+import testsconfig.utils.TestDbUtils;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
@@ -17,7 +18,7 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import static com.tdd.testsconfig.utils.TestUtils.*;
+import static testsconfig.utils.TestUtils.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -28,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 // ja a inicia independente da anotacao
 @DisplayName("ServRepoAnnot")
 @Import({ServRepoStandard.class})
-@MergedAnnotations
+@MergedTcContainer
 public class ServRepoAnnot {
 
   final private String enabledTest = "true";

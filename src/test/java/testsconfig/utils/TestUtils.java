@@ -1,4 +1,4 @@
-package com.tdd.testsconfig.utils;
+package testsconfig.utils;
 
 import io.restassured.builder.ResponseSpecBuilder;
 import io.restassured.http.ContentType;

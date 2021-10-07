@@ -1,11 +1,11 @@
 package com.tdd.parallel.resource.standard;
 
 import com.tdd.parallel.entity.PersonStandard;
-import com.tdd.parallel.resource.MergedAnnotations;
+import testsconfig.annotations.MergedResource;
 import com.tdd.parallel.service.IService;
 import com.tdd.parallel.service.standard.ServRepoStandard;
-import com.tdd.testsconfig.tcCompose.TcComposeConfig;
-import com.tdd.testsconfig.utils.TestDbUtils;
+import testsconfig.tcCompose.TcComposeConfig;
+import testsconfig.utils.TestDbUtils;
 import io.restassured.http.ContentType;
 import io.restassured.module.webtestclient.RestAssuredWebTestClient;
 import org.junit.jupiter.api.*;
@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import static com.tdd.parallel.core.routes.RoutesStandard.*;
-import static com.tdd.testsconfig.utils.TestUtils.*;
+import static testsconfig.utils.TestUtils.*;
 import static io.restassured.module.jsv.JsonSchemaValidator.*;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.Matchers.*;
@@ -33,10 +33,10 @@ import static org.springframework.http.HttpStatus.*;
 
 @DisplayName("ResRepoStd")
 @Import({ServRepoStandard.class})
-@MergedAnnotations
+@MergedResource
 public class ResRepoStd {
 
-  //STATIC: one service for ALL tests
+  //STATIC: one service for ALL tests -> SUPER FASTER
   //NON-STATIC: one service for EACH test
   @Container
   private static final DockerComposeContainer<?> compose = new TcComposeConfig().getTcCompose();

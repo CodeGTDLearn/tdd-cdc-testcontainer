@@ -1,4 +1,4 @@
-package com.tdd.testsconfig.tcCompose;
+package testsconfig.tcCompose;
 
 import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
@@ -17,7 +17,7 @@ public class TcComposeConfig {
   final static public int COMPOSE_STARTUP_TIMEOUT = 30;
   final static public int COMPOSE_SERVICE_PORT = 27017;
   final static public String COMPOSE_SERVICE = "db-service";
-  final static private String COMPOSE_PATH = "src/test/resources/compose-tcContainers.yml";
+  final static private String COMPOSE_PATH = "src/test/resources/tc-compose.yml";
 
 
   //format 01: using a variable to create the tcContainerCompose

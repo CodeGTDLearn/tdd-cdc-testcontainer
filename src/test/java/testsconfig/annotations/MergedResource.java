@@ -1,7 +1,5 @@
-package com.tdd.parallel.service.tcCompose;
+package testsconfig.annotations;
 
-import com.tdd.testsconfig.globalAnnotations.GlobalConfig;
-import com.tdd.testsconfig.globalAnnotations.MongoDbConfig;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.lang.annotation.ElementType;
@@ -12,7 +10,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
 @Testcontainers
-@MongoDbConfig
+@ResourceConfig
 @GlobalConfig
-public @interface MergedAnnotations {
+public @interface MergedResource {
 }

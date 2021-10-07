@@ -1,14 +1,13 @@
-package com.tdd.testsconfig.utils;
+package testsconfig.utils;
 
 import com.tdd.parallel.entity.PersonJsonview;
 import com.tdd.parallel.entity.PersonStandard;
 import com.tdd.parallel.service.IService;
+import testsconfig.databuilder.PersonJsonviewBuilder;
+import testsconfig.databuilder.PersonStandardBuilder;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
-
-import static com.tdd.databuilder.PersonJsonviewBuilder.personWithIdAndNameJsonview;
-import static com.tdd.databuilder.PersonStandardBuilder.personWithIdAndNameStandard;
 
 
 public class TestDbUtils<E> {
@@ -32,7 +31,7 @@ public class TestDbUtils<E> {
 
 
   public PersonStandard personStandard_save_check(IService<PersonStandard> service) {
-    PersonStandard localPerson = personWithIdAndNameStandard().create();
+    PersonStandard localPerson = PersonStandardBuilder.personWithIdAndNameStandard().create();
 
     StepVerifier
          .create(service.deleteAll()
@@ -52,7 +51,7 @@ public class TestDbUtils<E> {
 
 
   public PersonJsonview personJsonview_save_check(IService<PersonJsonview> service) {
-    PersonJsonview localPerson = personWithIdAndNameJsonview().create();
+    PersonJsonview localPerson = PersonJsonviewBuilder.personWithIdAndNameJsonview().create();
 
     StepVerifier
          .create(service.deleteAll()
@@ -69,24 +68,4 @@ public class TestDbUtils<E> {
 
     return localPerson;
   }
-
-  //  public PersonSlim personSlim_save_check(IService<PersonSlim> service) {
-  //    PersonSlim personSlim = personSlimOnlyName().create();
-  //
-  //    StepVerifier
-  //         .create(service.deleteAll()
-  //                        .log())
-  //         .expectSubscription()
-  //         .expectNextCount(0L)
-  //         .verifyComplete();
-  //
-  //    StepVerifier
-  //         .create(service.save(personSlim))
-  //         .expectSubscription()
-  //         .expectNext(personSlim)
-  //         .verifyComplete();
-  //
-  //    return personSlim;
-  //  }
-
 }

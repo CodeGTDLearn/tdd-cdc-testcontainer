@@ -3,7 +3,7 @@ package com.tdd.parallel.service.tcContainer.inheritance;
 import com.tdd.parallel.entity.PersonStandard;
 import com.tdd.parallel.service.IService;
 import com.tdd.parallel.service.standard.ServCrudStandard;
-import com.tdd.testsconfig.tcContainer.inheritance.TestscontainerConfigInhe;
+import testsconfig.tcContainer.inheritance.TestscontainerConfigInhe;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +21,8 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-
-import static com.tdd.databuilder.PersonStandardBuilder.personWithIdAndNameStandard;
-import static com.tdd.testsconfig.utils.TestUtils.*;
+import static testsconfig.databuilder.PersonStandardBuilder.personWithIdAndNameStandard;
+import static testsconfig.utils.TestUtils.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j

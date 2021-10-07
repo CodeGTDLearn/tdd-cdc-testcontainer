@@ -3,10 +3,10 @@ package com.tdd.parallel.service.tcContainer.nestedTestClasses;
 import com.tdd.parallel.entity.PersonStandard;
 import com.tdd.parallel.service.IService;
 import com.tdd.parallel.service.standard.ServCrudStandard;
-import com.tdd.testsconfig.globalAnnotations.GlobalConfig;
-import com.tdd.testsconfig.globalAnnotations.MongoDbConfig;
-import com.tdd.testsconfig.tcContainer.annotations.TcContainer;
-import com.tdd.testsconfig.utils.TestDbUtils;
+import testsconfig.annotations.GlobalConfig;
+import testsconfig.annotations.MongoDbConfig;
+import testsconfig.tcContainer.annotations.TcContainer;
+import testsconfig.utils.TestDbUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -19,7 +19,7 @@ import reactor.test.StepVerifier;
 
 import java.util.Stack;
 
-import static com.tdd.databuilder.PersonStandardBuilder.personWithIdAndNameStandard;
+import static testsconfig.databuilder.PersonStandardBuilder.personWithIdAndNameStandard;
 import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
 

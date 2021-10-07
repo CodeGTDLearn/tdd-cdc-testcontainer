@@ -26,7 +26,9 @@ public class ResTemplJsonview {
   @JsonView(AdminResponseView.class)
   @ResponseStatus(CREATED)
   public Mono<PersonJsonview> saveAdminRequestView(
-       @RequestBody @JsonView(PostFilterRequestView.class) PersonJsonview person) {
+       @RequestBody
+       @JsonView(PostFilterRequestView.class)
+            PersonJsonview person) {
     // NO ID PROVIDED:
     // - no Id provided in the ipnput Object (No ID, only Name)
     // - the response will have an ID provided/created from the DB
