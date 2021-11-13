@@ -3,8 +3,6 @@ package com.tdd.parallel.service.tcContainer.annotation;
 import com.tdd.parallel.entity.PersonStandard;
 import com.tdd.parallel.service.IService;
 import com.tdd.parallel.service.standard.ServCrudStandard;
-import testsconfig.annotations.MergedTcContainer;
-import testsconfig.utils.TestDbUtils;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
@@ -12,15 +10,17 @@ import org.springframework.test.context.junit.jupiter.EnabledIf;
 import reactor.blockhound.BlockingOperationError;
 import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
+import testsconfig.annotations.MergedTcContainer;
+import testsconfig.utils.TestDbUtils;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import static testsconfig.utils.TestUtils.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import static testsconfig.utils.TestUtils.*;
 
 // KEEP: Anotacao de TcContainer
 // - sera inocua, se imports staticos, da classe de extensao dessa anotacao, forem feitos
@@ -42,29 +42,33 @@ public class ServCrudAnnot {
 
   @BeforeAll
   public static void beforeAll(TestInfo testInfo) {
+
     globalBeforeAll();
-    globalTestMessage(testInfo.getDisplayName(),"class-start");
+    globalTestMessage(testInfo.getDisplayName(), "class-start");
   }
 
 
   @AfterAll
   public static void afterAll(TestInfo testInfo) {
+
     globalAfterAll();
-    globalTestMessage(testInfo.getDisplayName(),"class-end");
+    globalTestMessage(testInfo.getDisplayName(), "class-end");
   }
 
 
   @BeforeEach
   public void setUp(TestInfo testInfo) {
+
     globalTestMessage(testInfo.getTestMethod()
-                              .toString(),"method-start");
+                              .toString(), "method-start");
   }
 
 
   @AfterEach
   void tearDown(TestInfo testInfo) {
+
     globalTestMessage(testInfo.getTestMethod()
-                              .toString(),"method-end");
+                              .toString(), "method-end");
   }
 
 
@@ -72,6 +76,7 @@ public class ServCrudAnnot {
   @DisplayName("Save")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void save() {
+
     utils.personStandard_save_check(serviceCrudRepo);
   }
 
@@ -80,6 +85,7 @@ public class ServCrudAnnot {
   @DisplayName("FindById")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void findById() {
+
     PersonStandard localPerson = utils.personStandard_save_check(serviceCrudRepo);
 
 
@@ -97,6 +103,7 @@ public class ServCrudAnnot {
   @DisplayName("DeleteById")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void deleteById() {
+
     PersonStandard localPerson = utils.personStandard_save_check(serviceCrudRepo);
 
 
@@ -114,9 +121,28 @@ public class ServCrudAnnot {
 
 
   @Test
+  @DisplayName("findAll")
+  @EnabledIf(expression = enabledTest, loadContext = true)
+  public void findAll() {
+
+    PersonStandard localPerson = utils.personStandard_save_check(serviceCrudRepo);
+
+
+    StepVerifier.create(serviceCrudRepo.findAll()
+                                       .log())
+                .thenConsumeWhile(person -> {
+                  Assertions.assertEquals((person.getId()), localPerson.getId());
+                  return true;
+                })
+                .verifyComplete();
+  }
+
+
+  @Test
   @DisplayName("BHWorks")
   @EnabledIf(expression = enabledTest, loadContext = true)
   public void bHWorks() {
+
     try {
       FutureTask<?> task = new FutureTask<>(() -> {
         Thread.sleep(0);
@@ -126,28 +152,11 @@ public class ServCrudAnnot {
       Schedulers.parallel()
                 .schedule(task);
 
-      task.get(10,TimeUnit.SECONDS);
+      task.get(10, TimeUnit.SECONDS);
       fail("should fail");
     } catch (ExecutionException | InterruptedException | TimeoutException e) {
-      assertTrue(e.getCause() instanceof BlockingOperationError,"detected");
+      assertTrue(e.getCause() instanceof BlockingOperationError, "detected");
     }
   }
 
-
-  @Test
-  @DisplayName("findAll")
-  @EnabledIf(expression = enabledTest, loadContext = true)
-  public void findAll() {
-    PersonStandard localPerson = utils.personStandard_save_check(serviceCrudRepo);
-
-
-    StepVerifier.create(serviceCrudRepo.findAll()
-                                       .log())
-                .thenConsumeWhile(person -> {
-                  Assertions.assertEquals((person.getId()),localPerson.getId());
-                  return true;
-                })
-                .verifyComplete();
-  }
 }
-

@@ -1,18 +1,18 @@
-### Initial Project Sectors
+### Project Index
 
 1. Testcontainers
    * MergedAnnotations
    * Static/Non-Static Containers
-     - inhiretance + annotations
+     - inheritance
+     - annotations
    * Static/Non-Static Compose
 
 
 2. Custom Test-Annotations
 
 
-3. Parallel Test
+3. MultiThread/Parallel Test
    * Aborted: Because server-costs in CI/CD
-
 
 4. TestDb utils
 
@@ -36,5 +36,6 @@
     - Crud
     - Repo 
     - Template
-   
+
+
 9. Reactive RestAssured
